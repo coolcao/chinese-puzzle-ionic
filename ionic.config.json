@@ -1,0 +1,7 @@
+{
+  "name": "三国华容道",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

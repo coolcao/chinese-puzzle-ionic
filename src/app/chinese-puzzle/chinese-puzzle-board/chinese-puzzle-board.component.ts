@@ -66,18 +66,40 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
     const updateCellSize = () => {
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
+      const isPC = viewportWidth >= 1024; // lg断点
 
-      // 根据屏幕大小动态计算单元格尺寸
-      // 这里取视窗宽度和高度的较小值的1/6作为单元格尺寸
-      // 确保棋盘在各种屏幕尺寸下都能完整显示
-      const minDimension = Math.min(viewportWidth, viewportHeight);
+      let availableHeight, availableWidth;
 
-      this.cellSize = Math.floor(minDimension / 5);
+      if (isPC) {
+        // PC端布局：顶部header + 下面左右布局
+        // 顶部header约80px，右侧信息卡片宽度约320px + 边距
+        availableWidth = viewportWidth - 320 - 72; // 减去信息卡片宽度和左右边距
+        availableHeight = viewportHeight - 80 - 48; // 减去顶部header和上下边距
+      } else {
+        // 移动端上下布局
+        // 顶部导航约60px + 控制栏约80px + 边距约32px = 约172px
+        availableHeight = viewportHeight - 172;
+        availableWidth = viewportWidth - 32; // 减去左右边距
+      }
 
-      // 确保最小尺寸不小于75px
-      this.cellSize = Math.max(this.cellSize, 75);
-      // 确保最大尺寸不超过150px
-      this.cellSize = Math.min(this.cellSize, 150);
+      // 根据可用空间计算单元格尺寸
+      // 棋盘尺寸：4x5 单元格
+      const maxCellWidth = Math.floor(availableWidth / this.boardWidth);
+      const maxCellHeight = Math.floor(availableHeight / this.boardHeight);
+      
+      // 取较小值确保棋盘完全可见
+      this.cellSize = Math.min(maxCellWidth, maxCellHeight);
+
+      // 根据设备类型设置不同的尺寸限制
+      if (isPC) {
+        // PC端：最小80px，最大200px
+        this.cellSize = Math.max(this.cellSize, 80);
+        this.cellSize = Math.min(this.cellSize, 200);
+      } else {
+        // 移动端：最小60px，最大120px
+        this.cellSize = Math.max(this.cellSize, 60);
+        this.cellSize = Math.min(this.cellSize, 120);
+      }
     };
 
     // 初始设置

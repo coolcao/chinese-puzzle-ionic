@@ -7,12 +7,13 @@ import { ChinesePuzzleRoutingModule } from './chinese-puzzle-routing.module';
 import { ChinesePuzzleBoardComponent } from './chinese-puzzle-board/chinese-puzzle-board.component';
 import { ChinesePuzzleStore } from './chinese-puzzle.store';
 import { ScatterFlowersComponent } from './scatter-flowers/scatter-flowers.component';
-
+import { GameBoardCanvasComponent } from './game-board-canvas/game-board-canvas.component';
 
 @NgModule({
   declarations: [
     ChinesePuzzleBoardComponent,
     ScatterFlowersComponent,
+    GameBoardCanvasComponent,
   ],
   imports: [
     CommonModule,

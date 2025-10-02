@@ -38,7 +38,7 @@
   }
   
   /* 确保移动端棋盘不会太大 */
-  .relative.border-4 {
+  canvas {
     max-width: 90vw;
     max-height: 60vh;
   }

@@ -1,18 +1,18 @@
 <div
   *ngIf="!resourceLoading"
-  class="h-screen w-screen bg-gray-50 transition-colors duration-300 dark:bg-gray-800 overflow-hidden"
+  class="h-screen w-screen bg-amber-50 transition-colors duration-300 dark:bg-amber-900/30 overflow-hidden"
 >
   <!-- PC大屏左右布局 -->
   <div class="hidden lg:flex h-full w-full flex-col">
     <!-- 顶部header -->
-    <header class="bg-white p-4 shadow-lg transition-colors duration-300 dark:bg-gray-700">
+    <header class="bg-amber-100 p-4 shadow-lg transition-colors duration-300 dark:bg-amber-800/50 border-b-4 border-amber-200 dark:border-amber-700">
       <div class="relative flex items-center justify-center gap-3">
-        <h1 class="text-2xl font-extrabold text-slate-600 dark:text-slate-200">
+        <h1 class="text-2xl font-extrabold text-amber-800 dark:text-amber-100">
           🎮 三国华容道 🎮
         </h1>
         <button
           (click)="showInstructions = !showInstructions"
-          class="absolute right-4 rounded-full bg-blue-100 p-2 text-blue-600 shadow-md hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-200"
+          class="absolute right-4 rounded-full bg-amber-200 p-2 text-amber-800 shadow-md hover:bg-amber-300 dark:bg-amber-700/50 dark:text-amber-100 dark:hover:bg-amber-600"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +33,7 @@
     </header>
 
     <!-- 下面部分左右布局 -->
-    <div class="flex-1 flex">
+    <div class="flex-1 flex bg-amber-50/50 dark:bg-amber-900/20">
       <!-- 左侧棋盘 -->
       <div class="flex-1 flex items-center justify-center p-6">
         <canvas
@@ -44,24 +44,24 @@
           (touchstart)="onTouchStart($event)"
           (touchmove)="onTouchMove($event)"
           (touchend)="onTouchEnd($event)"
-          class="border-4 border-b-0 border-solid border-yellow-800 dark:border-yellow-700 rounded-md w-full max-w-2xl h-auto"
+          class="border-4 border-b-0 border-solid border-amber-800 dark:border-amber-700 rounded-md w-full max-w-2xl h-auto shadow-lg"
         ></canvas>
       </div>
 
       <!-- 右侧信息卡片 -->
-      <div class="w-80 bg-white shadow-lg dark:bg-gray-700 m-6 rounded-lg flex flex-col">
-        <div class="p-6 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">
-          <h2 class="text-xl font-bold text-slate-600 dark:text-slate-200 mb-4">游戏控制</h2>
-          
+      <div class="w-80 bg-amber-100/80 shadow-lg dark:bg-amber-800/50 m-6 rounded-lg flex flex-col border-2 border-amber-200 dark:border-amber-700">
+        <div class="p-6 border-b border-amber-200 dark:border-amber-700 rounded-t-lg">
+          <h2 class="text-xl font-bold text-amber-800 dark:text-amber-100 mb-4">游戏控制</h2>
+
           <!-- 棋局选择 -->
           <div class="mb-6">
-            <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+            <label class="block text-sm font-medium text-amber-700 dark:text-amber-200 mb-2">
               选择棋局
             </label>
             <select
               [ngModel]="dataSetName()"
               (ngModelChange)="onDataSetChange($event)"
-              class="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-slate-700 shadow-inner transition-all hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-gray-600 dark:bg-gray-800 dark:text-slate-200 dark:focus:border-blue-400"
+              class="w-full rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-amber-800 shadow-inner transition-all hover:border-amber-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-amber-600 dark:bg-amber-700/30 dark:text-amber-100 dark:focus:border-amber-400"
             >
               <option *ngFor="let item of dataSetNames(); let i = index" value="{{ item }}" class="py-2">
                 {{ item }}
@@ -72,31 +72,29 @@
           <!-- 游戏状态 -->
           <div class="space-y-4">
             <div class="flex items-center justify-between">
-              <span class="text-slate-600 dark:text-slate-300">当前步数：</span>
-              <div class="rounded-lg bg-blue-100 px-4 py-2 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
+              <span class="text-amber-700 dark:text-amber-200">当前步数：</span>
+              <div class="rounded-lg bg-amber-200 px-4 py-2 text-amber-800 dark:bg-amber-700/50 dark:text-amber-100">
                 {{ steps }}
               </div>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-slate-600 dark:text-slate-300">游戏状态：</span>
+              <span class="text-amber-700 dark:text-amber-200">游戏状态：</span>
               <div
-                class="rounded-lg px-4 py-2"
-                [class.bg-green-100]="finished()"
-                [class.bg-red-100]="!finished()"
-                [class.text-green-800]="finished()"
-                [class.text-red-800]="!finished()"
-                dark:bg-gray-600
-                dark:text-gray-200
-              >
-                {{ finished() ? "✅ 已完成" : "⏳ 进行中" }}
+                class="rounded-lg px-4 py-2 dark:bg-amber-700/50 bg-amber-300/50"
+                >
+                @if(finished()) {
+                  <span class=" text-green-600 dark:text-green-300">✅ 已完成</span>
+                } @else {
+                  <span class="text-amber-600 dark:text-amber-300">⏳ 进行中</span>
+                }
               </div>
             </div>
           </div>
         </div>
 
         <div class="flex-1 p-6">
-          <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-200 mb-4">游戏说明</h3>
-          <div class="space-y-3 text-sm text-slate-600 dark:text-slate-300">
+          <h3 class="text-lg font-semibold text-amber-800 dark:text-amber-100 mb-4">游戏说明</h3>
+          <div class="space-y-3 text-sm text-amber-700 dark:text-amber-200">
             <p>🎮 通过拖拽方块移动棋子</p>
             <p>⭐ 优先移动大块棋子开路</p>
             <p>🎯 将曹操移动到底部出口</p>
@@ -105,18 +103,17 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- 移动端上下布局 -->
+    <!-- 移动端上下布局 -->
   <div class="lg:hidden flex flex-col h-full">
-    <header class="bg-white p-3 shadow-lg transition-colors duration-300 dark:bg-gray-700">
+    <header class="bg-amber-100 p-3 shadow-lg transition-colors duration-300 dark:bg-amber-800/50 border-b-4 border-amber-200 dark:border-amber-700">
       <div class="relative flex items-center justify-center gap-3">
-        <h1 class="text-lg font-extrabold text-slate-600 dark:text-slate-200">
+        <h1 class="text-lg font-extrabold text-amber-800 dark:text-amber-100">
           🎮 三国华容道 🎮
         </h1>
         <button
           (click)="showInstructions = !showInstructions"
-          class="absolute right-2 rounded-full bg-blue-100 p-2 text-blue-600 shadow-md hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-200"
+          class="absolute right-2 rounded-full bg-amber-200 p-2 text-amber-800 shadow-md hover:bg-amber-300 dark:bg-amber-700/50 dark:text-amber-100 dark:hover:bg-amber-600"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -136,18 +133,18 @@
       </div>
     </header>
 
-    <div class="w-full bg-blue-200">
-      <div class="flex items-center justify-between bg-white/80 px-4 py-2 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-gray-700/80">
+    <div class="w-full bg-amber-200/50 dark:bg-amber-900/30">
+      <div class="flex items-center justify-between bg-amber-100/80 px-4 py-2 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-amber-800/50 border-b-2 border-amber-200 dark:border-amber-700">
         <div class="flex w-full flex-col space-y-2 px-2">
           <!-- 棋局选择区域 -->
           <div class="flex items-center space-x-2">
-            <span class="whitespace-nowrap text-xs font-semibold text-slate-600 dark:text-slate-200">
+            <span class="whitespace-nowrap text-xs font-semibold text-amber-700 dark:text-amber-200">
               当前棋局：
             </span>
             <select
               [ngModel]="dataSetName()"
               (ngModelChange)="onDataSetChange($event)"
-              class="w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 shadow-inner transition-all hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:border-gray-600 dark:bg-gray-800 dark:text-slate-200 dark:focus:border-blue-400"
+              class="w-full rounded-lg border border-amber-200 bg-amber-50 px-2 py-1 text-xs text-amber-800 shadow-inner transition-all hover:border-amber-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:border-amber-600 dark:bg-amber-700/30 dark:text-amber-100 dark:focus:border-amber-400"
             >
               <option *ngFor="let item of dataSetNames(); let i = index" value="{{ item }}" class="py-1">
                 {{ item }}
@@ -157,18 +154,21 @@
 
           <!-- 状态显示区域 -->
           <div class="flex justify-end space-x-2">
-            <div class="rounded-lg bg-blue-100 px-2 py-1 text-xs text-blue-800 shadow-inner transition-colors duration-300 dark:bg-blue-900/30 dark:text-blue-200">
+            <div class="rounded-lg bg-amber-200 px-2 py-1 text-xs text-amber-800 shadow-inner transition-colors duration-300 dark:bg-amber-700/50 dark:text-amber-100">
               步数: {{ steps }}
             </div>
             <div
               class="rounded-lg px-2 py-1 text-xs shadow-inner"
-              [class.bg-green-100]="finished()"
+              [class.bg-green-100]="finished()">
               [class.bg-red-100]="!finished()"
               [class.text-green-800]="finished()"
               [class.text-red-800]="!finished()"
-              dark:bg-gray-600
-              dark:text-gray-200
-            >
+              [class.bg-amber-200]="finished()"
+              [class.bg-amber-300]="!finished()"
+              [class.text-amber-800]="finished()"
+              [class.text-amber-900]="!finished()"
+              dark:bg-amber-700/50
+              dark:text-amber-100>
               状态: {{ finished() ? "✅" : "⏳" }}
             </div>
           </div>
@@ -176,7 +176,7 @@
       </div>
     </div>
 
-    <div class="flex-1 flex items-center justify-center p-4">
+    <div class="flex-1 flex items-center justify-center p-4 bg-amber-50/50 dark:bg-amber-900/20">
       <canvas
         #gameCanvasMobile
         (mousedown)="onMouseDown($event)"
@@ -185,17 +185,15 @@
         (touchstart)="onTouchStart($event)"
         (touchmove)="onTouchMove($event)"
         (touchend)="onTouchEnd($event)"
-        class="border-4 border-b-0 border-solid border-yellow-800 dark:border-yellow-700 rounded-md w-full max-w-md h-auto"
+        class="border-4 border-b-0 border-solid border-amber-800 dark:border-amber-700 rounded-md w-full max-w-md h-auto shadow-lg"
       ></canvas>
     </div>
-  </div>
-</div>
 
 <div
   *ngIf="resourceLoading"
-  class="flex h-full min-h-screen w-full flex-col items-center justify-center bg-gray-50 dark:bg-gray-800"
+  class="flex h-full min-h-screen w-full flex-col items-center justify-center bg-amber-50 dark:bg-amber-900/30"
 >
-  <div class="text-2xl text-slate-600 dark:text-slate-300">
+  <div class="text-2xl text-amber-800 dark:text-amber-100">
     <div class="loader"></div>
   </div>
 </div>
@@ -209,17 +207,18 @@
 ></div>
 }
 
+
 <div
   *ngIf="showInstructions"
-  class="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white/95 p-6 shadow-2xl backdrop-blur-sm transition-all dark:bg-gray-700/95"
+  class="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-amber-100/95 p-6 shadow-2xl backdrop-blur-sm transition-all dark:bg-amber-800/95 border-2 border-amber-200 dark:border-amber-700"
 >
   <div class="mb-4 flex items-center justify-between">
-    <h3 class="text-2xl font-bold text-slate-600 dark:text-slate-200">
+    <h3 class="text-2xl font-bold text-amber-800 dark:text-amber-100">
       🎮 游戏指南
     </h3>
     <button
       (click)="showInstructions = false"
-      class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+      class="text-amber-600 hover:text-amber-800 dark:hover:text-amber-200"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -238,15 +237,15 @@
     </button>
   </div>
 
-  <div class="space-y-4 text-slate-600 dark:text-slate-300">
+  <div class="space-y-4 text-amber-800 dark:text-amber-100">
     <div class="flex items-start gap-3">
       <div
-        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30"
+        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-800 dark:bg-amber-700/50"
       >
         1
       </div>
       <p>
-        通过<span class="font-medium text-blue-600 dark:text-blue-400"
+        通过<span class="font-medium text-amber-700 dark:text-amber-200"
           >拖拽方块</span
         >或点击边缘<span class="text-xl">⬆️⬇️⬅️➡️</span>箭头移动棋子
       </p>
@@ -254,13 +253,13 @@
 
     <div class="flex items-start gap-3">
       <div
-        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900/30"
+        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-800 dark:bg-amber-700/50"
       >
         2
       </div>
       <p>
         ⭐ 技巧：优先移动关羽等<span
-          class="font-bold text-green-600 dark:text-green-400"
+          class="font-bold text-amber-700 dark:text-amber-200"
           >大块</span
         >开路
       </p>
@@ -268,12 +267,12 @@
 
     <div class="flex items-start gap-3">
       <div
-        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/30"
+        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-800 dark:bg-amber-700/50"
       >
         3
       </div>
       <p>
-        目标是将<span class="font-medium text-purple-600 dark:text-purple-400"
+        目标是将<span class="font-medium text-amber-700 dark:text-amber-200"
           >曹操方块</span
         >移动到底部中央出口
       </p>
@@ -281,12 +280,12 @@
 
     <div class="flex items-start gap-3">
       <div
-        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/30"
+        class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-800 dark:bg-amber-700/50"
       >
         4
       </div>
       <p>
-        尽量用<span class="font-medium text-amber-600 dark:text-amber-400"
+        尽量用<span class="font-medium text-amber-700 dark:text-amber-200"
           >最少步数</span
         >完成，挑战最佳记录！
       </p>
@@ -295,7 +294,7 @@
 
   <button
     (click)="showInstructions = false"
-    class="mt-6 w-full rounded-lg bg-blue-600 py-3 font-medium text-white transition-colors hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+    class="mt-6 w-full rounded-lg bg-amber-600 py-3 font-medium text-amber-50 transition-colors hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600"
   >
     开始游戏
   </button>

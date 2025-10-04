@@ -48,10 +48,14 @@ export class GameBoardCanvasComponent implements OnInit, OnDestroy {
 
   // 图片资源
   private pieceImages: Map<string, HTMLImageElement> = new Map();
-  private woodPatternImage: HTMLImageElement | null = null;
+  private woodDarkImage: HTMLImageElement | null = null;
+  private woodLightImage: HTMLImageElement | null = null;
 
   // 监听屏幕大小变化
   private resizeObserver: ResizeObserver | null = null;
+  // 监听黑暗模式变化
+  private darkModeMediaQuery: MediaQueryList | null = null;
+  private darkModeListener: ((e: MediaQueryListEvent) => void) | null = null;
 
   // 检查是否是黑暗模式
   private isDarkMode(): boolean {
@@ -133,6 +137,17 @@ export class GameBoardCanvasComponent implements OnInit, OnDestroy {
         }, 200);
       }
     }, 200);
+
+    // 监听黑暗模式变化
+    if (window.matchMedia) {
+      this.darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      this.darkModeListener = (e: MediaQueryListEvent) => {
+        console.log('Dark mode changed:', e.matches);
+        // 重新绘制棋盘以适配新的主题
+        this.drawBoard();
+      };
+      this.darkModeMediaQuery.addEventListener('change', this.darkModeListener);
+    }
   }
 
   // 组件销毁时清理监听器
@@ -141,6 +156,13 @@ export class GameBoardCanvasComponent implements OnInit, OnDestroy {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;
+    }
+    
+    // 清理黑暗模式监听器
+    if (this.darkModeMediaQuery && this.darkModeListener) {
+      this.darkModeMediaQuery.removeEventListener('change', this.darkModeListener);
+      this.darkModeListener = null;
+      this.darkModeMediaQuery = null;
     }
   }
 
@@ -310,83 +332,58 @@ export class GameBoardCanvasComponent implements OnInit, OnDestroy {
     this.createRoundedRectPath(ctx, x, y, width, height, borderRadius);
     ctx.clip();
 
-    // 绘制棋子背景
-    if (this.woodPatternImage) {
-      // 创建一个临时canvas来绘制wood pattern
-      const patternCanvas = document.createElement('canvas');
-      patternCanvas.width = width * dpr;
-      patternCanvas.height = height * dpr;
-      const patternCtx = patternCanvas.getContext('2d')!;
-      patternCtx.scale(dpr, dpr);
+    // 绘制更真实的木质棋子
+    this.drawRealisticWoodenPiece(ctx, x, y, width, height, piece.name);
 
-      // 绘制wood pattern
-      patternCtx.drawImage(
-        this.woodPatternImage,
-        0, 0, this.woodPatternImage.width, this.woodPatternImage.height,
-        0, 0, width, height
-      );
-
-      // 在棋子位置绘制wood pattern
-      ctx.drawImage(patternCanvas, x, y);
-    } else {
-      // 如果没有wood pattern图片，使用纯色背景
-      // 在黑暗模式下使用更深的木质颜色
-      if (this.isDarkMode()) {
-        ctx.fillStyle = '#a88252'; // 深色木质颜色
-      } else {
-        ctx.fillStyle = '#d2a86f'; // 木质颜色
-      }
-      ctx.fillRect(x, y, width, height);
-    }
-
-    // 绘制棋子图片
-    if (piece.img && this.pieceImages.has(piece.name)) {
-      const img = this.pieceImages.get(piece.name)!;
-      const padding = 8;
-      
-      // 简单直接绘制图片，不进行复杂的颜色处理
-      if (this.isDarkMode()) {
-        // 黑暗模式下，为图片添加轻微发光效果以增强可见性
-        ctx.save();
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
-        ctx.shadowBlur = 1;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-        ctx.drawImage(img, x + padding, y + padding, width - padding * 2, height - padding * 2);
-        ctx.restore();
-      } else {
-        // 白天模式下直接绘制图片
-        ctx.drawImage(img, x + padding, y + padding, width - padding * 2, height - padding * 2);
-      }
-    }
-
-    // 绘制棋子名称
+    // 绘制棋子名称（当没有图片或图片未加载时显示）
+    // 根据棋子大小动态调整文字大小
+    const fontSize = Math.max(12, Math.min(width / 4, height / 4, 24));
     if (!piece.img || !this.pieceImages.has(piece.name)) {
-      ctx.font = '20px Arial';
-      // 在黑暗模式下使用更亮的文字颜色
-      if (this.isDarkMode()) {
-        ctx.fillStyle = '#e6d2b5'; // 更亮的米色
-        // 为文字添加轻微发光效果
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
-        ctx.shadowBlur = 0.3;
-      } else {
-        ctx.fillStyle = '#6b4f27'; // text-[#6b4f27]
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-      }
+      ctx.font = `${fontSize}px Arial`;
+      ctx.fillStyle = '#6b4f27'; // text-[#6b4f27]
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(piece.name, x + width / 2, y + height / 2);
     }
 
+    // 绘制棋子名称
+    ctx.font = `bold ${fontSize * 0.8}px Arial`;
+    // 在黑暗模式下使用更亮的文字颜色
+    if (this.isDarkMode()) {
+      ctx.fillStyle = '#F5DEB3'; // 浅木色文字
+      // 为文字添加轻微发光效果
+      ctx.shadowColor = 'rgba(255, 255, 255, 0.7)';
+      ctx.shadowBlur = 1;
+    } else {
+      ctx.fillStyle = '#8B4513'; // 深棕色文字
+      ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+      ctx.shadowBlur = 0.5;
+    }
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(piece.name, x + width / 2, y + height / 2);
+    
+    // 重置阴影效果
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+
     // 恢复绘图状态
     ctx.restore();
 
-    // 根据黑暗模式调整边框颜色
-    const outerBorderColor = this.isDarkMode() ? '#e6d2b5' : '#7a360a'; // 黑暗模式下外边框更亮
-    const innerBorderColor = this.isDarkMode() ? '#7a360a' : '#e6d2b5'; // 黑暗模式下内边框更暗
+    // 根据黑暗模式调整边框颜色，白天模式颜色更深，黑夜模式颜色更浅
+    let outerBorderColor, innerBorderColor;
     
-    // 绘制外边框（在黑暗模式下应该是亮色）
+    if (this.isDarkMode()) {
+      // 黑夜模式下使用更浅的颜色
+      outerBorderColor = '#f5e5c9'; // 更浅的外边框
+      innerBorderColor = '#9c5a2a'; // 更浅的内边框
+    } else {
+      // 白天模式下使用更深的颜色
+      outerBorderColor = '#5a2508'; // 更深的外边框
+      innerBorderColor = '#c4a47a'; // 更深的内边框
+    }
+    
+    // 绘制外边框
     ctx.strokeStyle = outerBorderColor;
     ctx.lineWidth = 1;
     this.createRoundedRectPath(ctx, x, y, width, height, borderRadius);
@@ -394,11 +391,283 @@ export class GameBoardCanvasComponent implements OnInit, OnDestroy {
 
     const padding = 8;
 
-    // 绘制内边框（在黑暗模式下应该是暗色）
+    // 绘制内边框
     ctx.strokeStyle = innerBorderColor;
     ctx.lineWidth = 3;
     this.createRoundedRectPath(ctx, x + padding, y + padding, width - padding * 2, height - padding * 2, borderRadius - 2);
     ctx.stroke();
+  }
+
+  // 绘制更真实的木质棋子
+  private drawRealisticWoodenPiece(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, pieceName: string) {
+    const isDark = this.isDarkMode();
+
+    // 使用木质纹理图片为每个棋子单独贴图
+    const woodImage = isDark ? this.woodDarkImage : this.woodLightImage;
+
+    // 定义内边框的padding和圆角半径
+    const padding = 8;
+    const innerBorderRadius = 6; // borderRadius - 2
+
+    if (woodImage && woodImage.complete) {
+      // 为每个棋子单独绘制木质纹理图片，从内边框内开始绘制，带圆角
+      this.drawImageFill(ctx, woodImage, x + padding, y + padding, width - padding * 2, height - padding * 2, innerBorderRadius);
+    } else {
+      // 如果图片未加载完成，回退到原来的渐变效果（也需要调整位置和圆角）
+      // 注意：drawWoodenGradient方法也需要修改以支持圆角和位置调整
+      this.drawWoodenGradient(ctx, x + padding, y + padding, width - padding * 2, height - padding * 2, isDark, pieceName);
+    }
+
+    // 添加边框效果
+    this.addWoodenBorder(ctx, x, y, width, height, isDark);
+
+    // 添加立体阴影效果
+    this.addWoodenShadows(ctx, x, y, width, height, isDark);
+  }
+  
+  // 绘制木质渐变效果（回退方案）
+  private drawWoodenGradient(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, isDark: boolean, pieceName: string) {
+    const borderRadius = 6; // 内边框的圆角半径
+
+    // 保存当前绘图状态
+    ctx.save();
+
+    // 创建圆角矩形路径并裁剪
+    this.createRoundedRectPath(ctx, x, y, width, height, borderRadius);
+    ctx.clip();
+
+    // 绘制木质基底 - 为白天和黑夜模式分别设计颜色
+    const gradient = ctx.createLinearGradient(x, y, x + width, y + height);
+
+    if (isDark) {
+      // 夜晚模式下的深色木质渐变
+      gradient.addColorStop(0, '#8B4513'); // 深棕色
+      gradient.addColorStop(0.5, '#A0522D'); // 中等棕色
+      gradient.addColorStop(1, '#5D2906'); // 深红棕色
+    } else {
+      // 白天模式下的更浅色木质渐变
+      gradient.addColorStop(0, '#E6D2B5'); // 更浅的木色
+      gradient.addColorStop(0.5, '#D4A76A'); // 浅木色
+      gradient.addColorStop(1, '#C18E4F'); // 中木色
+    }
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, y, width, height);
+
+    // 添加木质纹理效果 - 模拟1.html中的网格纹理
+    this.drawWoodGrainTexture(ctx, x, y, width, height, isDark, pieceName);
+
+    // 恢复绘图状态
+    ctx.restore();
+  }
+  
+  // 绘制木质纹理效果
+  private drawWoodGrainTexture(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, isDark: boolean, pieceName: string) {
+    // 为每个棋子创建固定的种子值，确保纹理不会随机变化
+    const seed = this.hashString(pieceName) % 1000;
+    
+    // 创建可预测的随机数生成器
+    const random = (min: number, max: number, offset: number = 0) => {
+      const x = Math.sin(seed + offset) * 10000;
+      return min + (x - Math.floor(x)) * (max - min);
+    };
+    
+    // 创建网格状木质纹理 - 模拟1.html中的网格纹理效果
+    const gridSize = 10; // 网格大小
+    
+    // 1. 绘制水平网格线
+    ctx.strokeStyle = isDark ? 
+      'rgba(139, 69, 19, 0.15)' :  // 深色模式下使用深棕色
+      'rgba(230, 210, 181, 0.08)'; // 浅色模式下使用更浅的颜色
+    ctx.lineWidth = 1;
+    
+    for (let i = 0; i <= Math.ceil(height / gridSize); i++) {
+      const yPos = y + i * gridSize;
+      if (yPos >= y && yPos <= y + height) {
+        ctx.beginPath();
+        ctx.moveTo(x, yPos);
+        ctx.lineTo(x + width, yPos);
+        ctx.stroke();
+      }
+    }
+    
+    // 2. 绘制垂直网格线
+    ctx.strokeStyle = isDark ? 
+      'rgba(160, 82, 45, 0.25)' :   // 深色模式下使用中等棕色
+      'rgba(212, 167, 106, 0.15)';  // 浅色模式下使用更浅的颜色
+    
+    for (let i = 0; i <= Math.ceil(width / gridSize); i++) {
+      const xPos = x + i * gridSize;
+      if (xPos >= x && xPos <= x + width) {
+        ctx.beginPath();
+        ctx.moveTo(xPos, y);
+        ctx.lineTo(xPos, y + height);
+        ctx.stroke();
+      }
+    }
+    
+    // 3. 添加随机的木质纹理点 - 增加真实感
+    const dotCount = 30 + Math.floor(random(0, 20, 100));
+    for (let i = 0; i < dotCount; i++) {
+      const dotX = x + random(0, width, i * 10);
+      const dotY = y + random(0, height, i * 20);
+      const dotSize = 1 + random(0, 2, i * 30);
+      
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, dotSize, 0, Math.PI * 2);
+      
+      // 根据位置创建深浅不同的纹理点
+      const depth = random(0, 1, i * 40);
+      ctx.fillStyle = isDark ? 
+        `rgba(139, 69, 19, ${0.1 + depth * 0.3})` :  // 深色模式下使用深棕色
+        `rgba(230, 210, 181, ${0.05 + depth * 0.15})`; // 浅色模式下使用更浅的颜色
+      ctx.fill();
+    }
+  }
+  
+  // 添加3D边缘效果
+  private add3DEdges(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, isDark: boolean) {
+    // 创建更明显的3D效果
+    
+    // 1. 顶部高光 - 模拟光源照射
+    const topLight = ctx.createLinearGradient(x, y, x, y + height * 0.2);
+    topLight.addColorStop(0, isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.6)');
+    topLight.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    
+    ctx.fillStyle = topLight;
+    ctx.fillRect(x, y, width, height * 0.2);
+    
+    // 2. 左侧高光
+    const leftLight = ctx.createLinearGradient(x, y, x + width * 0.2, y);
+    leftLight.addColorStop(0, isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.5)');
+    leftLight.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    
+    ctx.fillStyle = leftLight;
+    ctx.fillRect(x, y, width * 0.2, height);
+    
+    // 3. 右侧阴影 - 模拟背光
+    const rightShadow = ctx.createLinearGradient(x + width * 0.8, y, x + width, y);
+    rightShadow.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    rightShadow.addColorStop(1, isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.4)');
+    
+    ctx.fillStyle = rightShadow;
+    ctx.fillRect(x + width * 0.8, y, width * 0.2, height);
+    
+    // 4. 底部阴影
+    const bottomShadow = ctx.createLinearGradient(x, y + height * 0.8, x, y + height);
+    bottomShadow.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    bottomShadow.addColorStop(1, isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.5)');
+    
+    ctx.fillStyle = bottomShadow;
+    ctx.fillRect(x, y + height * 0.8, width, height * 0.2);
+    
+    // 5. 内部阴影 - 增强立体感
+    const innerShadow = ctx.createRadialGradient(
+      x + width/2, y + height/2, 0,
+      x + width/2, y + height/2, Math.min(width, height) * 0.8
+    );
+    innerShadow.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    innerShadow.addColorStop(1, isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.15)');
+    
+    ctx.fillStyle = innerShadow;
+    ctx.fillRect(x, y, width, height);
+  }
+  
+  // 添加边框效果
+  private addWoodenBorder(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, isDark: boolean) {
+    // 添加内边框效果 - 模拟1.html中的内边框
+    const borderWidth = 3;
+    const borderRadius = 4;
+    
+    // 绘制内边框阴影
+    ctx.fillStyle = isDark ? 
+      'rgba(0, 0, 0, 0.15)' :  // 深色模式下使用更深的阴影
+      'rgba(0, 0, 0, 0.03)';   // 浅色模式下使用更浅的阴影
+    ctx.fillRect(x + borderWidth, y + borderWidth, width - 2 * borderWidth, height - 2 * borderWidth);
+  }
+  
+  // 添加立体阴影效果
+  private addWoodenShadows(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, isDark: boolean) {
+    // 添加外阴影效果 - 模拟1.html中的外阴影
+    
+    // 1. 外阴影
+    const outerShadow = ctx.createLinearGradient(x, y, x, y + height);
+    outerShadow.addColorStop(0, isDark ? 
+      'rgba(0, 0, 0, 0.2)' :   // 深色模式下使用更深的阴影
+      'rgba(0, 0, 0, 0.05)');  // 浅色模式下使用更浅的阴影
+    outerShadow.addColorStop(1, isDark ? 
+      'rgba(0, 0, 0, 0.4)' :   // 深色模式下使用更深的阴影
+      'rgba(0, 0, 0, 0.15)');  // 浅色模式下使用更浅的阴影
+    
+    // 绘制外阴影
+    ctx.fillStyle = outerShadow;
+    ctx.fillRect(x + 2, y + 4, width, height);
+    ctx.fillRect(x + 4, y + 8, width, height);
+    
+    // 2. 内阴影 - 顶部高光
+    const innerHighlight = ctx.createLinearGradient(x, y, x, y + height * 0.3);
+    innerHighlight.addColorStop(0, isDark ? 
+      'rgba(255, 255, 255, 0.15)' :  // 深色模式下使用较弱的高光
+      'rgba(255, 255, 255, 0.3)');   // 浅色模式下使用更强的高光
+    innerHighlight.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    
+    ctx.fillStyle = innerHighlight;
+    ctx.fillRect(x, y, width, height * 0.3);
+    
+    // 3. 内阴影 - 底部阴影
+    const innerShadow = ctx.createLinearGradient(x, y + height * 0.7, x, y + height);
+    innerShadow.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    innerShadow.addColorStop(1, isDark ? 
+      'rgba(0, 0, 0, 0.3)' :    // 深色模式下使用更深的阴影
+      'rgba(0, 0, 0, 0.15)');   // 浅色模式下使用更浅的阴影
+    
+    ctx.fillStyle = innerShadow;
+    ctx.fillRect(x, y + height * 0.7, width, height * 0.3);
+  }
+
+  // 添加木质纹理细节
+  private addWoodGrainDetails(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, isDark: boolean) {
+    // 这个函数现在已经被整合到新的绘制函数中，但为了保持代码兼容性暂时保留
+    // 实际的纹理绘制已经在drawWoodGrain函数中实现
+  }
+
+  // 按比例填充绘制图片，确保图片填充整个区域（可能会裁切），支持圆角
+  private drawImageFill(ctx: CanvasRenderingContext2D, image: HTMLImageElement, x: number, y: number, width: number, height: number, borderRadius: number = 0) {
+    // 计算图片的宽高比
+    const imageAspect = image.width / image.height;
+    const containerAspect = width / height;
+
+    let drawWidth, drawHeight, offsetX, offsetY;
+
+    // 根据宽高比决定如何缩放图片以填充整个区域
+    if (imageAspect > containerAspect) {
+      // 图片更宽，以高度为准填充，裁切左右
+      drawHeight = height;
+      drawWidth = height * imageAspect;
+      offsetX = (width - drawWidth) / 2;
+      offsetY = 0;
+    } else {
+      // 图片更高，以宽度为准填充，裁切上下
+      drawWidth = width;
+      drawHeight = width / imageAspect;
+      offsetX = 0;
+      offsetY = (height - drawHeight) / 2;
+    }
+
+    // 如果需要圆角，创建裁剪区域
+    if (borderRadius > 0) {
+      ctx.save();
+      this.createRoundedRectPath(ctx, x, y, width, height, borderRadius);
+      ctx.clip();
+    }
+
+    // 绘制图片，确保填充整个区域
+    ctx.drawImage(image, x + offsetX, y + offsetY, drawWidth, drawHeight);
+
+    // 恢复绘图状态
+    if (borderRadius > 0) {
+      ctx.restore();
+    }
   }
 
   // 创建圆角矩形路径
@@ -414,6 +683,17 @@ export class GameBoardCanvasComponent implements OnInit, OnDestroy {
     ctx.lineTo(x, y + radius);
     ctx.quadraticCurveTo(x, y, x + radius, y);
     ctx.closePath();
+  }
+  
+  // 字符串哈希函数 - 为每个棋子生成固定种子
+  private hashString(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash; // 转换为32位整数
+    }
+    return Math.abs(hash);
   }
 
   // 根据坐标查找棋子
@@ -664,23 +944,40 @@ export class GameBoardCanvasComponent implements OnInit, OnDestroy {
 
     // 清空之前的图片缓存
     this.pieceImages.clear();
-    this.woodPatternImage = null;
+    this.woodDarkImage = null;
+    this.woodLightImage = null;
 
     // 获取当前最新的棋子数据
     const currentPieces = this.pieces();
 
-    // 预加载wood pattern图片
-    const woodPatternImg = new Image();
-    woodPatternImg.src = 'assets/img/wood-pattern.png';
-    woodPatternImg.onload = () => {
-      this.woodPatternImage = woodPatternImg;
+    // 预加载木质纹理图片
+    const woodDarkImg = new Image();
+    woodDarkImg.src = 'assets/img/wood_dark.png';
+    woodDarkImg.onload = () => {
+      this.woodDarkImage = woodDarkImg;
       // 如果棋子图片已经加载完成，则绘制棋盘
       if (!this.resourceLoading) {
         this.drawBoard();
       }
     };
-    woodPatternImg.onerror = () => {
-      // 即使wood pattern图片加载失败也要尝试绘制
+    woodDarkImg.onerror = () => {
+      // 即使wood dark图片加载失败也要尝试绘制
+      if (!this.resourceLoading) {
+        this.drawBoard();
+      }
+    };
+
+    const woodLightImg = new Image();
+    woodLightImg.src = 'assets/img/wood_light.png';
+    woodLightImg.onload = () => {
+      this.woodLightImage = woodLightImg;
+      // 如果棋子图片已经加载完成，则绘制棋盘
+      if (!this.resourceLoading) {
+        this.drawBoard();
+      }
+    };
+    woodLightImg.onerror = () => {
+      // 即使wood light图片加载失败也要尝试绘制
       if (!this.resourceLoading) {
         this.drawBoard();
       }

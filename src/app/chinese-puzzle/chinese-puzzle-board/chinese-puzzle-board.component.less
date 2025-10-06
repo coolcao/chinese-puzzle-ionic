@@ -52,3 +52,31 @@
     overflow: hidden;
   }
 }
+
+/* 黑暗模式下的棋子优化 */
+:host-context(.dark) {
+  /* 棋子背景（木纹）在黑暗模式下变暗 */
+  [cdkDrag] {
+    filter: brightness(0.75) contrast(1.1);
+    
+    /* 棋子上的人物图片在黑暗模式下稍微变暗 */
+    > div {
+      filter: brightness(0.9) contrast(1.05);
+    }
+  }
+}
+
+/* 使用媒体查询作为备选方案 */
+@media (prefers-color-scheme: dark) {
+  :host {
+    /* 棋子背景（木纹）在黑暗模式下变暗 */
+    [cdkDrag] {
+      filter: brightness(0.75) contrast(1.1);
+      
+      /* 棋子上的人物图片在黑暗模式下稍微变暗 */
+      > div {
+        filter: brightness(0.9) contrast(1.05);
+      }
+    }
+  }
+}

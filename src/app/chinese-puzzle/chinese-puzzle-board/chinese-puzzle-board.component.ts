@@ -1,11 +1,13 @@
 import { Component, effect, inject, OnDestroy, OnInit } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
+import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 
 import { ChinesePuzzleStore } from '../chinese-puzzle.store';
 import { ToolsService } from '../../common/tools.service';
 import { Direction, Piece } from '../chinese-puzzle.type';
 import { ImagePreloaderService } from '../image-preloader.service';
+import { levels } from '../data-set';
 
 @Component({
   selector: 'app-chinese-puzzle-board',
@@ -18,9 +20,10 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
   private store = inject(ChinesePuzzleStore);
   private tools = inject(ToolsService);
   private imagePreLoader = inject(ImagePreloaderService);
-  // 单元格尺寸
+  private route = inject(ActivatedRoute);
+  // 响应式单元格尺寸
   cellSize = 150;
-  // 由于边框问题，这里加一个偏移量
+  // 边框偏移量
   cellOffset = 8;
 
   Direction = Direction;
@@ -31,7 +34,6 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
   boardWidth = this.store.boardWidth();
   boardHeight = this.store.boardHeight();
 
-  dataSetNames = this.store.dataSetNames;
   dataSetName = this.store.dataSetName;
 
   pieces = this.store.pieces;
@@ -45,6 +47,9 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
 
   resourceLoading = false;
   showSuccess = false;
+  
+  // 当前关卡信息
+  currentLevel = this.getCurrentLevel();
 
   constructor() {
     effect(() => {
@@ -96,9 +101,10 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
         this.cellSize = Math.max(this.cellSize, 80);
         this.cellSize = Math.min(this.cellSize, 200);
       } else {
-        // 移动端：最小60px，最大120px
-        this.cellSize = Math.max(this.cellSize, 60);
-        this.cellSize = Math.min(this.cellSize, 120);
+        // 移动端：让响应式方法处理，这里不设置范围
+        // 使用响应式计算的尺寸
+        const responsiveSize = this.getResponsiveCellSizeForMobile();
+        this.cellSize = responsiveSize;
       }
     };
 
@@ -124,6 +130,13 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // 从 query 参数中获取关卡 ID
+    const levelId = this.route.snapshot.queryParams['level'];
+    if (levelId) {
+      this.store.changeDataSet(levelId);
+      this.currentLevel = this.getCurrentLevel();
+    }
+    
     this.store.initBoard();
     this.preLoadImage();
     this.initResizeObserver();
@@ -251,10 +264,6 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
     this.resetClickOrDragState();
   }
 
-  changeDataSet(dataSetName: string) {
-    this.store.changeDataSet(dataSetName);
-    this.steps = 0;
-  }
 
   private preLoadImage() {
     this.resourceLoading = true;
@@ -270,5 +279,107 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
         console.error('图片预加载失败');
       }
     })
+  }
+
+  // 检查是否为移动端
+  isMobile(): boolean {
+    return window.innerWidth < 1024;
+  }
+
+  // 获取响应式棋盘宽度
+  getResponsiveBoardWidth(): number {
+    if (this.isMobile()) {
+      // 移动端：动态计算最适合的尺寸
+      const screenWidth = window.innerWidth;
+      const availableWidth = screenWidth - 32; // 减去最小边距
+      const maxCellSize = Math.floor(availableWidth / this.boardWidth);
+      
+      // 限制单元格尺寸范围
+      const responsiveCellSize = Math.max(40, Math.min(maxCellSize, 80));
+      return this.boardWidth * responsiveCellSize;
+    }
+    return this.boardWidth * this.cellSize + this.cellOffset;
+  }
+
+  // 获取响应式棋盘高度
+  getResponsiveBoardHeight(): number {
+    if (this.isMobile()) {
+      // 移动端：基于宽度比例计算高度
+      const boardWidth = this.getResponsiveBoardWidth();
+      const cellSize = boardWidth / this.boardWidth;
+      return this.boardHeight * cellSize;
+    }
+    return this.boardHeight * this.cellSize + this.cellOffset;
+  }
+
+  // 获取响应式单元格大小
+  getResponsiveCellSize(): number {
+    if (this.isMobile()) {
+      const boardWidth = this.getResponsiveBoardWidth();
+      return boardWidth / this.boardWidth;
+    }
+    return this.cellSize;
+  }
+
+  // 移动端专用的单元格尺寸计算（包含iPad等大屏优化）
+  private getResponsiveCellSizeForMobile(): number {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const availableWidth = screenWidth - 32; // 减去边距
+    const availableHeight = screenHeight - 280; // 减去头部、信息栏等占用空间
+    
+    // 根据宽度和高度计算最大可能的单元格尺寸
+    const maxCellSizeByWidth = Math.floor(availableWidth / this.boardWidth);
+    const maxCellSizeByHeight = Math.floor(availableHeight / this.boardHeight);
+    
+    // 取较小值确保完全适配
+    const maxCellSize = Math.min(maxCellSizeByWidth, maxCellSizeByHeight);
+    
+    // 针对不同屏幕尺寸设置不同的范围
+    let minSize: number, maxSize: number;
+    
+    if (screenWidth >= 768) {
+      // iPad 等大屏移动设备（768px 及以上）
+      minSize = 60;
+      maxSize = 120;
+    } else if (screenWidth >= 640) {
+      // 中等屏幕移动设备
+      minSize = 50;
+      maxSize = 100;
+    } else {
+      // 小屏幕移动设备
+      minSize = 40;
+      maxSize = 80;
+    }
+    
+    console.log('Mobile size calculation:', {
+      screenWidth,
+      screenHeight,
+      availableWidth,
+      availableHeight,
+      boardWidth: this.boardWidth,
+      boardHeight: this.boardHeight,
+      maxCellSizeByWidth,
+      maxCellSizeByHeight,
+      maxCellSize,
+      range: `${minSize}-${maxSize}`,
+      finalSize: Math.max(minSize, Math.min(maxCellSize, maxSize))
+    });
+    
+    // 在对应的范围内限制尺寸
+    const finalSize = Math.max(minSize, Math.min(maxCellSize, maxSize));
+    return finalSize;
+  }
+
+  // 返回关卡选择页面
+  goToLevelSelect() {
+    // 这里可以添加返回逻辑，比如使用 Router 或者 Location
+    window.history.back();
+  }
+
+  // 获取当前关卡信息
+  getCurrentLevel() {
+    const currentDataSetName = this.dataSetName();
+    return levels.find(level => level.id === currentDataSetName) || null;
   }
 }

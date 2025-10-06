@@ -11,11 +11,13 @@ import { GameBoardCanvasComponent } from './game-board-canvas/game-board-canvas.
 import { GameBoardFabricComponent } from './game-board-fabric/game-board-fabric.component';
 import { HomeComponent } from './home/home.component';
 import { LevelSelectComponent } from './level-select/level-select.component';
+import { LevelPreviewComponent } from './level-preview/level-preview.component';
 
 @NgModule({
   declarations: [
     HomeComponent,
     LevelSelectComponent,
+    LevelPreviewComponent,
     ChinesePuzzleBoardComponent,
     ScatterFlowersComponent,
     GameBoardCanvasComponent,

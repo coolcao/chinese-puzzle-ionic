@@ -8,12 +8,18 @@ import { ChinesePuzzleBoardComponent } from './chinese-puzzle-board/chinese-puzz
 import { ChinesePuzzleStore } from './chinese-puzzle.store';
 import { ScatterFlowersComponent } from './scatter-flowers/scatter-flowers.component';
 import { GameBoardCanvasComponent } from './game-board-canvas/game-board-canvas.component';
+import { GameBoardFabricComponent } from './game-board-fabric/game-board-fabric.component';
+import { HomeComponent } from './home/home.component';
+import { LevelSelectComponent } from './level-select/level-select.component';
 
 @NgModule({
   declarations: [
+    HomeComponent,
+    LevelSelectComponent,
     ChinesePuzzleBoardComponent,
     ScatterFlowersComponent,
     GameBoardCanvasComponent,
+    GameBoardFabricComponent,
   ],
   imports: [
     CommonModule,

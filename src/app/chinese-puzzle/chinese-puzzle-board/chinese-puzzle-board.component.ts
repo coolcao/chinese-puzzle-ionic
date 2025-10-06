@@ -86,7 +86,7 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
       // 棋盘尺寸：4x5 单元格
       const maxCellWidth = Math.floor(availableWidth / this.boardWidth);
       const maxCellHeight = Math.floor(availableHeight / this.boardHeight);
-      
+
       // 取较小值确保棋盘完全可见
       this.cellSize = Math.min(maxCellWidth, maxCellHeight);
 
@@ -245,8 +245,6 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
       }
     } else {
       // 如果无法移动，还原
-      console.log('无法移动，还原');
-
       dragEnd.source.reset();
     }
 
@@ -268,7 +266,6 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
     this.imagePreLoader.preloadImages(imageUrls).then(success => {
       if (success) {
         this.resourceLoading = false;
-        console.log('所有图片已成功加载');
       } else {
         console.error('图片预加载失败');
       }

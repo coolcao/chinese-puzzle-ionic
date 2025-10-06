@@ -6,10 +6,30 @@
   <div class="hidden lg:flex h-full w-full flex-col">
     <!-- 顶部header -->
     <header
-      class="bg-wood-light p-4 shadow-lg transition-colors duration-300 border-b-4 border-wood-border dark:bg-dark-wood-dark"
+      class="py-6 px-4 text-center bg-wood-light dark:bg-dark-wood-dark border-b-4 border-wood-border dark:border-dark-wood-border flex-shrink-0"
     >
-      <div class="relative flex items-center justify-center gap-3">
+      <div class="flex items-center justify-between">
+        <button
+          (click)="goToLevelSelect()"
+          class="text-wood-text dark:text-wood-lighter hover:bg-wood-light dark:hover:bg-dark-wood rounded-full p-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
         <h1 class="text-2xl font-extrabold text-wood-text dark:text-wood-lighter">🎮 三国华容道 🎮</h1>
+        <div class="w-10"></div>
         <button
           (click)="showInstructions = !showInstructions"
           class="absolute right-4 rounded-full bg-wood-light dark:bg-dark-wood-lighter dark:text-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30"
@@ -38,12 +58,7 @@
       <div class="flex-1 flex items-center justify-center p-6">
         <canvas
           #gameCanvasPC
-          (mousedown)="onMouseDown($event)"
-          (mousemove)="onMouseMove($event)"
-          (mouseup)="onMouseUp($event)"
-          (touchstart)="onTouchStart($event)"
           (touchmove)="onTouchMove($event)"
-          (touchend)="onTouchEnd($event)"
           class="border-4 border-b-0 border-solid border-wood-darker rounded-md w-full max-w-2xl h-auto shadow-lg"
         ></canvas>
       </div>
@@ -132,10 +147,30 @@
   <!-- 移动端上下布局 -->
   <div class="lg:hidden flex flex-col h-full">
     <header
-      class="bg-wood-light p-3 shadow-lg transition-colors duration-300 border-b-4 border-wood-border dark:bg-dark-wood-darker"
+      class="py-6 px-4 text-center bg-wood-light dark:bg-dark-wood-dark border-b-4 border-wood-border dark:border-dark-wood-border flex-shrink-0"
     >
-      <div class="relative flex items-center justify-center gap-3">
+      <div class="flex items-center justify-between">
+        <button
+          (click)="goToLevelSelect()"
+          class="text-wood-text dark:text-wood-lighter hover:bg-wood-light dark:hover:bg-dark-wood rounded-full p-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
         <h1 class="text-lg font-extrabold text-wood-text">🎮 三国华容道 🎮</h1>
+        <div class="w-10"></div>
         <button
           (click)="showInstructions = !showInstructions"
           class="absolute right-2 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood"
@@ -208,12 +243,7 @@
     >
       <canvas
         #gameCanvasMobile
-        (mousedown)="onMouseDown($event)"
-        (mousemove)="onMouseMove($event)"
-        (mouseup)="onMouseUp($event)"
-        (touchstart)="onTouchStart($event)"
         (touchmove)="onTouchMove($event)"
-        (touchend)="onTouchEnd($event)"
         class="border-4 border-b-0 border-solid border-wood-darker rounded-md w-full max-w-md h-auto shadow-lg"
       ></canvas>
     </div>

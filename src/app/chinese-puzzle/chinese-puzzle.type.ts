@@ -20,3 +20,11 @@ export enum Direction {
   Right = 'right',
 }
 
+export interface Level {
+  id: string;
+  name: string;
+  difficulty: string;
+  minSteps?: number;
+  pieces: Piece[];
+}
+

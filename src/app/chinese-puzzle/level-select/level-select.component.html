@@ -1,0 +1,164 @@
+<div
+  class="flex flex-col h-screen bg-wood-lighter dark:bg-dark-wood-lighter transition-colors duration-300"
+>
+  <!-- 头部 -->
+  <header
+    class="py-6 px-4 text-center bg-wood-light dark:bg-dark-wood-dark border-b-4 border-wood-border dark:border-dark-wood-border flex-shrink-0"
+  >
+    <div class="flex items-center justify-between">
+      <button
+        (click)="goBack()"
+        class="text-wood-text dark:text-wood-lighter hover:bg-wood-light dark:hover:bg-dark-wood rounded-full p-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </button>
+      <h1 class="text-2xl font-extrabold text-wood-text dark:text-wood-lighter">
+        选择关卡
+      </h1>
+      <div class="w-10"></div>
+      <!-- 占位符，保持标题居中 -->
+    </div>
+  </header>
+
+  <!-- 主要内容 -->
+  <main
+    class="flex-1 bg-wood-light/50 dark:bg-dark-wood-dark/20 overflow-hidden"
+  >
+    <!-- 滚动容器 -->
+    <div class="h-full overflow-y-auto px-6 py-8">
+      <!-- 关卡列表 -->
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 pb-8"
+      >
+        <div
+          *ngFor="let level of levels; let i = index"
+          (click)="selectLevel(level.id)"
+          class="bg-wood-light cursor-pointer dark:bg-dark-wood-light rounded-2xl shadow-lg border-2 border-wood-border dark:border-dark-wood-border overflow-hidden transform transition duration-300 active:scale-95 hover:translate-y-[-2px] hover:shadow-xl"
+        >
+          <div class="p-4">
+            <div class="flex justify-between items-start mb-3">
+              <h3
+                class="text-lg font-bold text-wood-text dark:text-wood-lighter"
+              >
+                {{ level.name }}
+              </h3>
+              <span
+                class="text-xs bg-wood dark:bg-dark-wood text-wood-text dark:text-wood-lighter px-2 py-1 rounded-full"
+                >{{ i + 1 }}</span
+              >
+            </div>
+
+            <!-- 关卡预览 -->
+            <div
+              class="bg-wood-lighter dark:bg-dark-wood rounded-lg border border-wood-border dark:border-dark-wood-border p-2 h-32 flex items-center justify-center"
+            >
+              <div class="relative w-24 h-28">
+                <!-- 棋盘网格背景 -->
+                <div
+                  class="absolute inset-0 grid grid-cols-4 grid-rows-5 gap-0.5"
+                >
+                  <ng-container
+                    *ngFor="let cell of [].constructor(20); let j = index"
+                  >
+                    <div
+                      class="bg-wood-lighter dark:bg-dark-wood rounded-sm"
+                    ></div>
+                  </ng-container>
+                </div>
+
+                <!-- 棋子 -->
+                <div class="absolute inset-0">
+                  <ng-container *ngFor="let piece of level.pieces">
+                    <div
+                      [ngStyle]="{
+                        position: 'absolute',
+                        left: piece.x * 25 + '%',
+                        top: piece.y * 20 + '%',
+                        width: piece.width * 25 + '%',
+                        height: piece.height * 20 + '%'
+                      }"
+                      [ngClass]="{
+                        'bg-wood': piece.name === '曹操',
+                        'bg-wood-light':
+                          piece.name !== '曹操' &&
+                          piece.name !== '卒1' &&
+                          piece.name !== '卒2' &&
+                          piece.name !== '卒3' &&
+                          piece.name !== '卒4',
+                        'bg-wood-lighter':
+                          piece.name === '卒1' ||
+                          piece.name === '卒2' ||
+                          piece.name === '卒3' ||
+                          piece.name === '卒4',
+                        'dark:bg-dark-wood': piece.name === '曹操',
+                        'dark:bg-dark-wood-light':
+                          piece.name !== '曹操' &&
+                          piece.name !== '卒1' &&
+                          piece.name !== '卒2' &&
+                          piece.name !== '卒3' &&
+                          piece.name !== '卒4',
+                        'dark:bg-dark-wood-lighter':
+                          piece.name === '卒1' ||
+                          piece.name === '卒2' ||
+                          piece.name === '卒3' ||
+                          piece.name === '卒4',
+                        'rounded-sm': true,
+                        flex: true,
+                        'items-center': true,
+                        'justify-center': true
+                      }"
+                    >
+                      <span
+                        [ngClass]="{
+                          'text-wood-text': true,
+                          'dark:text-wood-lighter': true,
+                          'text-[6px]': true,
+                          'font-bold': piece.name === '曹操',
+                          truncate: true,
+                          'w-full': true,
+                          'text-center': true,
+                          'px-0.5': true
+                        }"
+                        >{{ piece.name }}</span
+                      >
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+
+            <!-- 关卡信息 -->
+            <div class="mt-3 flex justify-between items-center">
+              <span class="text-xs text-wood-text dark:text-wood-lighter"
+                >难度: {{ level.difficulty }}</span
+              >
+              <span class="text-xs text-wood-text dark:text-wood-lighter"
+                >棋子: {{ level.pieces.length }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 底部提示 -->
+  <footer
+    class="py-4 px-6 text-center text-sm text-wood-text dark:text-wood-lighter bg-wood-light dark:bg-dark-wood-dark border-t border-wood-border dark:border-dark-wood-border flex-shrink-0"
+  >
+    <p>选择一个关卡开始挑战</p>
+  </footer>
+</div>

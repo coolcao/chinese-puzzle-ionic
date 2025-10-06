@@ -1,4 +1,4 @@
-import { Piece } from "./chinese-puzzle.type";
+import { Level, Piece } from "./chinese-puzzle.type";
 
 const caocao = { id: 1, name: '曹操', width: 2, height: 2, x: 1, y: 0, img: 'assets/img/chinese-puzzle/曹操.png' };
 const guanyu = { id: 2, name: '关羽', width: 2, height: 1, x: 1, y: 2, img: 'assets/img/chinese-puzzle/关羽.png' };
@@ -77,3 +77,12 @@ export const dataSet: Record<string, Piece[]> = {
     { ...huangzhong, x: 3, y: 3 }
   ],
 };
+
+export const levels: Level[] = [
+  { id: '横刀立马', name: '横刀立马', difficulty: '高级',  pieces: dataSet['横刀立马'] },
+  { id: '将拥曹营', name: '将拥曹营', difficulty: '初级',  pieces: dataSet['将拥曹营'] },
+  { id: '齐头并进', name: '齐头并进', difficulty: '中级',  pieces: dataSet['齐头并进'] },
+  { id: '指挥若定', name: '指挥若定', difficulty: '中级',  pieces: dataSet['指挥若定'] },
+  { id: '兵分两路', name: '兵分两路', difficulty: '高级',  pieces: dataSet['兵分两路'] },
+  { id: '简易', name: '简易', difficulty: '初级',  pieces: dataSet['简易'] },
+];

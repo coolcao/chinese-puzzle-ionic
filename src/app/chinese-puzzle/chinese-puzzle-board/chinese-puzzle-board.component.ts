@@ -30,6 +30,8 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
 
   showInstructions = false;
 
+  isDarkMode = this.store.isDarkMode();
+
 
   boardWidth = this.store.boardWidth();
   boardHeight = this.store.boardHeight();
@@ -47,7 +49,7 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
 
   resourceLoading = false;
   showSuccess = false;
-  
+
   // 当前关卡信息
   currentLevel = this.getCurrentLevel();
 
@@ -136,7 +138,7 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
       this.store.changeDataSet(levelId);
       this.currentLevel = this.getCurrentLevel();
     }
-    
+
     this.store.initBoard();
     this.preLoadImage();
     this.initResizeObserver();
@@ -293,7 +295,7 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
       const screenWidth = window.innerWidth;
       const availableWidth = screenWidth - 32; // 减去最小边距
       const maxCellSize = Math.floor(availableWidth / this.boardWidth);
-      
+
       // 限制单元格尺寸范围
       const responsiveCellSize = Math.max(40, Math.min(maxCellSize, 80));
       return this.boardWidth * responsiveCellSize;
@@ -327,17 +329,17 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
     const screenHeight = window.innerHeight;
     const availableWidth = screenWidth - 32; // 减去边距
     const availableHeight = screenHeight - 280; // 减去头部、信息栏等占用空间
-    
+
     // 根据宽度和高度计算最大可能的单元格尺寸
     const maxCellSizeByWidth = Math.floor(availableWidth / this.boardWidth);
     const maxCellSizeByHeight = Math.floor(availableHeight / this.boardHeight);
-    
+
     // 取较小值确保完全适配
     const maxCellSize = Math.min(maxCellSizeByWidth, maxCellSizeByHeight);
-    
+
     // 针对不同屏幕尺寸设置不同的范围
     let minSize: number, maxSize: number;
-    
+
     if (screenWidth >= 768) {
       // iPad 等大屏移动设备（768px 及以上）
       minSize = 60;
@@ -351,7 +353,7 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
       minSize = 40;
       maxSize = 80;
     }
-    
+
     console.log('Mobile size calculation:', {
       screenWidth,
       screenHeight,
@@ -365,7 +367,7 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
       range: `${minSize}-${maxSize}`,
       finalSize: Math.max(minSize, Math.min(maxCellSize, maxSize))
     });
-    
+
     // 在对应的范围内限制尺寸
     const finalSize = Math.max(minSize, Math.min(maxCellSize, maxSize));
     return finalSize;

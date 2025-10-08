@@ -3,7 +3,7 @@ module.exports = {
   content: [
     "./src/**/*.{html,ts}",
   ],
-  darkMode: "media", // 启用基于类的黑暗模式
+  darkMode: "class", // 启用基于类的黑暗模式
   theme: {
     extend: {
       colors: {

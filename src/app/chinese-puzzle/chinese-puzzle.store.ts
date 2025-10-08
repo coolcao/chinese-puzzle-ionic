@@ -10,6 +10,7 @@ export class ChinesePuzzleStore {
   private tools = inject(ToolsService);
   private _boardWidth = signal(4);
   private _boardHeight = signal(5);
+  private _isDarkMode = signal(false);
 
   private _dataSetName = signal(dataSetNames[0]);
 
@@ -17,6 +18,7 @@ export class ChinesePuzzleStore {
   private _board = signal<string[][]>([]);
 
 
+  readonly isDarkMode = this._isDarkMode.asReadonly();
   readonly dataSetNames = signal(dataSetNames);
   readonly dataSetName = this._dataSetName.asReadonly();
   readonly pieces = this._pieces.asReadonly();
@@ -67,7 +69,8 @@ export class ChinesePuzzleStore {
     this.initBoard();
   }
 
-
-
+  toggleDarkMode() {
+    this._isDarkMode.set(!this.isDarkMode());
+  }
 
 }

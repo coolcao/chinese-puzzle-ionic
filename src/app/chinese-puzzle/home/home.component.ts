@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { ChinesePuzzleStore } from '../chinese-puzzle.store';
 
 interface GameLevel {
   id: string;
@@ -18,9 +19,21 @@ export class HomeComponent implements OnInit {
   showSettings = false;
   showProfile = false;
 
-  constructor(private router: Router) { }
+  private store = inject(ChinesePuzzleStore);
 
-  ngOnInit() {}
+  isDarkMode = this.store.isDarkMode;
+
+  constructor(private router: Router) {
+    effect(() => {
+      if (this.isDarkMode()) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    });
+  }
+
+  ngOnInit() { }
 
   startGame() {
     // 默认开始第一个关卡
@@ -55,6 +68,7 @@ export class HomeComponent implements OnInit {
   // 设置功能方法
   toggleDarkMode() {
     // 切换黑暗模式逻辑
+    this.store.toggleDarkMode();
   }
 
   toggleSound() {

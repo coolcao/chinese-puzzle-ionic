@@ -5,7 +5,7 @@
   <header
     class="py-6 px-4 text-center bg-wood-light dark:bg-dark-wood-dark border-b-4 border-wood-border dark:border-dark-wood-border flex-shrink-0"
   >
-    <div class="flex items-center justify-between">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
       <button
         (click)="goBack()"
         class="text-wood-text dark:text-wood-lighter hover:bg-wood-light dark:hover:bg-dark-wood rounded-full p-2"
@@ -41,12 +41,12 @@
     <div class="h-full overflow-y-auto px-6 py-8">
       <!-- 关卡列表 -->
       <div
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 pb-8"
+        class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 pb-8"
       >
         <div
           *ngFor="let level of levels; let i = index"
           (click)="selectLevel(level.id)"
-          class="bg-wood-light cursor-pointer dark:bg-dark-wood-light rounded-2xl shadow-lg border-2 border-wood-border dark:border-dark-wood-border overflow-hidden transform transition duration-300 active:scale-95 hover:translate-y-[-2px] hover:shadow-xl"
+          class="bg-wood-light cursor-pointer dark:bg-dark-wood-main rounded-2xl shadow-lg border-2 border-wood-border dark:border-dark-wood-border overflow-hidden transform transition duration-300 active:scale-95 hover:translate-y-[-2px] hover:shadow-xl"
         >
           <div class="p-4">
             <div class="flex justify-between items-start mb-3">
@@ -63,7 +63,10 @@
 
             <!-- 关卡预览 -->
             <div class="h-32 flex items-center justify-center">
-              <app-level-preview [level]="level" size="medium"></app-level-preview>
+              <app-level-preview
+                [level]="level"
+                size="medium"
+              ></app-level-preview>
             </div>
 
             <!-- 关卡信息 -->

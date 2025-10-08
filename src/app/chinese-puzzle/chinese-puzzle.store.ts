@@ -69,6 +69,10 @@ export class ChinesePuzzleStore {
     this.initBoard();
   }
 
+  setDarkMode(isDarkMode: boolean) {
+    this._isDarkMode.set(isDarkMode);
+  }
+
   toggleDarkMode() {
     this._isDarkMode.set(!this.isDarkMode());
   }

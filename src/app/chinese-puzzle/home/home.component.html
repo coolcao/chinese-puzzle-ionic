@@ -110,6 +110,35 @@
           >我的</span
         >
       </button>
+
+      <!-- 开发者按钮 (仅开发模式显示) -->
+      <button
+        *ngIf="isDevMode()"
+        (click)="goToGenerator()"
+        class="flex flex-col items-center"
+      >
+        <div
+          class="w-16 h-16 rounded-full bg-wood-light dark:bg-dark-wood-light flex items-center justify-center shadow-lg border-2 border-wood-border dark:border-dark-wood-border"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8 text-wood-text dark:text-wood-lighter"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+            />
+          </svg>
+        </div>
+        <span class="mt-2 text-sm text-wood-text dark:text-wood-lighter"
+          >生成器</span
+        >
+      </button>
     </div>
   </footer>
 

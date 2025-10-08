@@ -5,6 +5,7 @@ import { GameBoardCanvasComponent } from './game-board-canvas/game-board-canvas.
 import { GameBoardFabricComponent } from './game-board-fabric/game-board-fabric.component';
 import { HomeComponent } from './home/home.component';
 import { LevelSelectComponent } from './level-select/level-select.component';
+import { LevelGeneratorComponent } from './level-generator/level-generator.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -12,6 +13,7 @@ const routes: Routes = [
   { path: 'board', component: ChinesePuzzleBoardComponent },
   { path: 'canvas', component: GameBoardCanvasComponent },
   { path: 'fabric', component: GameBoardFabricComponent },
+  { path: 'generator', component: LevelGeneratorComponent },
 ];
 
 @NgModule({

@@ -12,6 +12,7 @@ import { GameBoardFabricComponent } from './game-board-fabric/game-board-fabric.
 import { HomeComponent } from './home/home.component';
 import { LevelSelectComponent } from './level-select/level-select.component';
 import { LevelPreviewComponent } from './level-preview/level-preview.component';
+import { LevelGeneratorComponent } from './level-generator/level-generator.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { LevelPreviewComponent } from './level-preview/level-preview.component';
     ScatterFlowersComponent,
     GameBoardCanvasComponent,
     GameBoardFabricComponent,
+    LevelGeneratorComponent,
   ],
   imports: [
     CommonModule,

@@ -1,0 +1,153 @@
+<div class="flex flex-col h-screen bg-wood-lighter dark:bg-dark-wood-lighter transition-colors duration-300">
+  <!-- 头部 -->
+  <header class="py-6 px-4 text-center bg-wood-light dark:bg-dark-wood-dark border-b-4 border-wood-border dark:border-dark-wood-border flex-shrink-0">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <button (click)="goHome()" class="text-wood-text dark:text-wood-lighter hover:bg-wood-light dark:hover:bg-dark-wood rounded-full p-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <h1 class="text-2xl font-extrabold text-wood-text dark:text-wood-lighter">
+        关卡数据生成器
+      </h1>
+      <div class="w-10"></div>
+    </div>
+  </header>
+
+  <!-- 主要内容 -->
+  <main class="flex-1 bg-wood-light/50 dark:bg-dark-wood-dark/20 overflow-hidden">
+    <div class="h-full overflow-y-auto px-6 py-8">
+      <div class="max-w-6xl mx-auto">
+        <!-- 关卡信息 -->
+        <div class="bg-wood-light dark:bg-dark-wood rounded-2xl shadow-lg border-2 border-wood-border dark:border-dark-wood-border p-6 mb-8">
+          <h2 class="text-xl font-bold text-wood-text dark:text-wood-lighter mb-4">关卡信息</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-wood-text dark:text-wood-lighter mb-2">关卡名称</label>
+              <input 
+                [(ngModel)]="levelName" 
+                type="text" 
+                class="w-full rounded-lg border border-wood-border bg-wood-lighter dark:bg-dark-wood-lighter px-4 py-2 text-wood-text dark:text-wood-lighter shadow-inner"
+                placeholder="请输入关卡名称">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-wood-text dark:text-wood-lighter mb-2">关卡难度</label>
+              <select 
+                [(ngModel)]="levelDifficulty" 
+                class="w-full rounded-lg border border-wood-border bg-wood-lighter dark:bg-dark-wood-lighter px-4 py-2 text-wood-text dark:text-wood-lighter shadow-inner">
+                <option value="初级">初级</option>
+                <option value="中级">中级</option>
+                <option value="高级">高级</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- 棋子模板 -->
+          <div class="lg:col-span-1">
+            <div class="bg-wood-light dark:bg-dark-wood rounded-2xl shadow-lg border-2 border-wood-border dark:border-dark-wood-border p-6 mb-8">
+              <h2 class="text-xl font-bold text-wood-text dark:text-wood-lighter mb-4">棋子模板</h2>
+              <div class="grid grid-cols-2 gap-4">
+                <div 
+                  *ngFor="let stockItem of pieceStock"
+                  [draggable]="stockItem.count > 0"
+                  (dragstart)="stockItem.count > 0 && onTemplateDragStart($event, stockItem.template)"
+                  (dragend)="onTemplateDragEnd($event)"
+                  class="relative bg-wood-lighter dark:bg-dark-wood-light rounded-xl border-2 border-wood-border dark:border-dark-wood-border p-4 flex flex-col items-center transition-opacity"
+                  [ngClass]="{
+                    'cursor-pointer hover:shadow-lg hover:-translate-y-0.5': stockItem.count > 0,
+                    'cursor-not-allowed opacity-40': stockItem.count === 0
+                  }">
+                  
+                  <div *ngIf="stockItem.template.name === '卒'" class="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-md">
+                    {{ stockItem.count }}
+                  </div>
+
+                  <div 
+                    class="mb-2 bg-cover bg-center rounded-md border border-yellow-900 flex items-center justify-center text-lg font-medium text-[#6b4f27] shadow-md"
+                    [ngStyle]="{
+                      'background-image': 'url(/assets/img/wood-pattern.png)',
+                      'width': (stockItem.template.width * 30) + 'px',
+                      'height': (stockItem.template.height * 30) + 'px'
+                    }">
+                    <div 
+                      class="w-full h-full rounded-md border-[2px] border-solid border-[#b8864b] bg-cover bg-center"
+                      [ngStyle]="{
+                        'background-image': 'url(' + stockItem.template.img + ')',
+                        'background-size': 'contain',
+                        'background-repeat': 'no-repeat',
+                        'background-position': 'center'
+                      }">
+                    </div>
+                  </div>
+                  <span class="text-sm font-medium text-wood-text dark:text-wood-lighter">{{ stockItem.template.name }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 棋盘区域 -->
+          <div class="lg:col-span-2">
+            <div class="bg-wood-light dark:bg-dark-wood rounded-2xl shadow-lg border-2 border-wood-border dark:border-dark-wood-border p-6 mb-8">
+              <h2 class="text-xl font-bold text-wood-text dark:text-wood-lighter mb-4">棋盘</h2>
+              <div class="flex flex-col items-center">
+                <!-- Canvas 棋盘 -->
+                <canvas 
+                  #editorCanvas
+                  (mousedown)="onMouseDown($event)"
+                  (mousemove)="onMouseMove($event)"
+                  (mouseup)="onMouseUp($event)"
+                  (mouseleave)="onMouseLeave($event)"
+                  (dragover)="onCanvasDragOver($event)"
+                  (dragleave)="onCanvasDragLeave($event)"
+                  (drop)="onCanvasDrop($event)"
+                  class="border-4 border-b-0 border-solid border-wood-darker rounded-md mb-6 cursor-grab active:cursor-grabbing">
+                </canvas>
+                
+                <!-- 操作按钮 -->
+                <div class="flex flex-wrap gap-4 justify-center">
+                  <button 
+                    (click)="validateData()"
+                    [disabled]="isAnimating"
+                    class="px-6 py-3 bg-wood hover:bg-wood-hover dark:bg-dark-wood dark:hover:bg-dark-wood-hover text-wood-text dark:text-wood-lighter font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-wood-border dark:border-dark-wood-border disabled:opacity-50 disabled:cursor-not-allowed">
+                    验证数据
+                  </button>
+                  <button 
+                    *ngIf="solutionPath && !isAnimating"
+                    (click)="animateSolution()"
+                    class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-blue-800">
+                    演示解法
+                  </button>
+                  <button 
+                    (click)="generateAndCopy()"
+                    [disabled]="isAnimating"
+                    class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-green-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                    生成并复制
+                  </button>
+                  <button 
+                    (click)="generateAndDownload()"
+                    [disabled]="isAnimating"
+                    class="px-6 py-3 bg-wood hover:bg-wood-hover dark:bg-dark-wood dark:hover:bg-dark-wood-hover text-wood-text dark:text-wood-lighter font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-wood-border dark:border-dark-wood-border disabled:opacity-50 disabled:cursor-not-allowed">
+                    生成并下载
+                  </button>
+                  <button 
+                    (click)="resetBoard()"
+                    [disabled]="isAnimating"
+                    class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-red-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                    重置棋盘
+                  </button>
+                </div>
+                
+                <!-- 提示信息 -->
+                <div *ngIf="message" class="mt-4 px-4 py-2 rounded-lg bg-wood-lighter dark:bg-dark-wood-light border border-wood-border dark:border-dark-wood-border text-wood-text dark:text-wood-lighter">
+                  {{ message }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

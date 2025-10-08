@@ -1,11 +1,7 @@
 import { Component, OnInit, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChinesePuzzleStore } from '../chinese-puzzle.store';
-
-interface GameLevel {
-  id: string;
-  name: string;
-}
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -35,6 +31,11 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() { }
 
+  // 检查是否为开发模式
+  isDevMode(): boolean {
+    return !environment.production;
+  }
+
   startGame() {
     // 默认开始第一个关卡
     this.router.navigate(['level-select']);
@@ -63,6 +64,11 @@ export class HomeComponent implements OnInit {
 
   closeProfile() {
     this.showProfile = false;
+  }
+
+  // 跳转到关卡生成器
+  goToGenerator() {
+    this.router.navigate(['/generator']);
   }
 
   // 设置功能方法

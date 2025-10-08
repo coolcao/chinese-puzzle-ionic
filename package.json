@@ -4,8 +4,8 @@
   "author": "coolcao",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "start": "ng serve --configuration development",
+    "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "assets-gen": "yarn capacitor-assets generate",
     "test": "ng test",

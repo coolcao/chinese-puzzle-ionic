@@ -485,9 +485,9 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
   animateSolution() {
     if (!this.solutionPath) return;
 
-    const path = this.solutionPath; // 复制路径到局部变量
+    const path = this.solutionPath;
     this.isAnimating = true;
-    this.invalidateSolution(); // 安全地使“演示解法”按钮消失
+    this.invalidateSolution();
 
     let step = 0;
     const interval = setInterval(() => {
@@ -591,27 +591,48 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
     return successors;
   }
 
-  private generateDataSetString(): string {
-    const pieceData = this.pieces.map(p =>
-      `    { id: ${p.templateId}, name: '${p.name}', width: ${p.width}, height: ${p.height}, x: ${p.x}, y: ${p.y}, img: '${p.img}' }`
-    ).join(',\n');
+  private generateDataSetString(): string | null {
+    if (!this.solutionPath) {
+      this.showMessage('请先验证关卡以获取最佳步数!', false);
+      return null;
+    }
 
-    const levelData = `  { id: '${this.levelName}', name: '${this.levelName}', difficulty: '${this.levelDifficulty}', pieces: [\n${pieceData}\n  ] }`;
-    const dataSet = `export const dataSet = {\n  '${this.levelName}': [\n${pieceData}\n  ]\n};\n\nexport const levels = [\n${levelData}\n];`;
+    const nameMapping: { [key: string]: string } = {
+      '曹操': 'caocao',
+      '关羽': 'guanyu',
+      '张飞': 'zhangfei',
+      '赵云': 'zhaoyun',
+      '马超': 'machao',
+      '黄忠': 'huangzhong',
+    };
+    let zuCounter = 1;
 
-    return dataSet;
+    const dataSetPieces = this.pieces.map(p => {
+      let constantName = nameMapping[p.name];
+      if (p.name === '卒') {
+        constantName = `zu${zuCounter++}`;
+      }
+      return `    { ...${constantName}, x: ${p.x}, y: ${p.y} }`;
+    }).join(',\n');
+
+    const dataSetString = `export const dataSet: Record<string, Piece[]> = {\n  '${this.levelName}': [\n${dataSetPieces}\n  ]\n};`;
+
+    const minSteps = this.solutionPath.length - 1;
+    const levelsString = `export const levels: Level[] = [\n  { id: '${this.levelName}', name: '${this.levelName}', difficulty: '${this.levelDifficulty}', minSteps: ${minSteps}, pieces: dataSet['${this.levelName}'] },\n];`;
+
+    return `${dataSetString}\n\n${levelsString}`;
   }
 
   async generateAndDownload() {
-    if (await this.validateData()) {
-      const dataSet = this.generateDataSetString();
+    const dataSet = this.generateDataSetString();
+    if (dataSet) {
       this.downloadFile(dataSet, `${this.levelName}-data-set.ts`);
     }
   }
 
   async generateAndCopy() {
-    if (await this.validateData()) {
-      const dataSet = this.generateDataSetString();
+    const dataSet = this.generateDataSetString();
+    if (dataSet) {
       navigator.clipboard.writeText(dataSet).then(() => {
         this.showMessage('已复制到剪贴板!');
       }).catch(err => {

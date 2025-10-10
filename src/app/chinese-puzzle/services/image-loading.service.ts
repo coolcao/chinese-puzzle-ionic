@@ -6,7 +6,7 @@ import { Piece } from '../chinese-puzzle.type';
   providedIn: 'root'
 })
 export class ImageLoadingService {
-  // 图片资源
+  // 图片资源 (key: imageUrl, value: ImageElement)
   private pieceImages: Map<string, HTMLImageElement> = new Map();
   private woodDarkImage: HTMLImageElement | null = null;
   private woodLightImage: HTMLImageElement | null = null;
@@ -16,8 +16,8 @@ export class ImageLoadingService {
   constructor(private imagePreLoader: ImagePreloaderService) { }
 
   // 获取棋子图片
-  getPieceImage(pieceName: string): HTMLImageElement | undefined {
-    return this.pieceImages.get(pieceName);
+  getPieceImage(imageUrl: string): HTMLImageElement | undefined {
+    return this.pieceImages.get(imageUrl);
   }
 
   // 获取木质深色图片
@@ -95,7 +95,7 @@ export class ImageLoadingService {
       };
 
       // 预加载棋子图片
-      const imageUrls = pieces.filter(p => !!p.img).map(piece => piece.img!);
+      const imageUrls = [...new Set(pieces.filter(p => !!p.img).map(piece => piece.img!))];
       if (!imageUrls || imageUrls.length == 0) {
         this.resourceLoading = false;
         // 即使没有图片也要resolve
@@ -113,44 +113,42 @@ export class ImageLoadingService {
         if (success) {
           // 加载成功后，为每个棋子创建图片对象
           let loadedImages = 0;
-          const totalImages = pieces.filter(p => !!p.img).length;
+          const totalImages = imageUrls.length;
 
-          pieces.forEach(piece => {
-            if (piece.img) {
-              const img = new Image();
-              img.src = piece.img;
-              img.onload = () => {
-                this.pieceImages.set(piece.name, img);
-                loadedImages++;
-                // 所有图片加载完成后resolve
-                if (loadedImages === totalImages) {
-                  this.resourceLoading = false;
-                  // 使用requestAnimationFrame确保在下次重绘之前执行
-                  requestAnimationFrame(() => {
-                    resolve({
-                      pieceImages: this.pieceImages,
-                      woodDarkImage: this.woodDarkImage,
-                      woodLightImage: this.woodLightImage
-                    });
+          imageUrls.forEach(imageUrl => {
+            const img = new Image();
+            img.src = imageUrl;
+            img.onload = () => {
+              this.pieceImages.set(imageUrl, img);
+              loadedImages++;
+              // 所有图片加载完成后resolve
+              if (loadedImages === totalImages) {
+                this.resourceLoading = false;
+                // 使用requestAnimationFrame确保在下次重绘之前执行
+                requestAnimationFrame(() => {
+                  resolve({
+                    pieceImages: this.pieceImages,
+                    woodDarkImage: this.woodDarkImage,
+                    woodLightImage: this.woodLightImage
                   });
-                }
-              };
-              img.onerror = () => {
-                loadedImages++;
-                // 即使有图片加载失败也要resolve
-                if (loadedImages === totalImages) {
-                  this.resourceLoading = false;
-                  // 使用requestAnimationFrame确保在下次重绘之前执行
-                  requestAnimationFrame(() => {
-                    resolve({
-                      pieceImages: this.pieceImages,
-                      woodDarkImage: this.woodDarkImage,
-                      woodLightImage: this.woodLightImage
-                    });
+                });
+              }
+            };
+            img.onerror = () => {
+              loadedImages++;
+              // 即使有图片加载失败也要resolve
+              if (loadedImages === totalImages) {
+                this.resourceLoading = false;
+                // 使用requestAnimationFrame确保在下次重绘之前执行
+                requestAnimationFrame(() => {
+                  resolve({
+                    pieceImages: this.pieceImages,
+                    woodDarkImage: this.woodDarkImage,
+                    woodLightImage: this.woodLightImage
                   });
-                }
-              };
-            }
+                });
+              }
+            };
           });
         } else {
           console.error('图片预加载失败');

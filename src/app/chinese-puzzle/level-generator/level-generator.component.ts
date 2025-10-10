@@ -41,11 +41,11 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
   // 棋子模板
   allPieceTemplates = [
     { id: 1, name: '曹操', width: 2, height: 2, img: 'assets/img/chinese-puzzle/曹操.png' },
-    { id: 2, name: '关羽', width: 2, height: 1, img: 'assets/img/chinese-puzzle/关羽.png' },
-    { id: 3, name: '张飞', width: 1, height: 2, img: 'assets/img/chinese-puzzle/张飞.png' },
-    { id: 4, name: '赵云', width: 1, height: 2, img: 'assets/img/chinese-puzzle/赵云.png' },
-    { id: 5, name: '马超', width: 1, height: 2, img: 'assets/img/chinese-puzzle/马超.png' },
-    { id: 6, name: '黄忠', width: 1, height: 2, img: 'assets/img/chinese-puzzle/黄忠.png' },
+    { id: 2, name: '关羽', width: 2, height: 1, img: 'assets/img/chinese-puzzle/关羽21.png' },
+    { id: 3, name: '张飞', width: 1, height: 2, img: 'assets/img/chinese-puzzle/张飞12.png' },
+    { id: 4, name: '赵云', width: 1, height: 2, img: 'assets/img/chinese-puzzle/赵云12.png' },
+    { id: 5, name: '马超', width: 1, height: 2, img: 'assets/img/chinese-puzzle/马超12.png' },
+    { id: 6, name: '黄忠', width: 1, height: 2, img: 'assets/img/chinese-puzzle/黄忠12.png' },
     { id: 7, name: '卒', width: 1, height: 1, img: 'assets/img/chinese-puzzle/卒.png' }
   ];
   pieceStock: Array<{ template: any, count: number }> = [];
@@ -100,8 +100,21 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   private preLoadImages() {
-    const allPieces = this.allPieceTemplates.map(t => ({ ...t, x: 0, y: 0, id: 0 }));
-    this.imageLoadingService.preLoadImage(allPieces).then(() => {
+    const piecesToLoad: Piece[] = [];
+    this.allPieceTemplates.forEach(template => {
+      piecesToLoad.push({ ...template, x: 0, y: 0, id: 0 });
+      if (template.width !== template.height) {
+        const baseName = template.name.replace(/\d+$/, '');
+        const rotatedImgPath = `assets/img/chinese-puzzle/${baseName}${template.height}${template.width}.png`;
+        piecesToLoad.push({
+          ...template,
+          img: rotatedImgPath,
+          x: 0, y: 0, id: 0
+        });
+      }
+    });
+
+    this.imageLoadingService.preLoadImage(piecesToLoad).then(() => {
       this.draw();
     });
   }
@@ -157,8 +170,15 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   private drawPiece(piece: EditorPiece) {
-    const pieceImage = this.imageLoadingService.getPieceImage(piece.name);
-    if (!pieceImage) return;
+    if (!piece.img) {
+      console.warn('Piece is missing img property:', piece);
+      return;
+    }
+    const pieceImage = this.imageLoadingService.getPieceImage(piece.img);
+    if (!pieceImage) {
+      console.warn(`Image not found for ${piece.img}`);
+      return;
+    }
 
     const x = piece.isDragging ? piece.x : piece.x * this.cellSize;
     const y = piece.isDragging ? piece.y : piece.y * this.cellSize;
@@ -174,6 +194,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
 
     if (!piece.isDragging) {
       this.drawDeleteButton(piece);
+      this.drawRotateButton(piece);
     }
   }
 
@@ -201,6 +222,45 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText('×', btnX, btnY);
   }
+
+  private drawRotateButton(piece: EditorPiece) {
+    if (piece.width === piece.height) return; // Not a rectangle
+
+    const btnSize = 28;
+    const piecePixelX = piece.x * this.cellSize;
+    const piecePixelY = piece.y * this.cellSize;
+
+    const btnX = piecePixelX + (btnSize / 2) - 5;
+    const btnY = piecePixelY + (btnSize / 2) - 5;
+
+    // Draw circle
+    this.ctx.fillStyle = 'rgba(59, 130, 246, 0.85)'; // Blue
+    this.ctx.beginPath();
+    this.ctx.arc(btnX, btnY, btnSize / 2, 0, Math.PI * 2);
+    this.ctx.fill();
+
+    this.ctx.strokeStyle = 'white';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.stroke();
+
+    // Draw rotate icon (simple curved arrow)
+    this.ctx.save();
+    this.ctx.translate(btnX, btnY);
+    this.ctx.rotate(-Math.PI / 4);
+    this.ctx.strokeStyle = 'white';
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.arc(0, 0, btnSize * 0.3, 0, Math.PI * 1.5);
+    this.ctx.stroke();
+    this.ctx.beginPath();
+    this.ctx.moveTo(btnSize * 0.3, -btnSize * 0.1);
+    this.ctx.lineTo(btnSize * 0.3, btnSize * 0.1);
+    this.ctx.lineTo(btnSize * 0.5, 0);
+    this.ctx.closePath();
+    this.ctx.fillStyle = 'white';
+    this.ctx.fill();
+    this.ctx.restore();
+  }
   // #endregion
 
   // #region 棋盘内拖拽
@@ -213,16 +273,29 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
       const btnSize = 28;
       const piecePixelX = clickedPiece.x * this.cellSize;
       const piecePixelY = clickedPiece.y * this.cellSize;
-      const piecePixelWidth = clickedPiece.width * this.cellSize;
-      const btnX = piecePixelX + piecePixelWidth - (btnSize / 2) + 5;
-      const btnY = piecePixelY + (btnSize / 2) - 5;
 
-      const dist = Math.sqrt(Math.pow(pos.x - btnX, 2) + Math.pow(pos.y - btnY, 2));
-      if (dist <= btnSize / 2) {
+      // Check for rotate button click
+      if (clickedPiece.width !== clickedPiece.height) {
+        const rotateBtnX = piecePixelX + (btnSize / 2) - 5;
+        const rotateBtnY = piecePixelY + (btnSize / 2) - 5;
+        const rotateDist = Math.sqrt(Math.pow(pos.x - rotateBtnX, 2) + Math.pow(pos.y - rotateBtnY, 2));
+        if (rotateDist <= btnSize / 2) {
+          this.rotatePiece(clickedPiece);
+          return;
+        }
+      }
+
+      // Check for delete button click
+      const piecePixelWidth = clickedPiece.width * this.cellSize;
+      const deleteBtnX = piecePixelX + piecePixelWidth - (btnSize / 2) + 5;
+      const deleteBtnY = piecePixelY + (btnSize / 2) - 5;
+      const deleteDist = Math.sqrt(Math.pow(pos.x - deleteBtnX, 2) + Math.pow(pos.y - deleteBtnY, 2));
+      if (deleteDist <= btnSize / 2) {
         this.removePiece(clickedPiece);
         return;
       }
 
+      // If not a button click, start dragging
       this.invalidateSolution();
       this.draggedPiece = clickedPiece;
       this.draggedPiece.isDragging = true;
@@ -240,12 +313,24 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
         const btnSize = 28;
         const piecePixelX = piece.x * this.cellSize;
         const piecePixelY = piece.y * this.cellSize;
-        const piecePixelWidth = piece.width * this.cellSize;
-        const btnX = piecePixelX + piecePixelWidth - (btnSize / 2) + 5;
-        const btnY = piecePixelY + (btnSize / 2) - 5;
-        const dist = Math.sqrt(Math.pow(pos.x - btnX, 2) + Math.pow(pos.y - btnY, 2));
 
-        if (dist <= btnSize / 2) {
+        // Check hover on rotate button
+        if (piece.width !== piece.height) {
+          const rotateBtnX = piecePixelX + (btnSize / 2) - 5;
+          const rotateBtnY = piecePixelY + (btnSize / 2) - 5;
+          const rotateDist = Math.sqrt(Math.pow(pos.x - rotateBtnX, 2) + Math.pow(pos.y - rotateBtnY, 2));
+          if (rotateDist <= btnSize / 2) {
+            onAButton = true;
+            break;
+          }
+        }
+
+        // Check hover on delete button
+        const piecePixelWidth = piece.width * this.cellSize;
+        const deleteBtnX = piecePixelX + piecePixelWidth - (btnSize / 2) + 5;
+        const deleteBtnY = piecePixelY + (btnSize / 2) - 5;
+        const deleteDist = Math.sqrt(Math.pow(pos.x - deleteBtnX, 2) + Math.pow(pos.y - deleteBtnY, 2));
+        if (deleteDist <= btnSize / 2) {
           onAButton = true;
           break;
         }
@@ -292,6 +377,27 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
   onMouseLeave(event: MouseEvent) {
     if (this.draggedPiece) {
       this.onMouseUp(event);
+    }
+  }
+
+  private rotatePiece(piece: EditorPiece) {
+    const tempRotatedPiece = {
+      ...piece,
+      width: piece.height,
+      height: piece.width
+    };
+
+    if (this.isValidPosition(tempRotatedPiece)) {
+      piece.width = tempRotatedPiece.width;
+      piece.height = tempRotatedPiece.height;
+
+      const baseName = piece.name.replace(/\d+$/, '');
+      piece.img = `assets/img/chinese-puzzle/${baseName}${piece.width}${piece.height}.png`;
+
+      this.invalidateSolution();
+      this.draw();
+    } else {
+      this.showMessage('无法旋转，空间不足或与其它棋子冲突');
     }
   }
   // #endregion
@@ -369,6 +475,16 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
     this.draggedTemplatePreviewPos = null;
     this.draw();
   }
+
+  public rotateTemplate(template: any): void {
+    if (template.width === template.height) { return; }
+    const temp = template.width;
+    template.width = template.height;
+    template.height = temp;
+
+    const baseName = template.name.replace(/\d+$/, '');
+    template.img = `assets/img/chinese-puzzle/${baseName}${template.width}${template.height}.png`;
+  }
   // #endregion
 
   // #region 辅助函数
@@ -441,7 +557,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
   resetBoard() {
     this.pieces = [];
     this.pieceStock = this.allPieceTemplates.map(template => ({
-      template: template,
+      template: JSON.parse(JSON.stringify(template)), // Deep copy
       count: template.name === '卒' ? 4 : 1
     }));
     this.invalidateSolution();
@@ -612,7 +728,14 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
       if (p.name === '卒') {
         constantName = `zu${zuCounter++}`;
       }
-      return `    { ...${constantName}, x: ${p.x}, y: ${p.y} }`;
+
+      const originalTemplate = this.allPieceTemplates.find(t => t.id === p.templateId);
+      let dimensionOverride = '';
+      if (originalTemplate && (originalTemplate.width !== p.width || originalTemplate.height !== p.height)) {
+        dimensionOverride = `, width: ${p.width}, height: ${p.height}`;
+      }
+
+      return `    { ...${constantName}, x: ${p.x}, y: ${p.y}${dimensionOverride} }`;
     }).join(',\n');
 
     const dataSetString = `export const dataSet: Record<string, Piece[]> = {\n  '${this.levelName}': [\n${dataSetPieces}\n  ]\n};`;

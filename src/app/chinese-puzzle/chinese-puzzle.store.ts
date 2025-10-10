@@ -64,9 +64,27 @@ export class ChinesePuzzleStore {
   }
 
   changeDataSet(dataSetName: string) {
-    this._dataSetName.set(dataSetName);
-    this._pieces.set(this.tools.deepClone(dataSet[dataSetName]));
-    this.initBoard();
+    const levelPieces = dataSet[dataSetName];
+    if (levelPieces) {
+      const processedPieces = this.tools.deepClone(levelPieces).map((p: Piece) => {
+        // Dynamically set the image path for rectangular pieces based on their dimensions.
+        if (p.width !== p.height) {
+          const baseName = p.name.replace(/\d+$/, '');
+          p.img = `assets/img/chinese-puzzle/${baseName}${p.width}${p.height}.png`;
+        }
+        return p;
+      });
+
+      this._dataSetName.set(dataSetName);
+      this._pieces.set(processedPieces);
+      this.initBoard();
+    } else {
+      console.error(`[ChinesePuzzleStore] Error: Level data for "${dataSetName}" not found in dataSet. Falling back to default level.`);
+      // Fallback to the default level to prevent crashing
+      if (this._dataSetName() !== dataSetNames[0]) {
+        this.changeDataSet(dataSetNames[0]);
+      }
+    }
   }
 
   setDarkMode(isDarkMode: boolean) {

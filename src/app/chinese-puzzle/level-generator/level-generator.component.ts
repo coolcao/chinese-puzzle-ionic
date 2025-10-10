@@ -11,6 +11,67 @@ interface EditorPiece extends Piece {
   isDragging?: boolean;
 }
 
+// A* 算法用的最小堆优先队列
+class PriorityQueue<T> {
+  private heap: { priority: number; value: T }[] = [];
+
+  insert(value: T, priority: number): void {
+    this.heap.push({ value, priority });
+    this.bubbleUp(this.heap.length - 1);
+  }
+
+  extractMin(): T | null {
+    if (this.isEmpty()) {
+      return null;
+    }
+    this.swap(0, this.heap.length - 1);
+    const min = this.heap.pop();
+    if (!this.isEmpty()) {
+      this.sinkDown(0);
+    }
+    return min!.value;
+  }
+
+  isEmpty(): boolean {
+    return this.heap.length === 0;
+  }
+
+  private bubbleUp(index: number): void {
+    while (index > 0) {
+      const parentIndex = Math.floor((index - 1) / 2);
+      if (this.heap[parentIndex].priority > this.heap[index].priority) {
+        this.swap(parentIndex, index);
+        index = parentIndex;
+      } else {
+        break;
+      }
+    }
+  }
+
+  private sinkDown(index: number): void {
+    const leftChildIndex = 2 * index + 1;
+    const rightChildIndex = 2 * index + 2;
+    let smallest = index;
+
+    if (leftChildIndex < this.heap.length && this.heap[leftChildIndex].priority < this.heap[smallest].priority) {
+      smallest = leftChildIndex;
+    }
+    if (rightChildIndex < this.heap.length && this.heap[rightChildIndex].priority < this.heap[smallest].priority) {
+      smallest = rightChildIndex;
+    }
+
+    if (smallest !== index) {
+      this.swap(index, smallest);
+      this.sinkDown(smallest);
+    }
+  }
+
+  private swap(i: number, j: number): void {
+    [this.heap[i], this.heap[j]] = [this.heap[j], this.heap[i]];
+  }
+}
+
+
 @Component({
   selector: 'app-level-generator',
   standalone: false,
@@ -36,7 +97,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
   message = '';
   pieces: EditorPiece[] = [];
   isAnimating = false;
-  solutionPath: EditorPiece[][] | null = null;
+  solutionPath: { state: EditorPiece[], cost: number }[] | null = null;
 
   // 棋子模板
   allPieceTemplates = [
@@ -583,17 +644,20 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
       return false;
     }
 
-    this.showMessage('正在检查解法, 请稍候...', false);
+    this.showMessage('正在使用 A* 算法检查解法, 请稍候...', false);
 
+    const startTime = performance.now();
     const solutionPath = await this.isSolvable();
+    const endTime = performance.now();
+    const durationInSeconds = ((endTime - startTime) / 1000).toFixed(2);
 
     if (solutionPath) {
       this.solutionPath = solutionPath;
-      const steps = solutionPath.length - 1;
-      this.showMessage(`数据合法, 关卡有解! 最佳步数: ${steps}`, false);
+      const steps = solutionPath.length > 0 ? solutionPath[solutionPath.length - 1].cost : 0;
+      this.showMessage(`数据合法, 关卡有解! 最佳步数: ${steps} (用时: ${durationInSeconds}秒)`, false);
       return true;
     } else {
-      this.showMessage('数据合法, 但当前关卡无解!');
+      this.showMessage(`数据合法, 但当前关卡无解! (用时: ${durationInSeconds}秒)`, false);
       return false;
     }
   }
@@ -608,7 +672,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
     let step = 0;
     const interval = setInterval(() => {
       if (step < path.length) {
-        this.pieces = path[step];
+        this.pieces = path[step].state;
         this.draw();
         step++;
       } else {
@@ -619,88 +683,108 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
     }, 1000);
   }
 
-  private async isSolvable(): Promise<EditorPiece[][] | null> {
+  private reconstructPath(cameFrom: Map<string, { state: EditorPiece[], cost: number }>, current: { state: EditorPiece[], cost: number }): { state: EditorPiece[], cost: number }[] {
+    const totalPath = [current];
+    let currentHash = this.getBoardStateHash(current.state);
+    while (cameFrom.has(currentHash)) {
+      const previous = cameFrom.get(currentHash)!;
+      totalPath.unshift(previous);
+      currentHash = this.getBoardStateHash(previous.state);
+    }
+    return totalPath;
+  }
+
+  private async isSolvable(): Promise<{ state: EditorPiece[], cost: number }[] | null> {
     return new Promise(resolve => {
       setTimeout(() => {
         const initialState = this.pieces;
-        const goalPieceName = '曹操';
-        const goalX = 1;
-        const goalY = 3;
+        const goalX = 1, goalY = 3;
 
-        const queue: EditorPiece[][] = [initialState];
-        const predecessors = new Map<string, EditorPiece[][]>();
-        predecessors.set(this.getBoardStateHash(initialState), [initialState]);
+        const heuristic = (state: EditorPiece[]): number => {
+          const caocao = state.find(p => p.name === '曹操');
+          if (!caocao) return Infinity;
+          return Math.abs(caocao.x - goalX) + Math.abs(caocao.y - goalY);
+        };
 
-        let path: EditorPiece[][] | null = null;
+        const openSet = new PriorityQueue<{ state: EditorPiece[], cost: number }>();
+        const initialNode = { state: initialState, cost: 0 };
+        openSet.insert(initialNode, heuristic(initialState));
 
-        while (queue.length > 0) {
-          const currentState = queue.shift()!;
-          const currentPath = predecessors.get(this.getBoardStateHash(currentState))!;
+        const cameFrom = new Map<string, { state: EditorPiece[], cost: number }>();
+        const gScore = new Map<string, number>();
+        gScore.set(this.getBoardStateHash(initialState), 0);
 
-          const caocao = currentState.find(p => p.name === goalPieceName);
+        while (!openSet.isEmpty()) {
+          const currentNode = openSet.extractMin()!;
+          const currentState = currentNode.state;
+          const currentStateHash = this.getBoardStateHash(currentState);
+
+          const caocao = currentState.find(p => p.name === '曹操');
           if (caocao && caocao.x === goalX && caocao.y === goalY) {
-            path = currentPath;
-            break;
+            resolve(this.reconstructPath(cameFrom, currentNode));
+            return;
           }
 
-          const successors = this.getSuccessors(currentState);
-          for (const successor of successors) {
-            const hash = this.getBoardStateHash(successor);
-            if (!predecessors.has(hash)) {
-              const newPath = [...currentPath, successor];
-              predecessors.set(hash, newPath);
-              queue.push(successor);
+          const successors = this.getSuccessorsWithCost(currentState);
+          for (const { state: successor, cost: moveCost } of successors) {
+            const successorHash = this.getBoardStateHash(successor);
+            const tentativeGScore = (gScore.get(currentStateHash) ?? Infinity) + moveCost;
+
+            if (tentativeGScore < (gScore.get(successorHash) ?? Infinity)) {
+              const newNode = { state: successor, cost: tentativeGScore };
+              cameFrom.set(successorHash, currentNode);
+              gScore.set(successorHash, tentativeGScore);
+              const fScore = tentativeGScore + heuristic(successor);
+              openSet.insert(newNode, fScore);
             }
           }
         }
-        resolve(path);
+
+        resolve(null); // No solution found
       }, 0);
     });
   }
 
   private getBoardStateHash(pieces: EditorPiece[]): string {
-    const grid = Array(this.boardHeight).fill(null).map(() => Array(this.boardWidth).fill(0));
-    pieces.forEach(p => {
-      for (let y = p.y; y < p.y + p.height; y++) {
-        for (let x = p.x; x < p.x + p.width; x++) {
-          grid[y][x] = p.templateId;
-        }
-      }
-    });
-    return grid.flat().join(',');
+    // Sort pieces by ID to ensure hash is consistent
+    const sortedPieces = [...pieces].sort((a, b) => a.templateId - b.templateId);
+    return sortedPieces.map(p => `${p.templateId},${p.x},${p.y},${p.width},${p.height}`).join('|');
   }
 
-  private getSuccessors(pieces: EditorPiece[]): EditorPiece[][] {
-    const successors: EditorPiece[][] = [];
-    const moves = [{ dx: 0, dy: 1 }, { dx: 0, dy: -1 }, { dx: 1, dy: 0 }, { dx: -1, dy: 0 }];
+  private getSuccessorsWithCost(pieces: EditorPiece[]): { state: EditorPiece[], cost: number }[] {
+    const successors: { state: EditorPiece[], cost: number }[] = [];
+    const directions = [{ dx: 0, dy: 1 }, { dx: 0, dy: -1 }, { dx: 1, dy: 0 }, { dx: -1, dy: 0 }];
 
-    for (let i = 0; i < pieces.length; i++) {
-      const piece = pieces[i];
-      for (const move of moves) {
-        const newX = piece.x + move.dx;
-        const newY = piece.y + move.dy;
+    for (const piece of pieces) {
+      for (const dir of directions) {
+        for (let distance = 1; ; distance++) {
+          const newX = piece.x + dir.dx * distance;
+          const newY = piece.y + dir.dy * distance;
 
-        const newPiece = { ...piece, x: newX, y: newY };
-
-        if (newX < 0 || newY < 0 || newX + piece.width > this.boardWidth || newY + piece.height > this.boardHeight) {
-          continue;
-        }
-
-        let isBlocked = false;
-        const otherPieces = pieces.filter(p => p.id !== piece.id);
-        for (const other of otherPieces) {
-          if (newPiece.x < other.x + other.width &&
-            newPiece.x + newPiece.width > other.x &&
-            newPiece.y < other.y + other.height &&
-            newPiece.y + newPiece.height > other.y) {
-            isBlocked = true;
-            break;
+          if (newX < 0 || newY < 0 || newX + piece.width > this.boardWidth || newY + piece.height > this.boardHeight) {
+            break; // Out of bounds, stop sliding in this direction
           }
-        }
 
-        if (!isBlocked) {
-          const newState = pieces.map(p => p.id === piece.id ? newPiece : p);
-          successors.push(newState);
+          const newPiece = { ...piece, x: newX, y: newY };
+
+          let isBlocked = false;
+          const otherPieces = pieces.filter(p => p.id !== piece.id);
+          for (const other of otherPieces) {
+            if (newPiece.x < other.x + other.width &&
+              newPiece.x + newPiece.width > other.x &&
+              newPiece.y < other.y + other.height &&
+              newPiece.y + newPiece.height > other.y) {
+              isBlocked = true;
+              break;
+            }
+          }
+
+          if (isBlocked) {
+            break; // Collision, stop sliding in this direction
+          } else {
+            const newState = pieces.map(p => (p.id === piece.id ? newPiece : p));
+            successors.push({ state: newState, cost: distance });
+          }
         }
       }
     }
@@ -740,7 +824,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
 
     const dataSetString = `export const dataSet: Record<string, Piece[]> = {\n  '${this.levelName}': [\n${dataSetPieces}\n  ]\n};`;
 
-    const minSteps = this.solutionPath.length - 1;
+    const minSteps = this.solutionPath[this.solutionPath.length - 1].cost;
     const levelsString = `export const levels: Level[] = [\n  { id: '${this.levelName}', name: '${this.levelName}', difficulty: '${this.levelDifficulty}', minSteps: ${minSteps}, pieces: dataSet['${this.levelName}'] },\n];`;
 
     return `${dataSetString}\n\n${levelsString}`;

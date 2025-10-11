@@ -40,6 +40,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   pieces = this.store.pieces;
   boardState = this.store.board;
   finished = this.store.finished;
+  isDarkMode = this.store.isDarkMode;
 
 
   steps = 0;
@@ -290,15 +291,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.fabricGameService.renderCanvas();
   }
 
-  // 检查是否是黑暗模式
-  private isDarkMode(): boolean {
-    return (
-      document.documentElement.classList.contains('dark') ||
-      document.body.classList.contains('dark') ||
-      (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ||
-      localStorage.getItem('theme') === 'dark'
-    );
-  }
 
   // 处理棋子移动（支持多步移动）
   private handlePieceMove(piece: Piece, direction: Direction, steps: number) {

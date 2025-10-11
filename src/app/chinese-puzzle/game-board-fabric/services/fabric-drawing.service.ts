@@ -193,6 +193,14 @@ export class FabricDrawingService {
     const glossLayers = this.createGlossLayers(width, height, isDarkMode);
     objects.push(...glossLayers);
 
+    // 5. 在黑暗模式下为图片添加深色叠加层
+    if (isDarkMode) {
+      const darkOverlay = this.createDarkOverlay(width, height, piece);
+      if (darkOverlay) {
+        objects.push(darkOverlay);
+      }
+    }
+
     return objects;
   }
 
@@ -389,6 +397,30 @@ export class FabricDrawingService {
         { offset: 0, color: 'rgba(0, 0, 0, 0)' },
         { offset: 1, color: 'rgba(0, 0, 0, 0.2)' }
       ]
+    });
+  }
+
+  // 为黑暗模式创建深色叠加层
+  private createDarkOverlay(width: number, height: number, piece: Piece): Rect | null {
+    // 只有当棋子有图片时才添加深色叠加层
+    const correctImage = this.getCorrectPieceImage(piece);
+    if (!correctImage || !correctImage.complete) {
+      return null;
+    }
+
+    const padding = 3; // 与内边框层的padding保持一致
+
+    return new Rect({
+      left: padding,
+      top: padding,
+      width: width - padding * 2,
+      height: height - padding * 2,
+      rx: 6,
+      ry: 6,
+      fill: 'rgba(0, 0, 0, 0.3)', // 30%透明度的黑色叠加
+      selectable: false,
+      evented: false,
+      absolutePositioned: true
     });
   }
 

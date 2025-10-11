@@ -57,8 +57,18 @@ export class FabricInteractionService {
       const obj = e.target as Group;
       if (!obj) return;
 
+      // 首先约束到网格和边界
       this.constrainToGrid(obj);
       this.snapToGrid(obj);
+      
+      // 然后检查碰撞，如果有碰撞则阻止移动
+      if (!this.isValidPosition(obj)) {
+        // 恢复到上一个有效位置
+        this.revertToLastValidPosition(obj);
+      } else {
+        // 更新最后的有效位置
+        this.updateLastValidPosition(obj);
+      }
     });
 
     // 对象拖拽结束事件
@@ -665,6 +675,110 @@ export class FabricInteractionService {
       this.fabricGameService.canvas.renderAll();
     }
 
+  }
+
+  // 检查当前位置是否有效（无碰撞且路径畅通）
+  private isValidPosition(obj: Group): boolean {
+    const pieceInfo = this.getPieceInfo(obj);
+    if (!pieceInfo || !this.boardStateCallback) return true;
+
+    const { piece } = pieceInfo;
+    const cellSize = this.fabricGameService.cellSize;
+    const gap = 1;
+
+    // 计算当前网格位置
+    const currentX = Math.round((obj.left! - gap + 1) / cellSize);
+    const currentY = Math.round((obj.top! - gap + 1) / cellSize);
+
+    // 计算最后有效位置的网格坐标
+    const lastValidLeft = (obj as any).lastValidLeft || (obj as any).originalLeft;
+    const lastValidTop = (obj as any).lastValidTop || (obj as any).originalTop;
+    const lastValidX = Math.round((lastValidLeft - gap + 1) / cellSize);
+    const lastValidY = Math.round((lastValidTop - gap + 1) / cellSize);
+
+    // 检查目标位置是否可以放置棋子
+    if (!this.canMoveTo(piece, currentX, currentY)) {
+      return false;
+    }
+
+    // 检查从最后有效位置到当前位置的路径是否畅通
+    return this.isPathClear(piece, lastValidX, lastValidY, currentX, currentY);
+  }
+
+  // 恢复到最后有效位置
+  private revertToLastValidPosition(obj: Group): void {
+    const lastValidLeft = (obj as any).lastValidLeft;
+    const lastValidTop = (obj as any).lastValidTop;
+
+    if (lastValidLeft !== undefined && lastValidTop !== undefined) {
+      obj.set({
+        left: lastValidLeft,
+        top: lastValidTop
+      });
+    } else {
+      // 如果没有记录的有效位置，恢复到原始位置
+      const originalLeft = (obj as any).originalLeft;
+      const originalTop = (obj as any).originalTop;
+      
+      if (originalLeft !== undefined && originalTop !== undefined) {
+        obj.set({
+          left: originalLeft,
+          top: originalTop
+        });
+      }
+    }
+  }
+
+  // 更新最后有效位置
+  private updateLastValidPosition(obj: Group): void {
+    (obj as any).lastValidLeft = obj.left;
+    (obj as any).lastValidTop = obj.top;
+  }
+
+  // 检查从起始位置到目标位置的路径是否畅通
+  private isPathClear(piece: Piece, startX: number, startY: number, endX: number, endY: number): boolean {
+    // 如果起点和终点相同，路径畅通
+    if (startX === endX && startY === endY) {
+      return true;
+    }
+
+    const deltaX = endX - startX;
+    const deltaY = endY - startY;
+
+    // 只允许直线移动（水平或垂直）
+    if (deltaX !== 0 && deltaY !== 0) {
+      return false; // 不允许对角线移动
+    }
+
+    // 检查水平移动路径
+    if (deltaX !== 0) {
+      const direction = deltaX > 0 ? 1 : -1;
+      const steps = Math.abs(deltaX);
+      
+      // 逐步检查每一步是否可以移动
+      for (let step = 1; step <= steps; step++) {
+        const nextX = startX + (step * direction);
+        if (!this.canMoveTo(piece, nextX, startY)) {
+          return false; // 路径被阻挡
+        }
+      }
+    }
+
+    // 检查垂直移动路径
+    if (deltaY !== 0) {
+      const direction = deltaY > 0 ? 1 : -1;
+      const steps = Math.abs(deltaY);
+      
+      // 逐步检查每一步是否可以移动
+      for (let step = 1; step <= steps; step++) {
+        const nextY = startY + (step * direction);
+        if (!this.canMoveTo(piece, startX, nextY)) {
+          return false; // 路径被阻挡
+        }
+      }
+    }
+
+    return true; // 路径畅通
   }
 
   // 平滑缩放动画

@@ -161,6 +161,9 @@ export class FabricDrawingService {
     // 存储原始位置信息
     (group as any).originalLeft = group.left;
     (group as any).originalTop = group.top;
+    // 初始化最后有效位置为当前位置
+    (group as any).lastValidLeft = group.left;
+    (group as any).lastValidTop = group.top;
     // 存储原始缩放信息
     (group as any).originalScaleX = group.scaleX || 1;
     (group as any).originalScaleY = group.scaleY || 1;
@@ -257,15 +260,15 @@ export class FabricDrawingService {
     const padding = 3; // 进一步减少 padding，让图片更大
     const strokeWidth = 2; // 减少边框宽度，避免占用过多空间
 
-    // 首先尝试获取角色图片，使用piece的img属性
-    const pieceImage = piece.img ? this.imageLoadingService.getPieceImage(piece.img) : undefined;
-
+    // 首先根据棋子的实际尺寸获取正确的图片，而不是依赖piece.img属性
+    const correctImage = this.getCorrectPieceImage(piece);
+    
     let innerFill: string | Pattern;
 
-    if (pieceImage && pieceImage.complete) {
+    if (correctImage && correctImage.complete) {
       // 计算适配棋子大小的缩放比例
-      const imgWidth = pieceImage.width;
-      const imgHeight = pieceImage.height;
+      const imgWidth = correctImage.width;
+      const imgHeight = correctImage.height;
       const targetWidth = width - padding * 2;
       const targetHeight = height - padding * 2;
       
@@ -278,31 +281,31 @@ export class FabricDrawingService {
       const offsetX = (targetWidth - imgWidth * scale) / 2;
       const offsetY = (targetHeight - imgHeight * scale) / 2;
       
-      // 直接使用原图创建Pattern，但添加适当的缩放变换
+      // 直接使用正确的图片创建Pattern，但添加适当的缩放变换
       innerFill = new Pattern({
-        source: pieceImage,
+        source: correctImage,
         repeat: 'no-repeat',
         patternTransform: [scale, 0, 0, scale, offsetX, offsetY]
       });
     } else {
-      // 如果没有角色图片，回退到使用木质纹理图片
-      const woodImage = isDarkMode ?
-        this.imageLoadingService.getWoodDarkImage() :
-        this.imageLoadingService.getWoodLightImage();
+        // 如果没有角色图片，回退到使用木质纹理图片
+        const woodImage = isDarkMode ?
+          this.imageLoadingService.getWoodDarkImage() :
+          this.imageLoadingService.getWoodLightImage();
 
-      if (woodImage && woodImage.complete) {
-        // 使用木质纹理图片作为内层背景
-        innerFill = new Pattern({
-          source: woodImage,
-          repeat: 'repeat',
-          offsetX: 0,
-          offsetY: 0
-        });
-      } else {
-        // 如果图片未加载，使用颜色作为备用
-        innerFill = isDarkMode ? '#8B4513' : '#D4A76A';
+        if (woodImage && woodImage.complete) {
+          // 使用木质纹理图片作为内层背景
+          innerFill = new Pattern({
+            source: woodImage,
+            repeat: 'repeat',
+            offsetX: 0,
+            offsetY: 0
+          });
+        } else {
+          // 如果图片未加载，使用颜色作为备用
+          innerFill = isDarkMode ? '#8B4513' : '#D4A76A';
+        }
       }
-    }
 
     return new Rect({
       left: padding,
@@ -407,11 +410,11 @@ export class FabricDrawingService {
     const width = piece.width * cellSize - gap * 2;
     const height = piece.height * cellSize - gap * 2;
 
-    // 检查是否已经有角色图片作为背景
-    const pieceImage = piece.img ? this.imageLoadingService.getPieceImage(piece.img) : undefined;
+    // 检查是否已经有角色图片作为背景，使用正确的图片获取方法
+    const correctImage = this.getCorrectPieceImage(piece);
 
     // 如果已经有角色图片作为背景，则不显示额外的内容
-    if (pieceImage && pieceImage.complete) {
+    if (correctImage && correctImage.complete) {
       // 创建一个透明的占位矩形
       const placeholder = new Rect({
         left: width / 2,
@@ -507,6 +510,54 @@ export class FabricDrawingService {
     if (onComplete) {
       onComplete();
     }
+  }
+
+  // 根据棋子尺寸获取正确的图片
+  private getCorrectPieceImage(piece: Piece): HTMLImageElement | undefined {
+    // 首先尝试使用原始图片路径（如果存在）
+    if (piece.img) {
+      const originalImage = this.imageLoadingService.getPieceImage(piece.img);
+      if (originalImage && originalImage.complete) {
+        return originalImage;
+      }
+    }
+
+    // 根据棋子名称和尺寸确定正确的图片路径
+    const baseName = piece.name.replace(/[12]$/, ''); // 移除可能的尺寸后缀
+    
+    // 检查是否是需要特殊处理的角色
+    const specialCharacters = ['张飞', '马超', '关羽', '赵云', '黄忠'];
+    
+    if (specialCharacters.some(char => baseName.includes(char))) {
+      // 根据棋子的实际尺寸确定图片名称
+      const sizeCode = `${piece.width}${piece.height}`;
+      const imagePath = `assets/img/chinese-puzzle/${baseName}${sizeCode}.png`;
+      
+      // 尝试从ImageLoadingService获取这个图片
+      const correctImage = this.imageLoadingService.getPieceImage(imagePath);
+      if (correctImage && correctImage.complete) {
+        return correctImage;
+      }
+
+      // 如果当前尺寸的图片不存在，尝试其他尺寸的图片作为回退
+      const alternateSizes = ['12', '21'];
+      for (const altSize of alternateSizes) {
+        if (altSize !== sizeCode) {
+          const altImagePath = `assets/img/chinese-puzzle/${baseName}${altSize}.png`;
+          const altImage = this.imageLoadingService.getPieceImage(altImagePath);
+          if (altImage && altImage.complete) {
+            return altImage;
+          }
+        }
+      }
+    }
+
+    // 对于其他角色（如曹操、卒等），直接使用原始图片路径
+    if (piece.img) {
+      return this.imageLoadingService.getPieceImage(piece.img);
+    }
+    
+    return undefined;
   }
 
   // 缓出四次方函数 - 更明显的缓动效果

@@ -28,7 +28,11 @@
             />
           </svg>
         </button>
-        <h1 class="text-2xl font-extrabold text-wood-text dark:text-wood-lighter">🎮 三国华容道 🎮</h1>
+        <h1
+          class="text-2xl font-extrabold text-wood-text dark:text-wood-lighter"
+        >
+          🎮 三国华容道 🎮
+        </h1>
         <div class="w-10"></div>
         <button
           (click)="showInstructions = !showInstructions"
@@ -239,7 +243,8 @@
     </div>
 
     <div
-      class="flex-1 flex items-center justify-center p-4 bg-wood-light/50 dark:bg-dark-wood-darker/50"
+      class="flex-1 flex items-start justify-center bg-wood-light/50 dark:bg-dark-wood-darker/50"
+      style="padding: 4rem 1rem 2.5rem 1rem"
     >
       <canvas
         #gameCanvasMobile
@@ -264,7 +269,9 @@
       class="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-wood-light/95 dark:bg-dark-wood-lighter p-6 shadow-2xl backdrop-blur-sm transition-all border-2 border-wood-border"
     >
       <div class="mb-4 flex items-center justify-between">
-        <h3 class="text-2xl font-bold text-wood-text dark:text-wood-lighter">🎮 游戏指南</h3>
+        <h3 class="text-2xl font-bold text-wood-text dark:text-wood-lighter">
+          🎮 游戏指南
+        </h3>
         <button
           (click)="showInstructions = false"
           class="text-wood-text dark:text-wood-lighter hover:bg-wood-dark"
@@ -294,7 +301,8 @@
             1
           </div>
           <p>
-            通过<span class="font-medium text-wood-text dark:text-wood-lighter">拖拽方块</span
+            通过<span class="font-medium text-wood-text dark:text-wood-lighter"
+              >拖拽方块</span
             >或点击边缘<span class="text-xl">⬆️⬇️⬅️➡️</span>箭头移动棋子
           </p>
         </div>
@@ -306,7 +314,8 @@
             2
           </div>
           <p>
-            ⭐ 技巧：优先移动关羽等<span class="font-bold text-wood-text dark:text-wood-lighter"
+            ⭐ 技巧：优先移动关羽等<span
+              class="font-bold text-wood-text dark:text-wood-lighter"
               >大块</span
             >开路
           </p>
@@ -319,7 +328,9 @@
             3
           </div>
           <p>
-            目标是将<span class="font-medium text-wood-text dark:text-wood-lighter">曹操方块</span
+            目标是将<span
+              class="font-medium text-wood-text dark:text-wood-lighter"
+              >曹操方块</span
             >移动到底部中央出口
           </p>
         </div>
@@ -331,7 +342,9 @@
             4
           </div>
           <p>
-            尽量用<span class="font-medium text-wood-text dark:text-wood-lighter">最少步数</span
+            尽量用<span
+              class="font-medium text-wood-text dark:text-wood-lighter"
+              >最少步数</span
             >完成，挑战最佳记录！
           </p>
         </div>

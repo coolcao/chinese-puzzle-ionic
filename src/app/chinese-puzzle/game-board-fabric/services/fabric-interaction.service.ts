@@ -132,11 +132,11 @@ export class FabricInteractionService {
   // 吸附到网格
   private snapToGrid(obj: Group): void {
     const cellSize = this.fabricGameService.cellSize;
-    const gap = 3; // 与createPieceGroup中保持一致
+    const gap = 1; // 与createPieceGroup中保持一致
 
     // 吸附到最近的网格位置
-    const snappedLeft = Math.round((obj.left! - gap) / cellSize) * cellSize + gap;
-    const snappedTop = Math.round((obj.top! - gap) / cellSize) * cellSize + gap;
+    const snappedLeft = Math.round((obj.left! - gap + 1) / cellSize) * cellSize + gap - 1;
+    const snappedTop = Math.round((obj.top! - gap + 1) / cellSize) * cellSize + gap - 1;
 
     obj.set({
       left: snappedLeft,
@@ -157,11 +157,11 @@ export class FabricInteractionService {
 
     const { piece, originalX, originalY } = pieceInfo;
     const cellSize = this.fabricGameService.cellSize;
-    const gap = 1.5;
+    const gap = 1;
 
     // 计算新位置
-    const newX = Math.round((obj.left! - gap) / cellSize);
-    const newY = Math.round((obj.top! - gap) / cellSize);
+    const newX = Math.round((obj.left! - gap + 1) / cellSize);
+    const newY = Math.round((obj.top! - gap + 1) / cellSize);
 
 
     // 检查是否有移动
@@ -214,15 +214,15 @@ export class FabricInteractionService {
     if (!pieceId || !pieceName) return null;
 
     const cellSize = this.fabricGameService.cellSize;
-    const gap = 3; // 与createPieceGroup中保持一致
+    const gap = 1; // 与createPieceGroup中保持一致
 
     // 从当前位置计算棋子在棋盘上的位置
-    const currentX = Math.round((obj.left! - gap) / cellSize);
-    const currentY = Math.round((obj.top! - gap) / cellSize);
+    const currentX = Math.round((obj.left! - gap + 1) / cellSize);
+    const currentY = Math.round((obj.top! - gap + 1) / cellSize);
 
     // 从原始位置计算棋子在棋盘上的原始位置
-    const originalX = Math.round(((obj as any).originalLeft - gap) / cellSize);
-    const originalY = Math.round(((obj as any).originalTop - gap) / cellSize);
+    const originalX = Math.round(((obj as any).originalLeft - gap + 1) / cellSize);
+    const originalY = Math.round(((obj as any).originalTop - gap + 1) / cellSize);
 
     const piece: Piece = {
       id: pieceId,

@@ -18,9 +18,8 @@ export class FabricDrawingService {
     const canvas = this.fabricGameService.canvas;
     if (!canvas) return;
 
-
-    // 绘制边框
-    this.drawBorder(isDarkMode);
+    // 不绘制边框，使用HTML的CSS边框
+    // this.drawBorder(isDarkMode);
 
     // 绘制出口
     this.drawExit(isDarkMode);
@@ -134,7 +133,7 @@ export class FabricDrawingService {
   // 创建棋子组
   createPieceGroup(piece: Piece, isDarkMode: boolean): Group {
     const cellSize = this.fabricGameService.cellSize;
-    const gap = 2; // 增大间距，从1.5增加到3
+    const gap = 1; // 减小间距，与DOM版本保持一致
 
     // 创建多层棋子效果
     const objects = this.createMultiLayerPiece(piece, cellSize, gap, isDarkMode);
@@ -145,8 +144,8 @@ export class FabricDrawingService {
 
     // 创建组
     const group = new Group(objects, {
-      left: piece.x * cellSize + gap,
-      top: piece.y * cellSize + gap,
+      left: piece.x * cellSize + gap - 1,
+      top: piece.y * cellSize + gap - 1,
       selectable: true,
       hasControls: false,
       hasBorders: false,
@@ -180,11 +179,11 @@ export class FabricDrawingService {
     objects.push(...shadowLayers);
 
     // 2. 创建基础木质矩形（包含背景图片）
-    const baseRect = this.createBaseWoodRect(width, height, isDarkMode, piece.name);
+    const baseRect = this.createBaseWoodRect(width, height, isDarkMode, piece);
     objects.push(baseRect);
 
     // 3. 创建内边框层（包含角色图片或木质背景图片）
-    const innerBorder = this.createInnerBorder(width, height, isDarkMode, piece.name);
+    const innerBorder = this.createInnerBorder(width, height, isDarkMode, piece);
     objects.push(innerBorder);
 
     // 4. 创建光滑表面效果层
@@ -232,7 +231,7 @@ export class FabricDrawingService {
   }
 
   // 创建基础棋子矩形（外层边框，无背景）
-  private createBaseWoodRect(width: number, height: number, isDarkMode: boolean, pieceName: string): Rect {
+  private createBaseWoodRect(width: number, height: number, isDarkMode: boolean, piece: Piece): Rect {
     // 创建外层矩形框架，只有边框，无填充
     const rect = new Rect({
       left: 0,
@@ -253,99 +252,38 @@ export class FabricDrawingService {
   }
 
   // 创建内边框层（包含角色图片或木质背景图片）
-  private createInnerBorder(width: number, height: number, isDarkMode: boolean, pieceName: string): Rect {
+  private createInnerBorder(width: number, height: number, isDarkMode: boolean, piece: Piece): Rect {
     // 调整 padding，确保上下左右均匀
-    const padding = 6; // 减少 padding，让背景更居中
+    const padding = 3; // 进一步减少 padding，让图片更大
     const strokeWidth = 2; // 减少边框宽度，避免占用过多空间
 
-    // 首先尝试获取角色图片
-    const pieceImage = this.imageLoadingService.getPieceImage(pieceName);
+    // 首先尝试获取角色图片，使用piece的img属性
+    const pieceImage = piece.img ? this.imageLoadingService.getPieceImage(piece.img) : undefined;
 
     let innerFill: string | Pattern;
 
     if (pieceImage && pieceImage.complete) {
-      // 为不同尺寸的棋子调整图片显示策略
+      // 计算适配棋子大小的缩放比例
       const imgWidth = pieceImage.width;
       const imgHeight = pieceImage.height;
-
-      // 创建一个临时canvas来绘制处理后的图片
-      const tempCanvas = document.createElement('canvas');
-      const tempCtx = tempCanvas.getContext('2d');
-      if (tempCtx) {
-        tempCanvas.width = width - padding * 2;
-        tempCanvas.height = height - padding * 2;
-
-        // 计算缩放比例，使用较大的缩放比例来填满区域，可能会裁剪图片
-        const scaleX = tempCanvas.width / imgWidth;
-        const scaleY = tempCanvas.height / imgHeight;
-        const scale = Math.max(scaleX, scaleY); // 使用较大的缩放比例来填满区域
-
-        // 计算缩放后的尺寸
-        const displayWidth = imgWidth * scale;
-        const displayHeight = imgHeight * scale;
-
-        // 计算居中位置（可能为负值，表示图片超出显示区域）
-        const x = (tempCanvas.width - displayWidth) / 2;
-        const y = (tempCanvas.height - displayHeight) / 2;
-
-        // 在临时canvas上绘制缩放后的图片，确保填满整个区域
-        tempCtx.drawImage(pieceImage, x, y, displayWidth, displayHeight);
-
-        // 如果是黑暗模式，调整图片以适应黑暗主题
-        if (isDarkMode) {
-          // 创建一个ImageData对象来处理像素
-          const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-          const data = imageData.data;
-
-          // 调整每个像素以适应黑暗模式，同时保持细节
-          for (let i = 0; i < data.length; i += 4) {
-            // 获取RGBA值
-            let r = data[i];
-            let g = data[i + 1];
-            let b = data[i + 2];
-
-            // 应用亮度和对比度调整
-            // 降低亮度
-            r = r * 0.7;
-            g = g * 0.7;
-            b = b * 0.7;
-
-            // 增加对比度
-            r = ((r - 128) * 1.2) + 128;
-            g = ((g - 128) * 1.2) + 128;
-            b = ((b - 128) * 1.2) + 128;
-
-            // 确保值在有效范围内
-            r = Math.min(255, Math.max(0, r));
-            g = Math.min(255, Math.max(0, g));
-            b = Math.min(255, Math.max(0, b));
-
-            // 设置调整后的值
-            data[i] = r;
-            data[i + 1] = g;
-            data[i + 2] = b;
-          }
-
-          // 将修改后的图像数据放回canvas
-          tempCtx.putImageData(imageData, 0, 0);
-        }
-
-        // 使用临时canvas作为Pattern的source
-        innerFill = new Pattern({
-          source: tempCanvas,
-          repeat: 'no-repeat'
-        });
-      } else {
-        // 如果无法创建canvas，使用简单的Pattern，但仍使用max来填满区域
-        const scaleX = (width - padding * 2) / imgWidth;
-        const scaleY = (height - padding * 2) / imgHeight;
-        const scale = Math.max(scaleX, scaleY);
-
-        innerFill = new Pattern({
-          source: pieceImage,
-          repeat: 'no-repeat'
-        });
-      }
+      const targetWidth = width - padding * 2;
+      const targetHeight = height - padding * 2;
+      
+      // 使用较大的缩放比例来填满区域（保持DOM版本的行为）
+      const scaleX = targetWidth / imgWidth;
+      const scaleY = targetHeight / imgHeight;
+      const scale = Math.max(scaleX, scaleY);
+      
+      // 计算居中偏移
+      const offsetX = (targetWidth - imgWidth * scale) / 2;
+      const offsetY = (targetHeight - imgHeight * scale) / 2;
+      
+      // 直接使用原图创建Pattern，但添加适当的缩放变换
+      innerFill = new Pattern({
+        source: pieceImage,
+        repeat: 'no-repeat',
+        patternTransform: [scale, 0, 0, scale, offsetX, offsetY]
+      });
     } else {
       // 如果没有角色图片，回退到使用木质纹理图片
       const woodImage = isDarkMode ?
@@ -465,12 +403,12 @@ export class FabricDrawingService {
   // 创建棋子内容（当背景不是角色图片时显示图片或文字）
   private createPieceContent(piece: Piece, isDarkMode: boolean): any {
     const cellSize = this.fabricGameService.cellSize;
-    const gap = 1.5;
+    const gap = 1; // 与其他地方的间距保持一致
     const width = piece.width * cellSize - gap * 2;
     const height = piece.height * cellSize - gap * 2;
 
     // 检查是否已经有角色图片作为背景
-    const pieceImage = this.imageLoadingService.getPieceImage(piece.name);
+    const pieceImage = piece.img ? this.imageLoadingService.getPieceImage(piece.img) : undefined;
 
     // 如果已经有角色图片作为背景，则不显示额外的内容
     if (pieceImage && pieceImage.complete) {
@@ -536,9 +474,9 @@ export class FabricDrawingService {
     if (!pieceObject) return;
 
     const cellSize = this.fabricGameService.cellSize;
-    const gap = 1.5;
-    const newLeft = piece.x * cellSize + gap;
-    const newTop = piece.y * cellSize + gap;
+    const gap = 1; // 与创建棋子时的间距保持一致
+    const newLeft = piece.x * cellSize + gap - 1;
+    const newTop = piece.y * cellSize + gap - 1;
 
 
     // 使用 requestAnimationFrame 实现更可控的动画

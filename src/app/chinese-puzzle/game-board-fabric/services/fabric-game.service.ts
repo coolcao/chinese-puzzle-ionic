@@ -65,8 +65,8 @@ export class FabricGameService {
     this.cellSize = Math.min(maxCellWidth, maxCellHeight);
 
     if (isPC) {
-      this.cellSize = Math.max(this.cellSize, 25);
-      this.cellSize = Math.min(this.cellSize, 120);
+      this.cellSize = Math.max(this.cellSize, 30);
+      this.cellSize = Math.min(this.cellSize, 160);
     } else {
       this.cellSize = Math.max(this.cellSize, 15);
       if (viewportWidth < 375) {

@@ -21,7 +21,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild('gameCanvasMobile', { static: false }) canvasMobileRef!: ElementRef<HTMLCanvasElement>;
 
   private store = inject(ChinesePuzzleStore);
-  private fabricGameService = inject(FabricGameService);
+  public fabricGameService = inject(FabricGameService);
   private fabricDrawingService = inject(FabricDrawingService);
   private fabricInteractionService = inject(FabricInteractionService);
   private imageLoadingService = inject(ImageLoadingService);

@@ -3,12 +3,14 @@
   class="h-screen w-screen bg-wood-lighter transition-colors duration-300 dark:bg-dark-wood-lighter overflow-hidden"
 >
   <!-- PC大屏左右布局 -->
-  <div class="hidden lg:flex h-full w-full flex-col">
+  <div
+    class="hidden lg:flex h-full w-full flex-col bg-wood-light/50 dark:bg-dark-wood-dark/20"
+  >
     <!-- 顶部header -->
     <header
       class="py-6 px-4 text-center bg-wood-light dark:bg-dark-wood-dark border-b-4 border-wood-border dark:border-dark-wood-border flex-shrink-0"
     >
-      <div class="flex items-center justify-between">
+      <div class="max-w-7xl mx-auto flex items-center justify-between relative">
         <button
           (click)="goToLevelSelect()"
           class="text-wood-text dark:text-wood-lighter hover:bg-wood-light dark:hover:bg-dark-wood rounded-full p-2"
@@ -36,7 +38,7 @@
         <div class="w-10"></div>
         <button
           (click)="showInstructions = !showInstructions"
-          class="absolute right-4 rounded-full bg-wood-light dark:bg-dark-wood-lighter dark:text-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30"
+          class="absolute right-0 rounded-full bg-wood-light dark:bg-dark-wood-lighter dark:text-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -57,91 +59,100 @@
     </header>
 
     <!-- 下面部分左右布局 -->
-    <div class="flex-1 flex bg-wood-light/50 dark:bg-dark-wood-dark/20">
+    <div class="flex-1 flex mx-auto max-w-6xl">
       <!-- 左侧棋盘 -->
       <div class="flex-1 flex items-center justify-center p-6">
-        <canvas
-          #gameCanvasPC
-          (touchmove)="onTouchMove($event)"
-          class="border-4 border-b-0 border-solid border-wood-darker rounded-md w-full max-w-2xl h-auto shadow-lg"
-        ></canvas>
+        <div class="flex items-center justify-center max-w-2xl">
+          <canvas
+            #gameCanvasPC
+            (touchmove)="onTouchMove($event)"
+            class="border-4 border-b-0 border-solid border-wood-darker rounded-md shadow-lg"
+          ></canvas>
+        </div>
       </div>
 
       <!-- 右侧信息卡片 -->
-      <div
-        class="w-80 bg-wood-light dark:bg-dark-wood-lighter dark:text-wood shadow-lg m-6 rounded-lg flex flex-col border-2 border-wood-border"
-      >
-        <div class="p-6 border-b border-wood-border rounded-t-lg">
-          <h2
-            class="text-xl font-bold text-wood-text dark:text-wood-lighter mb-4"
-          >
-            游戏控制
-          </h2>
-
-          <!-- 棋局选择 -->
-          <div class="mb-6">
-            <label
-              class="block text-sm font-medium text-wood-text dark:text-wood-lighter mb-2"
+      <div class="h-full w-full flex justify-center items-center">
+        <div
+          class="w-80 bg-wood-light dark:bg-dark-wood-lighter dark:text-wood shadow-lg m-6 rounded-lg flex flex-col border-2 border-wood-border"
+          [style.height.px]="
+            fabricGameService.boardHeight * fabricGameService.cellSize
+          "
+        >
+          <div class="p-6 border-b border-wood-border rounded-t-lg">
+            <h2
+              class="text-xl font-bold text-wood-text dark:text-wood-lighter mb-4"
             >
-              选择棋局
-            </label>
-            <select
-              [ngModel]="dataSetName()"
-              (ngModelChange)="onDataSetChange($event)"
-              class="w-full rounded-lg border border-wood-border dark:text-wood-lighter bg-wood/50 dark:bg-wood-dark/50 px-4 py-2 text-wood-text shadow-inner transition-all hover:border-bg-wood focus:border-bg-wood-darker focus:ring-2 focus:ring-bg-wood-light"
-            >
-              <option
-                *ngFor="let item of dataSetNames(); let i = index"
-                value="{{ item }}"
-                class="py-2"
-              >
-                {{ item }}
-              </option>
-            </select>
-          </div>
+              游戏控制
+            </h2>
 
-          <!-- 游戏状态 -->
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <span class="text-wood-text dark:text-wood-lighter"
-                >当前步数：</span
+            <!-- 棋局选择 -->
+            <div class="mb-6">
+              <label
+                class="block text-sm font-medium text-wood-text dark:text-wood-lighter mb-2"
               >
-              <div
-                class="rounded-lg bg-wood/50 text-wood-text dark:text-wood-lighter px-4 py-2"
+                选择棋局
+              </label>
+              <select
+                [ngModel]="dataSetName()"
+                (ngModelChange)="onDataSetChange($event)"
+                class="w-full rounded-lg border border-wood-border dark:text-wood-lighter bg-wood/50 dark:bg-wood-dark/50 px-4 py-2 text-wood-text shadow-inner transition-all hover:border-bg-wood focus:border-bg-wood-darker focus:ring-2 focus:ring-bg-wood-light"
               >
-                {{ steps }}
-              </div>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-wood-text dark:text-wood-lighter"
-                >游戏状态：</span
-              >
-              <div class="rounded-lg px-4 py-2 bg-wood/50">
-                @if(finished()) {
-                <span class="text-green-600 dark:text-green-300"
-                  >✅ 已完成</span
+                <option
+                  *ngFor="let item of dataSetNames(); let i = index"
+                  value="{{ item }}"
+                  class="py-2"
                 >
-                } @else {
+                  {{ item }}
+                </option>
+              </select>
+            </div>
+
+            <!-- 游戏状态 -->
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
                 <span class="text-wood-text dark:text-wood-lighter"
-                  >⏳ 进行中</span
+                  >当前步数：</span
                 >
-                }
+                <div
+                  class="rounded-lg bg-wood/50 text-wood-text dark:text-wood-lighter px-4 py-2"
+                >
+                  {{ steps }}
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-wood-text dark:text-wood-lighter"
+                  >游戏状态：</span
+                >
+                <div class="rounded-lg px-4 py-2 bg-wood/50">
+                  @if(finished()) {
+                  <span class="text-green-600 dark:text-green-300"
+                    >✅ 已完成</span
+                  >
+                  } @else {
+                  <span class="text-wood-text dark:text-wood-lighter"
+                    >⏳ 进行中</span
+                  >
+                  }
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="flex-1 p-6">
-          <h3
-            class="text-lg font-semibold text-wood-text dark:text-wood-lighter mb-4"
-          >
-            游戏说明
-          </h3>
-          <div class="space-y-3 text-sm text-wood-text dark:text-wood-lighter">
-            <p>🎮 通过拖拽方块移动棋子</p>
-            <p>⭐ 优先移动大块棋子开路</p>
-            <p>🎯 将曹操移动到底部出口</p>
-            <p>🏆 挑战最少步数完成</p>
+          <div class="flex-1 p-6">
+            <h3
+              class="text-lg font-semibold text-wood-text dark:text-wood-lighter mb-4"
+            >
+              游戏说明
+            </h3>
+            <div
+              class="space-y-3 text-sm text-wood-text dark:text-wood-lighter"
+            >
+              <p>🎮 通过拖拽方块移动棋子</p>
+              <p>⭐ 优先移动大块棋子开路</p>
+              <p>🎯 将曹操移动到底部出口</p>
+              <p>🏆 挑战最少步数完成</p>
+            </div>
           </div>
         </div>
       </div>
@@ -243,8 +254,7 @@
     </div>
 
     <div
-      class="flex-1 flex items-start justify-center bg-wood-light/50 dark:bg-dark-wood-darker/50"
-      style="padding: 4rem 1rem 2.5rem 1rem"
+      class="flex-1 flex items-center justify-center bg-wood-light/50 dark:bg-dark-wood-darker/50 px-4"
     >
       <canvas
         #gameCanvasMobile

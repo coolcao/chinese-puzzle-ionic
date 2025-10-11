@@ -244,7 +244,7 @@ export class FabricDrawingService {
       rx: 8,
       ry: 8,
       fill: 'transparent', // 外层透明
-      stroke: isDarkMode ? '#f5e5c9' : '#5a2508',
+      stroke: '#5a2508',
       strokeWidth: 1,
       selectable: false,
       evented: false,
@@ -315,7 +315,7 @@ export class FabricDrawingService {
       rx: 6,
       ry: 6,
       fill: innerFill, // 内层填充角色图片或木质纹理
-      stroke: isDarkMode ? '#9c5a2a' : '#c4a47a',
+      stroke: '#c4a47a',
       strokeWidth: strokeWidth,
       selectable: false,
       evented: false,

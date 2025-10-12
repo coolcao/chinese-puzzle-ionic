@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 
 import { ChinesePuzzleStore } from '../chinese-puzzle.store';
+import { GameManagementService } from '../services/game-management.service';
 import { Piece, Direction } from '../chinese-puzzle.type';
 import { ImageLoadingService } from '../services/image-loading.service';
 import { PieceMovementService } from '../services/piece-movement.service';
@@ -21,6 +22,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild('gameCanvasMobile', { static: false }) canvasMobileRef!: ElementRef<HTMLCanvasElement>;
 
   private store = inject(ChinesePuzzleStore);
+  private gameManagement = inject(GameManagementService);
   public fabricGameService = inject(FabricGameService);
   private fabricDrawingService = inject(FabricDrawingService);
   private fabricInteractionService = inject(FabricInteractionService);
@@ -61,6 +63,9 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   constructor() {
     effect(() => {
       if (this.finished()) {
+        // 保存游戏进度
+        this.gameManagement.saveGameProgress(this.steps, 0); // 暂时传0作为时间
+
         // 显示完成Modal
         this.showCompletionModal = true;
         // 同时显示撒花效果
@@ -96,10 +101,10 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.route.queryParams.subscribe(params => {
       const levelId = params['level'];
       if (levelId) {
-        this.store.changeDataSet(levelId);
+        this.gameManagement.changeLevel(levelId);
       } else {
         // 如果没有指定关卡，默认加载"横刀立马"
-        this.store.changeDataSet('横刀立马');
+        this.gameManagement.changeLevel('横刀立马');
       }
 
       // 在数据集更改后重新加载图片
@@ -115,7 +120,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     setTimeout(() => {
       this.initCanvas();
     }, 0);
-    
+
     // 监听游戏完成状态，锁定棋盘
     effect(() => {
       if (this.finished()) {
@@ -304,7 +309,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
     // 渲染画布
     this.fabricGameService.renderCanvas();
-    
+
     // 绘制完成后，根据游戏状态应用锁定
     if (this.finished()) {
       this.lockBoard();
@@ -356,7 +361,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   changeDataSet(dataSetName: string) {
-    this.store.changeDataSet(dataSetName);
+    this.gameManagement.changeLevel(dataSetName);
     this.steps = 0;
     // 直接重新绘制棋盘即可
     Promise.resolve().then(() => {
@@ -419,12 +424,12 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     const currentNames = this.dataSetNames();
     const currentName = this.dataSetName();
     const currentIndex = currentNames.indexOf(currentName);
-    
+
     if (currentIndex < currentNames.length - 1) {
       const nextLevel = currentNames[currentIndex + 1];
-      this.router.navigate(['game-board-fabric'], { 
+      this.router.navigate(['game-board-fabric'], {
         queryParams: { level: nextLevel },
-        replaceUrl: true 
+        replaceUrl: true
       });
     }
   }
@@ -434,14 +439,14 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     const currentNames = this.dataSetNames();
     const currentName = this.dataSetName();
     const currentIndex = currentNames.indexOf(currentName);
-    
+
     return currentIndex < currentNames.length - 1;
   }
 
   // 关闭完成Modal
   closeCompletionModal() {
     this.showCompletionModal = false;
-    
+
     // 关闭Modal后，确保游戏状态仍然锁定（如果游戏已完成）
     setTimeout(() => {
       if (this.finished()) {
@@ -460,7 +465,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   getCompletionRating(): string {
     const steps = this.steps;
     const difficulty = this.currentLevel()?.difficulty || '中级';
-    
+
     // 根据步数和难度给出评价
     let threshold: number;
     switch (difficulty) {

@@ -1,8 +1,8 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inject, OnInit } from '@angular/core';
 import { ChinesePuzzleStore } from '../chinese-puzzle.store';
 import { Piece, Direction } from '../chinese-puzzle.type';
-import { ToolsService } from '../../common/tools.service';
-import { ImagePreloaderService } from '../image-preloader.service';
+import { ToolsService } from '../services/tools.service';
+import { ImagePreloaderService } from '../services/image-preloader.service';
 import { timer } from 'rxjs';
 
 @Component({
@@ -548,8 +548,8 @@ export class GameBoardCanvasOldComponent implements OnInit, OnDestroy {
 
     // 5. 内部阴影 - 增强立体感
     const innerShadow = ctx.createRadialGradient(
-      x + width/2, y + height/2, 0,
-      x + width/2, y + height/2, Math.min(width, height) * 0.8
+      x + width / 2, y + height / 2, 0,
+      x + width / 2, y + height / 2, Math.min(width, height) * 0.8
     );
     innerShadow.addColorStop(0, 'rgba(0, 0, 0, 0)');
     innerShadow.addColorStop(1, isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.15)');

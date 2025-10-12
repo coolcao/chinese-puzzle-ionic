@@ -1,16 +1,29 @@
-import { computed, inject, signal } from "@angular/core";
-import { ToolsService } from "../common/tools.service";
-import { Piece } from "./chinese-puzzle.type";
+import { computed, inject, Injectable, signal } from "@angular/core";
+import { ToolsService } from "./services/tools.service";
+import { Piece, UserSettings } from "./chinese-puzzle.type";
 
 import { dataSet, levels } from './data-set';
 
+
+
 const dataSetNames = Object.keys(dataSet);
 
+@Injectable({
+  providedIn: 'root'
+})
 export class ChinesePuzzleStore {
   private tools = inject(ToolsService);
+
   private _boardWidth = signal(4);
   private _boardHeight = signal(5);
   private _isDarkMode = signal(false);
+  private _settings = signal<UserSettings>({
+    isDarkMode: false,
+    smoothDragMode: true,
+    soundEffectsEnabled: true,
+    backgroundMusicEnabled: false,
+    vibrationEnabled: true
+  });
 
   private _dataSetName = signal(dataSetNames[0]);
 
@@ -19,6 +32,7 @@ export class ChinesePuzzleStore {
 
 
   readonly isDarkMode = this._isDarkMode.asReadonly();
+  readonly settings = this._settings.asReadonly();
   readonly dataSetNames = signal(dataSetNames);
   readonly dataSetName = this._dataSetName.asReadonly();
   readonly pieces = this._pieces.asReadonly();
@@ -67,6 +81,39 @@ export class ChinesePuzzleStore {
     this._pieces.set(this.tools.deepClone(pieces));
   }
 
+
+  setDarkMode(isDarkMode: boolean) {
+    this._isDarkMode.set(isDarkMode);
+    // 同时更新settings对象
+    const currentSettings = this._settings();
+    this._settings.set({
+      ...currentSettings,
+      isDarkMode
+    });
+  }
+
+  // 设置相关方法
+  updateSettings(settings: UserSettings) {
+    this._settings.set(settings);
+    // 同时更新isDarkMode信号，保持向后兼容
+    this._isDarkMode.set(settings.isDarkMode);
+  }
+
+  updateSetting<K extends keyof UserSettings>(key: K, value: UserSettings[K]) {
+    const currentSettings = this._settings();
+    const updatedSettings = {
+      ...currentSettings,
+      [key]: value
+    } as UserSettings;
+
+    this._settings.set(updatedSettings);
+
+    // 如果是isDarkMode设置，也更新对应的信号，保持向后兼容
+    if (key === 'isDarkMode') {
+      this._isDarkMode.set(value as boolean);
+    }
+  }
+
   changeDataSet(dataSetName: string) {
     const levelPieces = dataSet[dataSetName];
     if (levelPieces) {
@@ -89,14 +136,6 @@ export class ChinesePuzzleStore {
         this.changeDataSet(dataSetNames[0]);
       }
     }
-  }
-
-  setDarkMode(isDarkMode: boolean) {
-    this._isDarkMode.set(isDarkMode);
-  }
-
-  toggleDarkMode() {
-    this._isDarkMode.set(!this.isDarkMode());
   }
 
 }

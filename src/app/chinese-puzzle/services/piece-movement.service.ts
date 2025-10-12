@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Piece, Direction } from '../chinese-puzzle.type';
-import { ToolsService } from '../../common/tools.service';
+import { ToolsService } from './tools.service';
 
 @Injectable({
   providedIn: 'root'

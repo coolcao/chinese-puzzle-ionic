@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ImagePreloaderService } from '../image-preloader.service';
+import { ImagePreloaderService } from './image-preloader.service';
 import { Piece } from '../chinese-puzzle.type';
 
 @Injectable({

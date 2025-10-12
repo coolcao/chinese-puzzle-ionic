@@ -1,6 +1,7 @@
 import { Component, OnInit, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChinesePuzzleStore } from '../chinese-puzzle.store';
+import { GameManagementService } from '../services/game-management.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -16,8 +17,10 @@ export class HomeComponent implements OnInit {
   showProfile = false;
 
   private store = inject(ChinesePuzzleStore);
+  private gameManagement = inject(GameManagementService);
 
   isDarkMode = this.store.isDarkMode;
+  settings = this.store.settings;
 
   constructor(private router: Router) {
     effect(() => {
@@ -29,7 +32,11 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  ngOnInit() { }
+  async ngOnInit() {
+    // 加载设置
+    const settings = await this.gameManagement.getSettings();
+    this.store.updateSettings(settings);
+  }
 
   // 检查是否为开发模式
   isDevMode(): boolean {
@@ -72,16 +79,33 @@ export class HomeComponent implements OnInit {
   }
 
   // 设置功能方法
-  toggleDarkMode() {
-    // 切换黑暗模式逻辑
-    this.store.toggleDarkMode();
+  async toggleDarkMode() {
+    this.store.updateSetting('isDarkMode', !this.settings().isDarkMode);
+    await this.saveSettings();
   }
 
-  toggleSound() {
-    // 切换音效逻辑
+  async toggleSoundEffects() {
+    this.store.updateSetting('soundEffectsEnabled', !this.settings().soundEffectsEnabled);
+    await this.saveSettings();
   }
 
-  toggleVibration() {
-    // 切换震动反馈逻辑
+  async toggleBackgroundMusic() {
+    this.store.updateSetting('backgroundMusicEnabled', !this.settings().backgroundMusicEnabled);
+    await this.saveSettings();
+  }
+
+  async toggleVibration() {
+    this.store.updateSetting('vibrationEnabled', !this.settings().vibrationEnabled);
+    await this.saveSettings();
+  }
+
+  async toggleSmoothDrag() {
+    this.store.updateSetting('smoothDragMode', !this.settings().smoothDragMode);
+    await this.saveSettings();
+  }
+
+  private async saveSettings() {
+    const currentSettings = this.settings();
+    await this.gameManagement.saveSettings(currentSettings);
   }
 }

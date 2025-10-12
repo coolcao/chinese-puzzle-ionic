@@ -4,9 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 
 import { ChinesePuzzleStore } from '../chinese-puzzle.store';
-import { ToolsService } from '../../common/tools.service';
+import { ToolsService } from '../services/tools.service';
 import { Direction, Piece } from '../chinese-puzzle.type';
-import { ImagePreloaderService } from '../image-preloader.service';
+import { ImagePreloaderService } from '../services/image-preloader.service';
 import { levels } from '../data-set';
 
 @Component({

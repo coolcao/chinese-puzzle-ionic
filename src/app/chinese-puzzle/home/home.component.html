@@ -247,11 +247,30 @@
         <div class="flex items-center justify-between">
           <span class="text-wood-text dark:text-wood-lighter">音效</span>
           <button
-            (click)="toggleSound()"
+            (click)="toggleSoundEffects()"
             class="relative inline-flex h-6 w-11 items-center rounded-full bg-wood dark:bg-dark-wood"
           >
             <span
-              class="inline-block h-4 w-4 transform rounded-full bg-wood-lighter dark:bg-dark-wood-lighter transition translate-x-1 dark:translate-x-6"
+              class="inline-block h-4 w-4 transform rounded-full bg-wood-lighter dark:bg-dark-wood-lighter transition"
+              [ngClass]="{
+                'translate-x-6': settings().soundEffectsEnabled,
+                'translate-x-1': !settings().soundEffectsEnabled
+              }"
+            ></span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-wood-text dark:text-wood-lighter">背景音乐</span>
+          <button
+            (click)="toggleBackgroundMusic()"
+            class="relative inline-flex h-6 w-11 items-center rounded-full bg-wood dark:bg-dark-wood"
+          >
+            <span
+              class="inline-block h-4 w-4 transform rounded-full bg-wood-lighter dark:bg-dark-wood-lighter transition"
+              [ngClass]="{
+                'translate-x-6': settings().backgroundMusicEnabled,
+                'translate-x-1': !settings().backgroundMusicEnabled
+              }"
             ></span>
           </button>
         </div>
@@ -262,7 +281,26 @@
             class="relative inline-flex h-6 w-11 items-center rounded-full bg-wood dark:bg-dark-wood"
           >
             <span
-              class="inline-block h-4 w-4 transform rounded-full bg-wood-lighter dark:bg-dark-wood-lighter transition translate-x-1 dark:translate-x-6"
+              class="inline-block h-4 w-4 transform rounded-full bg-wood-lighter dark:bg-dark-wood-lighter transition"
+              [ngClass]="{
+                'translate-x-6': settings().vibrationEnabled,
+                'translate-x-1': !settings().vibrationEnabled
+              }"
+            ></span>
+          </button>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-wood-text dark:text-wood-lighter">平滑拖拽</span>
+          <button
+            (click)="toggleSmoothDrag()"
+            class="relative inline-flex h-6 w-11 items-center rounded-full bg-wood dark:bg-dark-wood"
+          >
+            <span
+              class="inline-block h-4 w-4 transform rounded-full bg-wood-lighter dark:bg-dark-wood-lighter transition"
+              [ngClass]="{
+                'translate-x-6': settings().smoothDragMode,
+                'translate-x-1': !settings().smoothDragMode
+              }"
             ></span>
           </button>
         </div>

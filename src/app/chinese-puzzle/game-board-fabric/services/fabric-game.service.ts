@@ -13,6 +13,11 @@ export class FabricGameService {
   boardWidth = 4;
   boardHeight = 5;
 
+  // 拖拽体验模式设置
+  // true: 丝滑拖拽模式 - 棋子平滑跟随鼠标，通过透明度提示移动有效性
+  // false: 精准拖拽模式 - 棋子只能移动到有效位置，提供即时约束反馈
+  smoothDragMode = false; // 默认使用丝滑拖拽模式
+
   // 存储棋子对象的映射
   private pieceObjects: Map<number, Group> = new Map();
 

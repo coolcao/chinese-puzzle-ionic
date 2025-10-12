@@ -57,17 +57,21 @@ export class FabricInteractionService {
       const obj = e.target as Group;
       if (!obj) return;
 
-      // 首先约束到网格和边界
-      this.constrainToGrid(obj);
-      this.snapToGrid(obj);
-      
-      // 然后检查碰撞，如果有碰撞则阻止移动
-      if (!this.isValidPosition(obj)) {
-        // 恢复到上一个有效位置
-        this.revertToLastValidPosition(obj);
+      if (this.fabricGameService.smoothDragMode) {
+        // 丝滑拖拽模式：只约束边界，保持拖拽连续性
+        this.constrainToBounds(obj);
+        this.updateDragVisualFeedback(obj);
       } else {
-        // 更新最后的有效位置
-        this.updateLastValidPosition(obj);
+        // 精准拖拽模式：即时约束到有效位置
+        this.constrainToGrid(obj);
+        this.snapToGrid(obj);
+        
+        // 检查碰撞，如果有碰撞则阻止移动
+        if (!this.isValidPosition(obj)) {
+          this.revertToLastValidPosition(obj);
+        } else {
+          this.updateLastValidPosition(obj);
+        }
       }
     });
 
@@ -115,7 +119,102 @@ export class FabricInteractionService {
     });
   }
 
-  // 约束到网格
+  // 只约束边界，不进行网格对齐（用于平滑拖拽）
+  private constrainToBounds(obj: Group): void {
+    const cellSize = this.fabricGameService.cellSize;
+    const boardWidth = this.fabricGameService.boardWidth;
+    const boardHeight = this.fabricGameService.boardHeight;
+
+    // 获取棋子信息
+    const pieceInfo = this.getPieceInfo(obj);
+    if (!pieceInfo) return;
+
+    const { piece } = pieceInfo;
+    const gap = 1; // 与createPieceGroup中保持一致
+
+    // 约束移动范围
+    const minX = gap;
+    const maxX = (boardWidth - piece.width) * cellSize + gap;
+    const minY = gap;
+    const maxY = (boardHeight - piece.height) * cellSize + gap;
+
+    if (obj.left! < minX) obj.set({ left: minX });
+    if (obj.left! > maxX) obj.set({ left: maxX });
+    if (obj.top! < minY) obj.set({ top: minY });
+    if (obj.top! > maxY) obj.set({ top: maxY });
+  }
+
+  // 智能约束：只允许拖拽到有效路径上
+  private intelligentConstraint(obj: Group): void {
+    const pieceInfo = this.getPieceInfo(obj);
+    if (!pieceInfo) return;
+
+    const { piece, originalX, originalY } = pieceInfo;
+    const cellSize = this.fabricGameService.cellSize;
+    const gap = 1;
+
+    // 计算当前试图移动到的网格位置
+    const targetX = Math.round((obj.left! - gap + 1) / cellSize);
+    const targetY = Math.round((obj.top! - gap + 1) / cellSize);
+
+    // 检查是否有从原始位置到目标位置的有效路径
+    const hasValidPath = this.hasValidMovePath(piece, originalX, originalY, targetX, targetY);
+
+    if (!hasValidPath) {
+      // 如果没有有效路径，约束到最近的有效位置
+      const nearestValidPos = this.findNearestValidPosition(piece, originalX, originalY, targetX, targetY);
+      if (nearestValidPos) {
+        const constrainedLeft = nearestValidPos.x * cellSize + gap;
+        const constrainedTop = nearestValidPos.y * cellSize + gap;
+        obj.set({
+          left: constrainedLeft,
+          top: constrainedTop
+        });
+      } else {
+        // 如果找不到有效位置，保持在原位置
+        const originalLeft = originalX * cellSize + gap;
+        const originalTop = originalY * cellSize + gap;
+        obj.set({
+          left: originalLeft,
+          top: originalTop
+        });
+      }
+    } else {
+      // 如果有有效路径，仍然约束到边界
+      this.constrainToBounds(obj);
+    }
+  }
+
+  // 更新拖拽视觉反馈（只改变视觉，不影响位置）
+  private updateDragVisualFeedback(obj: Group): void {
+    const pieceInfo = this.getPieceInfo(obj);
+    if (!pieceInfo) return;
+
+    const { piece, originalX, originalY } = pieceInfo;
+    const cellSize = this.fabricGameService.cellSize;
+    const gap = 1;
+
+    // 计算当前鼠标位置对应的网格位置
+    const currentX = Math.round((obj.left! - gap + 1) / cellSize);
+    const currentY = Math.round((obj.top! - gap + 1) / cellSize);
+
+    // 检查当前位置是否有效（可以移动到）
+    const isValidPosition = this.hasValidMovePath(piece, originalX, originalY, currentX, currentY);
+
+    // 只更新视觉反馈，不改变位置
+    if (isValidPosition) {
+      // 有效位置：正常透明度
+      obj.set({ opacity: 1.0 });
+    } else {
+      // 无效位置：半透明提示，但保持拖拽能力
+      obj.set({ opacity: 0.5 });
+    }
+
+    // 重新渲染
+    this.fabricGameService.canvas?.renderAll();
+  }
+
+  // 约束到网格（在释放时使用）
   private constrainToGrid(obj: Group): void {
     const cellSize = this.fabricGameService.cellSize;
     const boardWidth = this.fabricGameService.boardWidth;
@@ -166,22 +265,46 @@ export class FabricInteractionService {
     }
 
     const { piece, originalX, originalY } = pieceInfo;
+    
+    // 公共变量声明
     const cellSize = this.fabricGameService.cellSize;
     const gap = 1;
+    let newX: number;
+    let newY: number;
+    
+    if (this.fabricGameService.smoothDragMode) {
+      // 丝滑拖拽模式：恢复透明度，进行位置验证
+      obj.set({ opacity: 1.0 });
+      
+      // 在释放时进行网格对齐
+      this.snapToGrid(obj);
+      
+      // 计算新位置（基于对齐后的位置）
+      newX = Math.round((obj.left! - gap + 1) / cellSize);
+      newY = Math.round((obj.top! - gap + 1) / cellSize);
 
-    // 计算新位置
-    const newX = Math.round((obj.left! - gap + 1) / cellSize);
-    const newY = Math.round((obj.top! - gap + 1) / cellSize);
+      // 检查释放位置是否有效
+      const hasValidPath = this.hasValidMovePath(piece, originalX, originalY, newX, newY);
+      
+      if (!hasValidPath || (newX === originalX && newY === originalY)) {
+        // 无效位置或未移动，平滑回到原位置
+        this.animateToOriginalPosition(obj);
+        return;
+      }
+    } else {
+      // 精准拖拽模式：位置已经在移动过程中验证过了
+      newX = Math.round((obj.left! - gap + 1) / cellSize);
+      newY = Math.round((obj.top! - gap + 1) / cellSize);
 
-
-    // 检查是否有移动
-    if (newX === originalX && newY === originalY) {
-      // 没有移动，确保棋子保持可交互状态
-      obj.set({
-        selectable: true,
-        evented: true
-      });
-      return;
+      // 检查是否有移动
+      if (newX === originalX && newY === originalY) {
+        // 没有移动，确保棋子保持可交互状态
+        obj.set({
+          selectable: true,
+          evented: true
+        });
+        return;
+      }
     }
 
     // 尝试寻找从起始位置到目标位置的路径
@@ -782,6 +905,58 @@ export class FabricInteractionService {
   }
 
   // 平滑缩放动画
+  // 检查是否有有效的移动路径
+  private hasValidMovePath(piece: Piece, startX: number, startY: number, endX: number, endY: number): boolean {
+    // 如果目标位置就是起始位置，总是有效的
+    if (startX === endX && startY === endY) {
+      return true;
+    }
+
+    // 检查目标位置是否可以放置棋子
+    if (!this.canMoveTo(piece, endX, endY)) {
+      return false;
+    }
+
+    // 检查是否有从起始位置到目标位置的路径
+    const path = this.findPath(piece, startX, startY, endX, endY);
+    return path.length > 0;
+  }
+
+  // 寻找最近的有效位置
+  private findNearestValidPosition(piece: Piece, startX: number, startY: number, targetX: number, targetY: number): {x: number, y: number} | null {
+    const deltaX = targetX - startX;
+    const deltaY = targetY - startY;
+
+    // 如果目标就是起始位置，返回起始位置
+    if (deltaX === 0 && deltaY === 0) {
+      return { x: startX, y: startY };
+    }
+
+    // 尝试只在主要移动方向上找到最远的有效位置
+    if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+      // 主要是水平移动
+      const direction = deltaX > 0 ? 1 : -1;
+      for (let step = Math.abs(deltaX); step > 0; step--) {
+        const testX = startX + (step * direction);
+        if (this.hasValidMovePath(piece, startX, startY, testX, startY)) {
+          return { x: testX, y: startY };
+        }
+      }
+    } else {
+      // 主要是垂直移动
+      const direction = deltaY > 0 ? 1 : -1;
+      for (let step = Math.abs(deltaY); step > 0; step--) {
+        const testY = startY + (step * direction);
+        if (this.hasValidMovePath(piece, startX, startY, startX, testY)) {
+          return { x: startX, y: testY };
+        }
+      }
+    }
+
+    // 如果没找到有效位置，返回起始位置
+    return { x: startX, y: startY };
+  }
+
   // 缓出二次方函数
   private easeOutQuad(t: number): number {
     return 1 - (1 - t) * (1 - t);

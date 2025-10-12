@@ -10,6 +10,8 @@ export class GameManagementService {
   private store = inject(ChinesePuzzleStore);
   private storage = inject(GameStorageService);
 
+  private isInitialized = false;
+
   constructor() {
     // 监听游戏状态变化，自动保存
     this.setupAutoSave();
@@ -22,23 +24,27 @@ export class GameManagementService {
   private async initializeGame() {
     try {
       await this.loadUserSettings();
+      this.isInitialized = true; // 标记初始化完成，允许自动保存
     } catch (error) {
       console.error('初始化游戏失败:', error);
+      this.isInitialized = true; // 即使失败也允许自动保存，避免无法保存设置
     }
   }
 
   private setupAutoSave() {
     // 监听设置变化
     effect(() => {
-      const settings = this.store.settings();
-      if (settings) {
-        this.saveUserSettings();
+      if (this.isInitialized) {  // 只有在初始化完成后才自动保存
+        const settings = this.store.settings();
+        if (settings) {
+          this.saveUserSettings();
+        }
       }
     });
 
     // 监听关卡变化
     effect(() => {
-      if (this.store.dataSetName()) {
+      if (this.isInitialized && this.store.dataSetName()) {  // 只有在初始化完成后才自动保存
         this.saveUserSettings();
       }
     });

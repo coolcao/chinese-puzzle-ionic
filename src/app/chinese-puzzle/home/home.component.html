@@ -233,75 +233,182 @@
           <span class="text-wood-text dark:text-wood-lighter">黑暗模式</span>
           <button
             (click)="toggleDarkMode()"
-            class="relative inline-flex h-6 w-11 items-center rounded-full bg-wood dark:bg-dark-wood"
+            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
+            [ngClass]="{
+              'bg-wood-darker dark:bg-dark-wood-darker': isDarkMode(),
+              'bg-wood-light dark:bg-wood-dark': !isDarkMode()
+            }"
           >
             <span
-              class="inline-block h-4 w-4 transform rounded-full bg-wood-lighter dark:bg-dark-wood-lighter transition"
+              class="h-5 w-5 transform rounded-full transition-transform duration-300 flex items-center justify-center text-[10px] font-bold text-center"
               [ngClass]="{
-                'translate-x-6': isDarkMode(),
-                'translate-x-1': !isDarkMode()
+                'translate-x-6 bg-wood-text dark:bg-wood-lighter': isDarkMode(),
+                'translate-x-1 bg-wood dark:bg-wood-darker': !isDarkMode()
               }"
-            ></span>
+            >
+              <span
+                class="text-xs"
+                [ngClass]="{
+                  'text-wood-light dark:text-dark-wood': isDarkMode(),
+                  'text-wood-lighter dark:text-wood-lighter': !isDarkMode()
+                }"
+                >{{ isDarkMode() ? "开" : "关" }}</span
+              >
+            </span>
           </button>
         </div>
         <div class="flex items-center justify-between">
           <span class="text-wood-text dark:text-wood-lighter">音效</span>
           <button
             (click)="toggleSoundEffects()"
-            class="relative inline-flex h-6 w-11 items-center rounded-full bg-wood dark:bg-dark-wood"
+            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
+            [ngClass]="{
+              'bg-wood-darker dark:bg-dark-wood-darker':
+                settings().soundEffectsEnabled,
+              'bg-wood-light dark:bg-wood-dark': !settings().soundEffectsEnabled
+            }"
           >
             <span
-              class="inline-block h-4 w-4 transform rounded-full bg-wood-lighter dark:bg-dark-wood-lighter transition"
+              class="h-5 w-5 transform rounded-full transition-transform duration-300 flex items-center justify-center text-[10px] font-bold text-center"
               [ngClass]="{
-                'translate-x-6': settings().soundEffectsEnabled,
-                'translate-x-1': !settings().soundEffectsEnabled
+                'translate-x-6 bg-wood-text dark:bg-wood-lighter':
+                  settings().soundEffectsEnabled,
+                'translate-x-1 bg-wood dark:bg-wood-darker':
+                  !settings().soundEffectsEnabled
               }"
-            ></span>
+            >
+              <span
+                class="text-xs"
+                [ngClass]="{
+                  'text-wood-light dark:text-dark-wood':
+                    settings().soundEffectsEnabled,
+                  'text-wood-lighter dark:text-wood-lighter':
+                    !settings().soundEffectsEnabled
+                }"
+                >{{ settings().soundEffectsEnabled ? "开" : "关" }}</span
+              >
+            </span>
           </button>
         </div>
         <div class="flex items-center justify-between">
           <span class="text-wood-text dark:text-wood-lighter">背景音乐</span>
           <button
             (click)="toggleBackgroundMusic()"
-            class="relative inline-flex h-6 w-11 items-center rounded-full bg-wood dark:bg-dark-wood"
+            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
+            [ngClass]="{
+              'bg-wood-darker dark:bg-dark-wood-darker':
+                settings().backgroundMusicEnabled,
+              'bg-wood-light dark:bg-wood-dark': !settings().backgroundMusicEnabled
+            }"
           >
             <span
-              class="inline-block h-4 w-4 transform rounded-full bg-wood-lighter dark:bg-dark-wood-lighter transition"
+              class="h-5 w-5 transform rounded-full transition-transform duration-300 flex items-center justify-center text-[10px] font-bold text-center"
               [ngClass]="{
-                'translate-x-6': settings().backgroundMusicEnabled,
-                'translate-x-1': !settings().backgroundMusicEnabled
+                'translate-x-6 bg-wood-text dark:bg-wood-lighter':
+                  settings().backgroundMusicEnabled,
+                'translate-x-1 bg-wood dark:bg-wood-darker':
+                  !settings().backgroundMusicEnabled
               }"
-            ></span>
+            >
+              <span
+                class="text-xs"
+                [ngClass]="{
+                  'text-wood-light dark:text-dark-wood':
+                    settings().backgroundMusicEnabled,
+                  'text-wood-lighter dark:text-wood-lighter':
+                    !settings().backgroundMusicEnabled
+                }"
+                >{{ settings().backgroundMusicEnabled ? "开" : "关" }}</span
+              >
+            </span>
           </button>
         </div>
         <div class="flex items-center justify-between">
           <span class="text-wood-text dark:text-wood-lighter">震动反馈</span>
           <button
             (click)="toggleVibration()"
-            class="relative inline-flex h-6 w-11 items-center rounded-full bg-wood dark:bg-dark-wood"
+            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
+            [ngClass]="{
+              'bg-wood-darker dark:bg-dark-wood-darker':
+                settings().vibrationEnabled,
+              'bg-wood-light dark:bg-wood-dark': !settings().vibrationEnabled
+            }"
           >
             <span
-              class="inline-block h-4 w-4 transform rounded-full bg-wood-lighter dark:bg-dark-wood-lighter transition"
+              class="h-5 w-5 transform rounded-full transition-transform duration-300 flex items-center justify-center text-[10px] font-bold text-center"
               [ngClass]="{
-                'translate-x-6': settings().vibrationEnabled,
-                'translate-x-1': !settings().vibrationEnabled
+                'translate-x-6 bg-wood-text dark:bg-wood-lighter':
+                  settings().vibrationEnabled,
+                'translate-x-1 bg-wood dark:bg-wood-darker':
+                  !settings().vibrationEnabled
               }"
-            ></span>
+            >
+              <span
+                class="text-xs"
+                [ngClass]="{
+                  'text-wood-light dark:text-dark-wood':
+                    settings().vibrationEnabled,
+                  'text-wood-lighter dark:text-wood-lighter':
+                    !settings().vibrationEnabled
+                }"
+                >{{ settings().vibrationEnabled ? "开" : "关" }}</span
+              >
+            </span>
           </button>
         </div>
         <div class="flex items-center justify-between">
-          <span class="text-wood-text dark:text-wood-lighter">平滑拖拽</span>
+          <div class="flex items-center space-x-2">
+            <span class="text-wood-text dark:text-wood-lighter">丝滑拖拽</span>
+            <!-- 问号图标 -->
+            <div class="relative group inline-block">
+              <button
+                class="w-5 h-5 rounded-full bg-wood-text/20 dark:bg-wood-lighter/20 flex items-center justify-center text-xs text-wood-text dark:text-wood-lighter"
+                type="button"
+              >
+                ?
+              </button>
+              <!-- 工具提示 -->
+              <div
+                class="absolute z-10 left-10 -top-16 mt-2 w-64 p-3 text-sm text-wood-text dark:text-wood-lighter bg-wood-lighter dark:bg-dark-wood-lighter border border-wood-border dark:border-dark-wood-border rounded-lg shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-300 -translate-x-1/2 transform -translate-y-1/2 hidden group-hover:block"
+              >
+                <div class="font-medium mb-1">拖拽模式说明</div>
+                <div class="text-xs mb-1">
+                  <span class="font-bold">开启丝滑拖拽:</span>
+                  棋子平滑跟随鼠标，通过透明度提示移动有效性，拖拽更丝滑
+                </div>
+                <div class="text-xs">
+                  <span class="font-bold">关闭丝滑拖拽:</span>
+                  棋子只能移动到有效位置，提供即时约束反馈，更符合物理拖拽体验
+                </div>
+              </div>
+            </div>
+          </div>
           <button
             (click)="toggleSmoothDrag()"
-            class="relative inline-flex h-6 w-11 items-center rounded-full bg-wood dark:bg-dark-wood"
+            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
+            [ngClass]="{
+              'bg-wood-darker dark:bg-dark-wood-darker':
+                settings().smoothDragMode,
+              'bg-wood-light dark:bg-wood-dark': !settings().smoothDragMode
+            }"
           >
             <span
-              class="inline-block h-4 w-4 transform rounded-full bg-wood-lighter dark:bg-dark-wood-lighter transition"
+              class="h-5 w-5 transform rounded-full transition-transform duration-300 flex items-center justify-center text-[10px] font-bold text-center"
               [ngClass]="{
-                'translate-x-6': settings().smoothDragMode,
-                'translate-x-1': !settings().smoothDragMode
+                'translate-x-6 bg-wood-text dark:bg-wood-lighter': settings().smoothDragMode,
+                'translate-x-1 bg-wood dark:bg-wood-darker': !settings().smoothDragMode
               }"
-            ></span>
+            >
+              <span
+                class="text-xs"
+                [ngClass]="{
+                  'text-wood-light dark:text-dark-wood': settings().smoothDragMode,
+                  'text-wood-lighter dark:text-wood-lighter': !settings().smoothDragMode
+                }"
+              >
+                {{ settings().smoothDragMode ? "开" : "关" }}
+              </span>
+            </span>
           </button>
         </div>
       </div>

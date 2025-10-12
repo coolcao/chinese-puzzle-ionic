@@ -215,8 +215,9 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
     const piecePixelY = piece.y * this.cellSize;
     const piecePixelWidth = piece.width * this.cellSize;
 
-    const btnX = piecePixelX + piecePixelWidth - (btnSize / 2) + 5;
-    const btnY = piecePixelY + (btnSize / 2) - 5;
+    // 向左下移动：减少右边距，增加上边距
+    const btnX = piecePixelX + piecePixelWidth - (btnSize / 2) - 5;
+    const btnY = piecePixelY + (btnSize / 2) + 5;
 
     this.ctx.fillStyle = 'rgba(239, 68, 68, 0.85)';
     this.ctx.beginPath();
@@ -241,8 +242,9 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
     const piecePixelX = piece.x * this.cellSize;
     const piecePixelY = piece.y * this.cellSize;
 
-    const btnX = piecePixelX + (btnSize / 2) - 5;
-    const btnY = piecePixelY + (btnSize / 2) - 5;
+    // 向右下移动：增加左边距和上边距
+    const btnX = piecePixelX + (btnSize / 2) + 5;
+    const btnY = piecePixelY + (btnSize / 2) + 5;
 
     // Draw circle
     this.ctx.fillStyle = 'rgba(59, 130, 246, 0.85)'; // Blue
@@ -287,8 +289,8 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
 
       // Check for rotate button click
       if (clickedPiece.width !== clickedPiece.height) {
-        const rotateBtnX = piecePixelX + (btnSize / 2) - 5;
-        const rotateBtnY = piecePixelY + (btnSize / 2) - 5;
+        const rotateBtnX = piecePixelX + (btnSize / 2) + 5;
+        const rotateBtnY = piecePixelY + (btnSize / 2) + 5;
         const rotateDist = Math.sqrt(Math.pow(pos.x - rotateBtnX, 2) + Math.pow(pos.y - rotateBtnY, 2));
         if (rotateDist <= btnSize / 2) {
           this.rotatePiece(clickedPiece);
@@ -298,8 +300,8 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
 
       // Check for delete button click
       const piecePixelWidth = clickedPiece.width * this.cellSize;
-      const deleteBtnX = piecePixelX + piecePixelWidth - (btnSize / 2) + 5;
-      const deleteBtnY = piecePixelY + (btnSize / 2) - 5;
+      const deleteBtnX = piecePixelX + piecePixelWidth - (btnSize / 2) - 5;
+      const deleteBtnY = piecePixelY + (btnSize / 2) + 5;
       const deleteDist = Math.sqrt(Math.pow(pos.x - deleteBtnX, 2) + Math.pow(pos.y - deleteBtnY, 2));
       if (deleteDist <= btnSize / 2) {
         this.removePiece(clickedPiece);
@@ -327,8 +329,8 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
 
         // Check hover on rotate button
         if (piece.width !== piece.height) {
-          const rotateBtnX = piecePixelX + (btnSize / 2) - 5;
-          const rotateBtnY = piecePixelY + (btnSize / 2) - 5;
+          const rotateBtnX = piecePixelX + (btnSize / 2) + 5;
+          const rotateBtnY = piecePixelY + (btnSize / 2) + 5;
           const rotateDist = Math.sqrt(Math.pow(pos.x - rotateBtnX, 2) + Math.pow(pos.y - rotateBtnY, 2));
           if (rotateDist <= btnSize / 2) {
             onAButton = true;
@@ -338,8 +340,8 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
 
         // Check hover on delete button
         const piecePixelWidth = piece.width * this.cellSize;
-        const deleteBtnX = piecePixelX + piecePixelWidth - (btnSize / 2) + 5;
-        const deleteBtnY = piecePixelY + (btnSize / 2) - 5;
+        const deleteBtnX = piecePixelX + piecePixelWidth - (btnSize / 2) - 5;
+        const deleteBtnY = piecePixelY + (btnSize / 2) + 5;
         const deleteDist = Math.sqrt(Math.pow(pos.x - deleteBtnX, 2) + Math.pow(pos.y - deleteBtnY, 2));
         if (deleteDist <= btnSize / 2) {
           onAButton = true;

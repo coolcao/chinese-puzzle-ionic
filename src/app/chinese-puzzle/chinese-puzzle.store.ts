@@ -2,7 +2,7 @@ import { computed, inject, signal } from "@angular/core";
 import { ToolsService } from "../common/tools.service";
 import { Piece } from "./chinese-puzzle.type";
 
-import { dataSet } from './data-set';
+import { dataSet, levels } from './data-set';
 
 const dataSetNames = Object.keys(dataSet);
 
@@ -25,6 +25,10 @@ export class ChinesePuzzleStore {
   readonly board = this._board.asReadonly();
   readonly boardWidth = this._boardWidth.asReadonly();
   readonly boardHeight = this._boardHeight.asReadonly();
+  readonly currentLevel = computed(() => {
+    const currentDataSetName = this.dataSetName();
+    return levels.find(level => level.id === currentDataSetName) || null;
+  });
 
   finished = computed(() => {
     const caocao = this.pieces().find(p => p.name == '曹操');

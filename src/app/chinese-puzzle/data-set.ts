@@ -15,6 +15,18 @@ export const dataSet: Record<string, Piece[]> = {
   '横刀立马': [
     caocao, guanyu, zhangfei, zhaoyun, machao, huangzhong, zu1, zu2, zu3, zu4
   ],
+  '比翼横空': [
+    { ...caocao, x: 2, y: 0 },
+    { ...guanyu, x: 0, y: 0 },
+    { ...zhangfei, x: 0, y: 1, width: 2, height: 1 },
+    { ...zhaoyun, x: 0, y: 2, width: 2, height: 1 },
+    { ...machao, x: 2, y: 2, width: 2, height: 1 },
+    { ...huangzhong, x: 3, y: 3 },
+    { ...zu1, x: 0, y: 3 },
+    { ...zu2, x: 0, y: 4 },
+    { ...zu3, x: 2, y: 3 },
+    { ...zu4, x: 2, y: 4 }
+  ],
   '将拥曹营': [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 0, y: 1 },
@@ -227,6 +239,7 @@ export const levels: Level[] = [
   { id: '将守角楼', name: '将守角楼', difficulty: '初级', minSteps: 100, pieces: dataSet['将守角楼'] },
   { id: '屯兵东路', name: '屯兵东路', difficulty: '初级', minSteps: 102, pieces: dataSet['屯兵东路'] },
   { id: '凹凸有致', name: '凹凸有致', difficulty: '初级', minSteps: 134, pieces: dataSet['凹凸有致'] },
+  { id: '比翼横空', name: '比翼横空', difficulty: '初级', minSteps: 39, pieces: dataSet['比翼横空'] },
   { id: '简易', name: '简易', difficulty: '初级', pieces: dataSet['简易'] },
 ];
 

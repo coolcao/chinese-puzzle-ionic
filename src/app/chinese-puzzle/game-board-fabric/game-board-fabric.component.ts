@@ -1,14 +1,14 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { timer } from 'rxjs';
+
 import { ChinesePuzzleStore } from '../chinese-puzzle.store';
 import { Piece, Direction } from '../chinese-puzzle.type';
-import { timer } from 'rxjs';
 import { ImageLoadingService } from '../services/image-loading.service';
 import { PieceMovementService } from '../services/piece-movement.service';
-import { Location } from '@angular/common';
 import { FabricGameService } from './services/fabric-game.service';
 import { FabricDrawingService } from './services/fabric-drawing.service';
 import { FabricInteractionService } from './services/fabric-interaction.service';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-game-board-fabric',
@@ -48,6 +48,8 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   showSuccess = false;
   showInstructions = false;
   resourceLoading = false;
+
+  currentLevel = this.store.currentLevel;
 
   // 监听屏幕大小变化
   private resizeObserver: ResizeObserver | null = null;

@@ -441,6 +441,13 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   // 关闭完成Modal
   closeCompletionModal() {
     this.showCompletionModal = false;
+    
+    // 关闭Modal后，确保游戏状态仍然锁定（如果游戏已完成）
+    setTimeout(() => {
+      if (this.finished()) {
+        this.lockBoard();
+      }
+    }, 0);
   }
 
   // 处理Modal遮罩点击

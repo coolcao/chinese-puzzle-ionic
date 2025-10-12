@@ -23,11 +23,37 @@ export class GameManagementService {
 
   private async initializeGame() {
     try {
-      await this.loadUserSettings();
+      await this.loadUserSettings(); // 只加载用户设置
       this.isInitialized = true; // 标记初始化完成，允许自动保存
     } catch (error) {
       console.error('初始化游戏失败:', error);
       this.isInitialized = true; // 即使失败也允许自动保存，避免无法保存设置
+    }
+  }
+
+  // 公开方法：加载用户设置
+  async loadSettings() {
+    await this.loadUserSettings();
+    this.isInitialized = true;
+  }
+
+  // 公开方法：恢复到最近玩过的关卡
+  async restoreLastLevel() {
+    try {
+      const gameHistory = await this.storage.getGameHistory();
+      if (gameHistory.length > 0) {
+        const latestGame = gameHistory[0];
+        if (latestGame) {
+          this.store.changeDataSet(latestGame.levelId);
+          return;
+        }
+      }
+      // 如果没有游戏历史，使用默认关卡
+      this.store.changeDataSet('横刀立马');
+    } catch (error) {
+      console.error('恢复最近关卡失败:', error);
+      // 失败时使用默认关卡
+      this.store.changeDataSet('横刀立马');
     }
   }
 
@@ -55,22 +81,8 @@ export class GameManagementService {
   private async loadUserSettings() {
     try {
       const settings = await this.storage.getSettings();
-
-      // 更新Store状态
+      // 只更新用户设置，不做任何关卡切换操作
       this.store.updateSettings(settings);
-
-      // 如果有游戏历史，尝试恢复到最近玩过的关卡
-      const gameHistory = await this.storage.getGameHistory();
-      if (gameHistory.length > 0) {
-        // 获取最近一次游戏的关卡
-        const latestGame = gameHistory[0]; // 按时间倒序排列
-        if (latestGame) {
-          this.store.changeDataSet(latestGame.levelId);
-        }
-      } else {
-        // 如果没有游戏历史，使用默认关卡
-        this.store.changeDataSet('横刀立马');
-      }
     } catch (error) {
       console.error('加载用户设置失败:', error);
     }

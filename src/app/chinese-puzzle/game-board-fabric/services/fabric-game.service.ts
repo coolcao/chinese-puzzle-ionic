@@ -1,7 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Canvas, Group, Pattern } from 'fabric';
-import { Piece } from '../../chinese-puzzle.type';
-import { ImageLoadingService } from '../../services/image-loading.service';
+import { Canvas, Group } from 'fabric';
 
 @Injectable({
   providedIn: 'root'
@@ -13,18 +11,13 @@ export class FabricGameService {
   boardWidth = 4;
   boardHeight = 5;
 
-  // 拖拽体验模式设置
-  // true: 丝滑拖拽模式 - 棋子平滑跟随鼠标，通过透明度提示移动有效性
-  // false: 精准拖拽模式 - 棋子只能移动到有效位置，提供即时约束反馈
-  smoothDragMode = false; // 默认使用丝滑拖拽模式
-
   // 存储棋子对象的映射
   private pieceObjects: Map<number, Group> = new Map();
 
   // 信号用于状态通知
   cellSizeSignal = signal(0);
 
-  constructor(private imageLoadingService: ImageLoadingService) {}
+  constructor() { }
 
   // 初始化画布
   initCanvas(canvasElement: HTMLCanvasElement): void {
@@ -99,7 +92,7 @@ export class FabricGameService {
         width: canvasWidth,
         height: canvasHeight
       });
-      
+
       // 更新Canvas元素的实际尺寸
       this.canvas.setWidth(canvasWidth);
       this.canvas.setHeight(canvasHeight);

@@ -30,6 +30,11 @@ export class ChinesePuzzleStore {
   private _pieces = signal(this.tools.deepClone(dataSet[this._dataSetName()]));
   private _board = signal<string[][]>([]);
 
+  constructor() {
+    // 在Store初始化时就创建初始的棋盘状态
+    this.initBoard();
+  }
+
 
   readonly isDarkMode = this._isDarkMode.asReadonly();
   readonly settings = this._settings.asReadonly();
@@ -116,6 +121,7 @@ export class ChinesePuzzleStore {
 
   changeDataSet(dataSetName: string) {
     const levelPieces = dataSet[dataSetName];
+    
     if (levelPieces) {
       const processedPieces = this.tools.deepClone(levelPieces).map((p: Piece) => {
         // Dynamically set the image path for rectangular pieces based on their dimensions.

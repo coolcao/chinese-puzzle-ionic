@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 
@@ -85,14 +85,29 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       }
     });
 
+    // 监听游戏完成状态，锁定棋盘
+    effect(() => {
+      if (this.finished()) {
+        this.lockBoard();
+      } else {
+        this.unlockBoard();
+      }
+    });
+
+    // 使用 effect 监听棋盘状态变化，确保回调始终获取最新状态
+    effect(() => {
+      const currentBoard = this.boardState();
+      // 每当棋盘状态发生变化时，重新设置回调
+      if (currentBoard && currentBoard.length > 0) {
+        this.fabricInteractionService.setBoardStateCallback(() => {
+          return this.boardState(); // 总是返回最新的棋盘状态
+        });
+      }
+    });
+
     // 设置移动回调
     this.fabricInteractionService.setMoveCallback((piece: Piece, direction: Direction, steps: number) => {
       this.handlePieceMove(piece, direction, steps);
-    });
-
-    // 设置棋盘状态回调
-    this.fabricInteractionService.setBoardStateCallback(() => {
-      return this.boardState();
     });
   }
 
@@ -100,11 +115,16 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     // 从查询参数中获取关卡ID
     this.route.queryParams.subscribe(params => {
       const levelId = params['level'];
+      
       if (levelId) {
-        this.gameManagement.changeLevel(levelId);
+        // URL中指定了关卡，先加载设置，然后手动切换到指定关卡
+        const decodedLevelId = decodeURIComponent(levelId);
+        this.gameManagement.loadSettings().then(() => {
+          this.gameManagement.changeLevel(decodedLevelId);
+        });
       } else {
-        // 如果没有指定关卡，默认加载"横刀立马"
-        this.gameManagement.changeLevel('横刀立马');
+        // 如果没有指定关卡，恢复最近关卡
+        this.gameManagement.restoreLastLevel();
       }
 
       // 在数据集更改后重新加载图片
@@ -121,14 +141,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       this.initCanvas();
     }, 0);
 
-    // 监听游戏完成状态，锁定棋盘
-    effect(() => {
-      if (this.finished()) {
-        this.lockBoard();
-      } else {
-        this.unlockBoard();
-      }
-    });
   }
 
   ngOnDestroy(): void {

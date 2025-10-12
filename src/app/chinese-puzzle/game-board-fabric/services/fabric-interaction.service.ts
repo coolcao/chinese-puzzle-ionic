@@ -1,13 +1,18 @@
-import { Injectable } from '@angular/core';
-import { Canvas, Group } from 'fabric';
+import { computed, inject, Injectable } from '@angular/core';
+import { Group } from 'fabric';
 import { Piece, Direction } from '../../chinese-puzzle.type';
 import { FabricGameService } from './fabric-game.service';
+import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class FabricInteractionService {
+
+  private readonly fabricGameService = inject(FabricGameService);
+  private readonly store = inject(ChinesePuzzleStore);
+
   private moveCallback?: (piece: Piece, direction: Direction, steps: number) => void;
   private boardStateCallback?: () => string[][];
 
@@ -16,7 +21,14 @@ export class FabricInteractionService {
   private pathMoves: { direction: Direction, steps: number }[] = [];
   private currentPiece?: Piece;
 
-  constructor(private fabricGameService: FabricGameService) {}
+  // 拖拽体验模式设置
+  // true: 丝滑拖拽模式 - 棋子平滑跟随鼠标，通过透明度提示移动有效性
+  // false: 精准拖拽模式 - 棋子只能移动到有效位置，提供即时约束反馈
+  smoothDragMode = computed(() => {
+    return Boolean(this.store.settings().smoothDragMode);
+  });
+
+  constructor() { }
 
   // 设置移动回调
   setMoveCallback(callback: (piece: Piece, direction: Direction, steps: number) => void): void {
@@ -57,7 +69,9 @@ export class FabricInteractionService {
       const obj = e.target as Group;
       if (!obj) return;
 
-      if (this.fabricGameService.smoothDragMode) {
+      console.log(this.smoothDragMode());
+
+      if (this.smoothDragMode()) {
         // 丝滑拖拽模式：只约束边界，保持拖拽连续性
         this.constrainToBounds(obj);
         this.updateDragVisualFeedback(obj);
@@ -65,7 +79,7 @@ export class FabricInteractionService {
         // 精准拖拽模式：即时约束到有效位置
         this.constrainToGrid(obj);
         this.snapToGrid(obj);
-        
+
         // 检查碰撞，如果有碰撞则阻止移动
         if (!this.isValidPosition(obj)) {
           this.revertToLastValidPosition(obj);
@@ -265,27 +279,27 @@ export class FabricInteractionService {
     }
 
     const { piece, originalX, originalY } = pieceInfo;
-    
+
     // 公共变量声明
     const cellSize = this.fabricGameService.cellSize;
     const gap = 1;
     let newX: number;
     let newY: number;
-    
-    if (this.fabricGameService.smoothDragMode) {
+
+    if (this.smoothDragMode()) {
       // 丝滑拖拽模式：恢复透明度，进行位置验证
       obj.set({ opacity: 1.0 });
-      
+
       // 在释放时进行网格对齐
       this.snapToGrid(obj);
-      
+
       // 计算新位置（基于对齐后的位置）
       newX = Math.round((obj.left! - gap + 1) / cellSize);
       newY = Math.round((obj.top! - gap + 1) / cellSize);
 
       // 检查释放位置是否有效
       const hasValidPath = this.hasValidMovePath(piece, originalX, originalY, newX, newY);
-      
+
       if (!hasValidPath || (newX === originalX && newY === originalY)) {
         // 无效位置或未移动，平滑回到原位置
         this.animateToOriginalPosition(obj);
@@ -528,8 +542,8 @@ export class FabricInteractionService {
 
     // 检查边界
     if (newX < 0 || newY < 0 ||
-        newX + piece.width > boardWidth ||
-        newY + piece.height > boardHeight) {
+      newX + piece.width > boardWidth ||
+      newY + piece.height > boardHeight) {
       return false;
     }
 
@@ -540,7 +554,7 @@ export class FabricInteractionService {
         const cellX = newX + j;
 
         if (boardState[cellY][cellX] !== '' &&
-            boardState[cellY][cellX] !== piece.name) {
+          boardState[cellY][cellX] !== piece.name) {
           return false;
         }
       }
@@ -734,8 +748,8 @@ export class FabricInteractionService {
 
       // 检查边界
       if (nextX < 0 || nextY < 0 ||
-          nextX + piece.width > boardWidth ||
-          nextY + piece.height > boardHeight) {
+        nextX + piece.width > boardWidth ||
+        nextY + piece.height > boardHeight) {
         return false;
       }
 
@@ -746,7 +760,7 @@ export class FabricInteractionService {
           const cellX = nextX + j;
 
           if (boardState[cellY][cellX] !== '' &&
-              boardState[cellY][cellX] !== piece.name) {
+            boardState[cellY][cellX] !== piece.name) {
             return false;
           }
         }
@@ -842,7 +856,7 @@ export class FabricInteractionService {
       // 如果没有记录的有效位置，恢复到原始位置
       const originalLeft = (obj as any).originalLeft;
       const originalTop = (obj as any).originalTop;
-      
+
       if (originalLeft !== undefined && originalTop !== undefined) {
         obj.set({
           left: originalLeft,
@@ -877,7 +891,7 @@ export class FabricInteractionService {
     if (deltaX !== 0) {
       const direction = deltaX > 0 ? 1 : -1;
       const steps = Math.abs(deltaX);
-      
+
       // 逐步检查每一步是否可以移动
       for (let step = 1; step <= steps; step++) {
         const nextX = startX + (step * direction);
@@ -891,7 +905,7 @@ export class FabricInteractionService {
     if (deltaY !== 0) {
       const direction = deltaY > 0 ? 1 : -1;
       const steps = Math.abs(deltaY);
-      
+
       // 逐步检查每一步是否可以移动
       for (let step = 1; step <= steps; step++) {
         const nextY = startY + (step * direction);
@@ -923,7 +937,7 @@ export class FabricInteractionService {
   }
 
   // 寻找最近的有效位置
-  private findNearestValidPosition(piece: Piece, startX: number, startY: number, targetX: number, targetY: number): {x: number, y: number} | null {
+  private findNearestValidPosition(piece: Piece, startX: number, startY: number, targetX: number, targetY: number): { x: number, y: number } | null {
     const deltaX = targetX - startX;
     const deltaY = targetY - startY;
 

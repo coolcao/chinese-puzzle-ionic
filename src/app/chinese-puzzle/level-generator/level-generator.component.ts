@@ -11,67 +11,6 @@ interface EditorPiece extends Piece {
   isDragging?: boolean;
 }
 
-// A* 算法用的最小堆优先队列
-class PriorityQueue<T> {
-  private heap: { priority: number; value: T }[] = [];
-
-  insert(value: T, priority: number): void {
-    this.heap.push({ value, priority });
-    this.bubbleUp(this.heap.length - 1);
-  }
-
-  extractMin(): T | null {
-    if (this.isEmpty()) {
-      return null;
-    }
-    this.swap(0, this.heap.length - 1);
-    const min = this.heap.pop();
-    if (!this.isEmpty()) {
-      this.sinkDown(0);
-    }
-    return min!.value;
-  }
-
-  isEmpty(): boolean {
-    return this.heap.length === 0;
-  }
-
-  private bubbleUp(index: number): void {
-    while (index > 0) {
-      const parentIndex = Math.floor((index - 1) / 2);
-      if (this.heap[parentIndex].priority > this.heap[index].priority) {
-        this.swap(parentIndex, index);
-        index = parentIndex;
-      } else {
-        break;
-      }
-    }
-  }
-
-  private sinkDown(index: number): void {
-    const leftChildIndex = 2 * index + 1;
-    const rightChildIndex = 2 * index + 2;
-    let smallest = index;
-
-    if (leftChildIndex < this.heap.length && this.heap[leftChildIndex].priority < this.heap[smallest].priority) {
-      smallest = leftChildIndex;
-    }
-    if (rightChildIndex < this.heap.length && this.heap[rightChildIndex].priority < this.heap[smallest].priority) {
-      smallest = rightChildIndex;
-    }
-
-    if (smallest !== index) {
-      this.swap(index, smallest);
-      this.sinkDown(smallest);
-    }
-  }
-
-  private swap(i: number, j: number): void {
-    [this.heap[i], this.heap[j]] = [this.heap[j], this.heap[i]];
-  }
-}
-
-
 @Component({
   selector: 'app-level-generator',
   standalone: false,
@@ -95,9 +34,18 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
   levelName = '';
   levelDifficulty = '初级';
   message = '';
+  messageType: 'info' | 'success' | 'error' = 'info'; // 提示类型
   pieces: EditorPiece[] = [];
   isAnimating = false;
-  solutionPath: { state: EditorPiece[], cost: number }[] | null = null;
+  solutionPath: EditorPiece[][] | null = null;
+  
+  // 验证时间统计
+  validationTime = 0;
+  
+  // 动画控制
+  animationInterval: any = null;
+  animationPaused = false;
+  currentAnimationStep = 0;
 
   // 棋子模板
   allPieceTemplates = [
@@ -142,6 +90,8 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.darkModeMediaQuery && this.darkModeListener) {
       this.darkModeMediaQuery.removeEventListener('change', this.darkModeListener);
     }
+    // 清理动画定时器
+    this.stopAnimation();
   }
 
   private initCanvas() {
@@ -458,7 +408,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
       this.invalidateSolution();
       this.draw();
     } else {
-      this.showMessage('无法旋转，空间不足或与其它棋子冲突');
+      this.showMessage('无法旋转，空间不足或与其它棋子冲突', true, 'error');
     }
   }
   // #endregion
@@ -529,7 +479,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
       }
       this.invalidateSolution();
     } else {
-      this.showMessage('目标位置已被占据或超出边界');
+      this.showMessage('目标位置已被占据或超出边界', true, 'error');
     }
 
     this.draggedFromTemplate = null;
@@ -598,8 +548,9 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
     this.draw();
   }
 
-  private showMessage(msg: string, autoClear = true) {
+  private showMessage(msg: string, autoClear = true, type: 'info' | 'success' | 'error' = 'info') {
     this.message = msg;
+    this.messageType = type;
     if (autoClear) {
       setTimeout(() => {
         if (this.message === msg) {
@@ -630,34 +581,34 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
   async validateData(): Promise<boolean> {
     this.invalidateSolution();
     if (this.isAnimating) return false;
-    if (!this.levelName.trim()) {
-      this.showMessage('请输入关卡名称');
-      return false;
-    }
+    
     if (this.pieces.length === 0) {
-      this.showMessage('请至少添加一个棋子');
+      this.showMessage('请至少添加一个棋子', true, 'error');
       return false;
     }
     const caocao = this.pieces.find(p => p.name === '曹操');
     if (!caocao) {
-      this.showMessage('必须包含曹操棋子');
+      this.showMessage('必须包含曹操棋子', true, 'error');
       return false;
     }
 
-    this.showMessage('正在使用 A* 算法检查解法, 请稍候...', false);
+    this.showMessage('正在检查解法, 请稍候...', false, 'info');
 
+    // 开始计时
     const startTime = performance.now();
     const solutionPath = await this.isSolvable();
     const endTime = performance.now();
-    const durationInSeconds = ((endTime - startTime) / 1000).toFixed(2);
+    
+    // 计算验证耗时
+    this.validationTime = Math.round(endTime - startTime);
 
     if (solutionPath) {
       this.solutionPath = solutionPath;
-      const steps = solutionPath.length > 0 ? solutionPath[solutionPath.length - 1].cost : 0;
-      this.showMessage(`数据合法, 关卡有解! 最佳步数: ${steps} (用时: ${durationInSeconds}秒)`, false);
+      const steps = solutionPath.length - 1;
+      this.showMessage(`数据合法, 关卡有解! 最佳步数: ${steps}, 验证耗时: ${this.validationTime}ms`, false, 'success');
       return true;
     } else {
-      this.showMessage(`数据合法, 但当前关卡无解! (用时: ${durationInSeconds}秒)`, false);
+      this.showMessage(`数据合法, 但当前关卡无解! 验证耗时: ${this.validationTime}ms`, true, 'error');
       return false;
     }
   }
@@ -667,124 +618,137 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
 
     const path = this.solutionPath;
     this.isAnimating = true;
+    this.animationPaused = false;
+    this.currentAnimationStep = 0;
     this.invalidateSolution();
 
-    let step = 0;
-    const interval = setInterval(() => {
-      if (step < path.length) {
-        this.pieces = path[step].state;
+    this.showMessage('🎬 正在演示解法步骤...', false, 'info');
+
+    this.animationInterval = setInterval(() => {
+      if (!this.animationPaused && this.currentAnimationStep < path.length) {
+        this.pieces = path[this.currentAnimationStep];
         this.draw();
-        step++;
-      } else {
-        clearInterval(interval);
-        this.isAnimating = false;
-        this.draw();
+        this.currentAnimationStep++;
+        
+        // 更新进度提示
+        if (this.currentAnimationStep < path.length) {
+          const progress = this.currentAnimationStep;
+          const total = path.length - 1;
+          this.showMessage(`🎬 演示步骤 ${progress}/${total} - 可暂停/恢复动画`, false, 'info');
+        }
+      } else if (this.currentAnimationStep >= path.length) {
+        this.stopAnimation();
+        this.showMessage('✅ 解法演示完成!', true, 'success');
       }
     }, 1000);
   }
 
-  private reconstructPath(cameFrom: Map<string, { state: EditorPiece[], cost: number }>, current: { state: EditorPiece[], cost: number }): { state: EditorPiece[], cost: number }[] {
-    const totalPath = [current];
-    let currentHash = this.getBoardStateHash(current.state);
-    while (cameFrom.has(currentHash)) {
-      const previous = cameFrom.get(currentHash)!;
-      totalPath.unshift(previous);
-      currentHash = this.getBoardStateHash(previous.state);
+  pauseAnimation() {
+    if (this.isAnimating) {
+      this.animationPaused = !this.animationPaused;
+      if (this.animationPaused) {
+        this.showMessage('⏸️ 动画已暂停 - 点击恢复继续演示', false, 'info');
+      } else {
+        const progress = this.currentAnimationStep;
+        const total = this.solutionPath ? this.solutionPath.length - 1 : 0;
+        this.showMessage(`▶️ 动画已恢复 - 步骤 ${progress}/${total}`, false, 'info');
+      }
     }
-    return totalPath;
   }
 
-  private async isSolvable(): Promise<{ state: EditorPiece[], cost: number }[] | null> {
+  stopAnimation() {
+    if (this.animationInterval) {
+      clearInterval(this.animationInterval);
+      this.animationInterval = null;
+    }
+    this.isAnimating = false;
+    this.animationPaused = false;
+    this.currentAnimationStep = 0;
+    this.draw();
+  }
+
+  private async isSolvable(): Promise<EditorPiece[][] | null> {
     return new Promise(resolve => {
       setTimeout(() => {
         const initialState = this.pieces;
-        const goalX = 1, goalY = 3;
+        const goalPieceName = '曹操';
+        const goalX = 1;
+        const goalY = 3;
 
-        const heuristic = (state: EditorPiece[]): number => {
-          const caocao = state.find(p => p.name === '曹操');
-          if (!caocao) return Infinity;
-          return Math.abs(caocao.x - goalX) + Math.abs(caocao.y - goalY);
-        };
+        const queue: EditorPiece[][] = [initialState];
+        const predecessors = new Map<string, EditorPiece[][]>();
+        predecessors.set(this.getBoardStateHash(initialState), [initialState]);
 
-        const openSet = new PriorityQueue<{ state: EditorPiece[], cost: number }>();
-        const initialNode = { state: initialState, cost: 0 };
-        openSet.insert(initialNode, heuristic(initialState));
+        let path: EditorPiece[][] | null = null;
 
-        const cameFrom = new Map<string, { state: EditorPiece[], cost: number }>();
-        const gScore = new Map<string, number>();
-        gScore.set(this.getBoardStateHash(initialState), 0);
+        while (queue.length > 0) {
+          const currentState = queue.shift()!;
+          const currentPath = predecessors.get(this.getBoardStateHash(currentState))!;
 
-        while (!openSet.isEmpty()) {
-          const currentNode = openSet.extractMin()!;
-          const currentState = currentNode.state;
-          const currentStateHash = this.getBoardStateHash(currentState);
-
-          const caocao = currentState.find(p => p.name === '曹操');
+          const caocao = currentState.find(p => p.name === goalPieceName);
           if (caocao && caocao.x === goalX && caocao.y === goalY) {
-            resolve(this.reconstructPath(cameFrom, currentNode));
-            return;
+            path = currentPath;
+            break;
           }
 
-          const successors = this.getSuccessorsWithCost(currentState);
-          for (const { state: successor, cost: moveCost } of successors) {
-            const successorHash = this.getBoardStateHash(successor);
-            const tentativeGScore = (gScore.get(currentStateHash) ?? Infinity) + moveCost;
-
-            if (tentativeGScore < (gScore.get(successorHash) ?? Infinity)) {
-              const newNode = { state: successor, cost: tentativeGScore };
-              cameFrom.set(successorHash, currentNode);
-              gScore.set(successorHash, tentativeGScore);
-              const fScore = tentativeGScore + heuristic(successor);
-              openSet.insert(newNode, fScore);
+          const successors = this.getSuccessors(currentState);
+          for (const successor of successors) {
+            const hash = this.getBoardStateHash(successor);
+            if (!predecessors.has(hash)) {
+              const newPath = [...currentPath, successor];
+              predecessors.set(hash, newPath);
+              queue.push(successor);
             }
           }
         }
-
-        resolve(null); // No solution found
+        resolve(path);
       }, 0);
     });
   }
 
   private getBoardStateHash(pieces: EditorPiece[]): string {
-    // Sort pieces by ID to ensure hash is consistent
-    const sortedPieces = [...pieces].sort((a, b) => a.templateId - b.templateId);
-    return sortedPieces.map(p => `${p.templateId},${p.x},${p.y},${p.width},${p.height}`).join('|');
+    const grid = Array(this.boardHeight).fill(null).map(() => Array(this.boardWidth).fill(0));
+    pieces.forEach(p => {
+      for (let y = p.y; y < p.y + p.height; y++) {
+        for (let x = p.x; x < p.x + p.width; x++) {
+          grid[y][x] = p.templateId;
+        }
+      }
+    });
+    return grid.flat().join(',');
   }
 
-  private getSuccessorsWithCost(pieces: EditorPiece[]): { state: EditorPiece[], cost: number }[] {
-    const successors: { state: EditorPiece[], cost: number }[] = [];
-    const directions = [{ dx: 0, dy: 1 }, { dx: 0, dy: -1 }, { dx: 1, dy: 0 }, { dx: -1, dy: 0 }];
+  private getSuccessors(pieces: EditorPiece[]): EditorPiece[][] {
+    const successors: EditorPiece[][] = [];
+    const moves = [{ dx: 0, dy: 1 }, { dx: 0, dy: -1 }, { dx: 1, dy: 0 }, { dx: -1, dy: 0 }];
 
-    for (const piece of pieces) {
-      for (const dir of directions) {
-        for (let distance = 1; ; distance++) {
-          const newX = piece.x + dir.dx * distance;
-          const newY = piece.y + dir.dy * distance;
+    for (let i = 0; i < pieces.length; i++) {
+      const piece = pieces[i];
+      for (const move of moves) {
+        const newX = piece.x + move.dx;
+        const newY = piece.y + move.dy;
 
-          if (newX < 0 || newY < 0 || newX + piece.width > this.boardWidth || newY + piece.height > this.boardHeight) {
-            break; // Out of bounds, stop sliding in this direction
+        const newPiece = { ...piece, x: newX, y: newY };
+
+        if (newX < 0 || newY < 0 || newX + piece.width > this.boardWidth || newY + piece.height > this.boardHeight) {
+          continue;
+        }
+
+        let isBlocked = false;
+        const otherPieces = pieces.filter(p => p.id !== piece.id);
+        for (const other of otherPieces) {
+          if (newPiece.x < other.x + other.width &&
+            newPiece.x + newPiece.width > other.x &&
+            newPiece.y < other.y + other.height &&
+            newPiece.y + newPiece.height > other.y) {
+            isBlocked = true;
+            break;
           }
+        }
 
-          const newPiece = { ...piece, x: newX, y: newY };
-
-          let isBlocked = false;
-          const otherPieces = pieces.filter(p => p.id !== piece.id);
-          for (const other of otherPieces) {
-            if (newPiece.x < other.x + other.width &&
-              newPiece.x + newPiece.width > other.x &&
-              newPiece.y < other.y + other.height &&
-              newPiece.y + newPiece.height > other.y) {
-              isBlocked = true;
-              break;
-            }
-          }
-
-          if (isBlocked) {
-            break; // Collision, stop sliding in this direction
-          } else {
-            const newState = pieces.map(p => (p.id === piece.id ? newPiece : p));
-            successors.push({ state: newState, cost: distance });
-          }
+        if (!isBlocked) {
+          const newState = pieces.map(p => p.id === piece.id ? newPiece : p);
+          successors.push(newState);
         }
       }
     }
@@ -793,7 +757,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
 
   private generateDataSetString(): string | null {
     if (!this.solutionPath) {
-      this.showMessage('请先验证关卡以获取最佳步数!', false);
+      this.showMessage('请先验证关卡以获取最佳步数!', false, 'error');
       return null;
     }
 
@@ -824,40 +788,29 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
 
     const dataSetString = `export const dataSet: Record<string, Piece[]> = {\n  '${this.levelName}': [\n${dataSetPieces}\n  ]\n};`;
 
-    const minSteps = this.solutionPath[this.solutionPath.length - 1].cost;
+    const minSteps = this.solutionPath.length - 1;
     const levelsString = `export const levels: Level[] = [\n  { id: '${this.levelName}', name: '${this.levelName}', difficulty: '${this.levelDifficulty}', minSteps: ${minSteps}, pieces: dataSet['${this.levelName}'] },\n];`;
 
     return `${dataSetString}\n\n${levelsString}`;
   }
 
-  async generateAndDownload() {
-    const dataSet = this.generateDataSetString();
-    if (dataSet) {
-      this.downloadFile(dataSet, `${this.levelName}-data-set.ts`);
-    }
-  }
 
   async generateAndCopy() {
+    if (!this.levelName.trim()) {
+      this.showMessage('请输入关卡名称', true, 'error');
+      return;
+    }
+    
     const dataSet = this.generateDataSetString();
     if (dataSet) {
       navigator.clipboard.writeText(dataSet).then(() => {
-        this.showMessage('已复制到剪贴板!');
+        this.showMessage('已复制到剪贴板!', true, 'success');
       }).catch(err => {
-        this.showMessage('复制失败, 请检查浏览器权限.');
+        this.showMessage('复制失败, 请检查浏览器权限.', true, 'error');
         console.error('Could not copy text: ', err);
       });
     }
   }
 
-  private downloadFile(content: string, filename: string) {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(a.href);
-  }
   // #endregion
 }

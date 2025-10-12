@@ -110,38 +110,73 @@
                   <button 
                     (click)="validateData()"
                     [disabled]="isAnimating"
-                    class="px-6 py-3 bg-wood hover:bg-wood-hover dark:bg-dark-wood dark:hover:bg-dark-wood-hover text-wood-text dark:text-wood-lighter font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-wood-border dark:border-dark-wood-border disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="flex items-center gap-2 px-6 py-3 bg-wood hover:bg-wood-hover dark:bg-dark-wood dark:hover:bg-dark-wood-hover text-wood-text dark:text-wood-lighter font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-wood-border dark:border-dark-wood-border disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                     验证数据
                   </button>
                   <button 
                     *ngIf="solutionPath && !isAnimating"
                     (click)="animateSolution()"
-                    class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-blue-800">
+                    class="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-blue-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                     演示解法
                   </button>
                   <button 
                     (click)="generateAndCopy()"
                     [disabled]="isAnimating"
-                    class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-green-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-green-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
                     生成并复制
-                  </button>
-                  <button 
-                    (click)="generateAndDownload()"
-                    [disabled]="isAnimating"
-                    class="px-6 py-3 bg-wood hover:bg-wood-hover dark:bg-dark-wood dark:hover:bg-dark-wood-hover text-wood-text dark:text-wood-lighter font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-wood-border dark:border-dark-wood-border disabled:opacity-50 disabled:cursor-not-allowed">
-                    生成并下载
                   </button>
                   <button 
                     (click)="resetBoard()"
                     [disabled]="isAnimating"
-                    class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-red-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg transform transition duration-300 active:scale-95 border-2 border-red-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
                     重置棋盘
                   </button>
                 </div>
                 
                 <!-- 提示信息 -->
-                <div *ngIf="message" class="mt-4 px-4 py-2 rounded-lg bg-wood-lighter dark:bg-dark-wood-light border border-wood-border dark:border-dark-wood-border text-wood-text dark:text-wood-lighter">
+                <div *ngIf="message" class="mt-4 px-4 py-2 rounded-lg border transition-colors duration-300"
+                     [ngClass]="{
+                       'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200': messageType === 'info',
+                       'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700 text-green-800 dark:text-green-200': messageType === 'success',
+                       'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700 text-red-800 dark:text-red-200': messageType === 'error'
+                     }">
                   {{ message }}
+                </div>
+
+                <!-- 动画控制按钮（只在动画进行时显示，放在提示信息下方） -->
+                <div *ngIf="isAnimating" class="mt-4 flex gap-3 justify-center">
+                  <button 
+                    (click)="pauseAnimation()"
+                    class="flex items-center gap-2 px-5 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg shadow-md transform transition duration-300 active:scale-95 border border-orange-600">
+                    <svg *ngIf="!animationPaused" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <svg *ngIf="animationPaused" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ animationPaused ? '恢复' : '暂停' }}
+                  </button>
+                  <button 
+                    (click)="stopAnimation()"
+                    class="flex items-center gap-2 px-5 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg shadow-md transform transition duration-300 active:scale-95 border border-red-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10h6v4H9z" />
+                    </svg>
+                    停止
+                  </button>
                 </div>
               </div>
             </div>

@@ -48,6 +48,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   showSuccess = false;
   showInstructions = false;
   resourceLoading = false;
+  showCompletionModal = false;
 
   currentLevel = this.store.currentLevel;
 
@@ -60,6 +61,9 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   constructor() {
     effect(() => {
       if (this.finished()) {
+        // 显示完成Modal
+        this.showCompletionModal = true;
+        // 同时显示撒花效果
         this.showSuccess = true;
         timer(2500).subscribe(() => {
           this.showSuccess = false;
@@ -111,6 +115,15 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     setTimeout(() => {
       this.initCanvas();
     }, 0);
+    
+    // 监听游戏完成状态，锁定棋盘
+    effect(() => {
+      if (this.finished()) {
+        this.lockBoard();
+      } else {
+        this.unlockBoard();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -291,6 +304,11 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
     // 渲染画布
     this.fabricGameService.renderCanvas();
+    
+    // 绘制完成后，根据游戏状态应用锁定
+    if (this.finished()) {
+      this.lockBoard();
+    }
   }
 
 
@@ -370,5 +388,109 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
         this.drawBoard();
       });
     });
+  }
+
+  // 锁定棋盘，禁止操作
+  private lockBoard() {
+    if (this.fabricGameService.canvas) {
+      this.fabricGameService.canvas.selection = false;
+      this.fabricGameService.canvas.forEachObject((obj) => {
+        obj.selectable = false;
+        obj.evented = false;
+      });
+      this.fabricGameService.canvas.renderAll();
+    }
+  }
+
+  // 解锁棋盘，允许操作
+  private unlockBoard() {
+    if (this.fabricGameService.canvas) {
+      this.fabricGameService.canvas.selection = false; // 保持不允许多选
+      this.fabricGameService.canvas.forEachObject((obj) => {
+        obj.selectable = true;
+        obj.evented = true;
+      });
+      this.fabricGameService.canvas.renderAll();
+    }
+  }
+
+  // 前往下一关
+  goToNextLevel() {
+    const currentNames = this.dataSetNames();
+    const currentName = this.dataSetName();
+    const currentIndex = currentNames.indexOf(currentName);
+    
+    if (currentIndex < currentNames.length - 1) {
+      const nextLevel = currentNames[currentIndex + 1];
+      this.router.navigate(['game-board-fabric'], { 
+        queryParams: { level: nextLevel },
+        replaceUrl: true 
+      });
+    }
+  }
+
+  // 检查是否有下一关
+  hasNextLevel(): boolean {
+    const currentNames = this.dataSetNames();
+    const currentName = this.dataSetName();
+    const currentIndex = currentNames.indexOf(currentName);
+    
+    return currentIndex < currentNames.length - 1;
+  }
+
+  // 关闭完成Modal
+  closeCompletionModal() {
+    this.showCompletionModal = false;
+  }
+
+  // 处理Modal遮罩点击
+  onModalBackdropClick(event: Event) {
+    // 点击遮罩时关闭Modal
+    this.closeCompletionModal();
+  }
+
+  // 获取完成评价
+  getCompletionRating(): string {
+    const steps = this.steps;
+    const difficulty = this.currentLevel()?.difficulty || '中级';
+    
+    // 根据步数和难度给出评价
+    let threshold: number;
+    switch (difficulty) {
+      case '初级':
+        threshold = 100;
+        break;
+      case '中级':
+        threshold = 150;
+        break;
+      case '高级':
+        threshold = 200;
+        break;
+      case '专家':
+        threshold = 250;
+        break;
+      case '大师':
+        threshold = 300;
+        break;
+      default:
+        threshold = 150;
+    }
+
+    if (steps <= threshold * 0.7) {
+      return '完美通关！🏆';
+    } else if (steps <= threshold) {
+      return '表现优秀！⭐';
+    } else if (steps <= threshold * 1.3) {
+      return '还不错！👍';
+    } else {
+      return '继续努力！💪';
+    }
+  }
+
+  // 监听键盘事件
+  onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && this.showCompletionModal) {
+      this.closeCompletionModal();
+    }
   }
 }

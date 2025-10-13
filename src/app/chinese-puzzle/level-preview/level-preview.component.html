@@ -1,15 +1,18 @@
-<div 
-  class="bg-wood-lighter dark:bg-dark-wood rounded-lg border border-wood-border dark:border-dark-wood-border p-2 flex items-center justify-center"
+<div
+  class="flex items-center justify-center rounded-lg border border-wood-border bg-wood-lighter p-2 dark:border-dark-wood-border dark:bg-dark-wood"
 >
-  <div class="relative" [ngClass]="{
-    'w-16 h-20': size === 'small',
-    'w-24 h-28': size === 'medium',
-    'w-32 h-36': size === 'large'
-  }">
+  <div
+    class="relative"
+    [ngClass]="{
+      'h-20 w-16': size === 'small',
+      'h-28 w-24': size === 'medium',
+      'h-36 w-32': size === 'large',
+    }"
+  >
     <!-- 棋盘网格背景 -->
     <div class="absolute inset-0 grid grid-cols-4 grid-rows-5 gap-0.5">
       <ng-container *ngFor="let cell of gridCells; let j = index">
-        <div class="bg-wood-lighter dark:bg-dark-wood rounded-sm"></div>
+        <div class="rounded-sm bg-wood-lighter dark:bg-dark-wood"></div>
       </ng-container>
     </div>
 
@@ -22,7 +25,7 @@
             left: piece.x * 25 + '%',
             top: piece.y * 20 + '%',
             width: piece.width * 25 + '%',
-            height: piece.height * 20 + '%'
+            height: piece.height * 20 + '%',
           }"
           [ngClass]="{
             'bg-wood': piece.name === '曹操',
@@ -32,7 +35,7 @@
             'rounded-sm': true,
             flex: true,
             'items-center': true,
-            'justify-center': true
+            'justify-center': true,
           }"
         >
           <span
@@ -40,16 +43,17 @@
               'text-wood-text': true,
               'dark:text-wood-lighter': true,
               'font-bold': piece.name === '曹操',
-              'truncate': true,
+              truncate: true,
               'w-full': true,
               'text-center': true,
               'px-0.5': true,
               'text-[4px]': size === 'small',
               'text-[6px]': size === 'medium',
               'text-[8px]': size === 'large',
-              'leading-none': true
+              'leading-none': true,
             }"
-          >{{ piece.name }}</span>
+            >{{ piece.name }}</span
+          >
         </div>
       </ng-container>
     </div>

@@ -1,19 +1,19 @@
 <div
   *ngIf="!resourceLoading"
-  class="h-screen w-screen bg-wood-lighter transition-colors duration-300 dark:bg-dark-wood-lighter overflow-hidden"
+  class="h-screen w-screen overflow-hidden bg-wood-lighter transition-colors duration-300 dark:bg-dark-wood-lighter"
 >
   <!-- PC大屏左右布局 -->
   <div
-    class="hidden lg:flex h-full w-full flex-col bg-wood-light/50 dark:bg-dark-wood-dark/20"
+    class="hidden h-full w-full flex-col bg-wood-light/50 dark:bg-dark-wood-dark/20 lg:flex"
   >
     <!-- 顶部header -->
     <header
-      class="py-6 px-4 text-center bg-wood-light dark:bg-dark-wood-dark border-b-4 border-wood-border dark:border-dark-wood-border flex-shrink-0"
+      class="flex-shrink-0 border-b-4 border-wood-border bg-wood-light px-4 py-6 text-center dark:border-dark-wood-border dark:bg-dark-wood-dark"
     >
-      <div class="max-w-7xl mx-auto flex items-center justify-between relative">
+      <div class="relative mx-auto flex max-w-7xl items-center justify-between">
         <button
           (click)="goToLevelSelect()"
-          class="text-wood-text dark:text-wood-lighter hover:bg-wood-light dark:hover:bg-dark-wood rounded-full p-2"
+          class="rounded-full p-2 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +38,7 @@
         <div class="w-10"></div>
         <button
           (click)="showInstructions = !showInstructions"
-          class="absolute right-0 rounded-full bg-wood-light dark:bg-dark-wood-lighter dark:text-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30"
+          class="absolute right-0 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -59,20 +59,20 @@
     </header>
 
     <!-- 下面部分左右布局 -->
-    <div class="flex-1 flex mx-auto max-w-6xl">
+    <div class="mx-auto flex max-w-6xl flex-1">
       <!-- 左侧棋盘 -->
-      <div class="flex-1 flex items-center justify-center p-6">
+      <div class="flex flex-1 items-center justify-center p-6">
         <div
           [ngStyle]="{
             width: boardWidth * cellSize + cellOffset + 'px',
             height: boardHeight * cellSize + cellOffset + 'px',
           }"
-          class="relative border-4 border-b-0 border-solid border-wood-darker rounded-md"
+          class="relative rounded-md border-4 border-b-0 border-solid border-wood-darker"
         >
           <div
             cdkDrag
             *ngFor="let piece of pieces()"
-            class="absolute p-1 border border-yellow-900 z-10 box-border flex cursor-pointer items-center justify-center rounded-md bg-cover bg-center text-2xl font-medium text-[#6b4f27] shadow-lg backdrop-blur-md hover:shadow-xl"
+            class="absolute z-10 box-border flex cursor-pointer items-center justify-center rounded-md border border-yellow-900 bg-cover bg-center p-1 text-2xl font-medium text-[#6b4f27] shadow-lg backdrop-blur-md hover:shadow-xl"
             [ngStyle]="{
               'background-color': isDarkMode()
                 ? 'rgba(255, 255, 255, 0.3)'
@@ -85,20 +85,19 @@
               top: piece.y * cellSize + 'px',
               left: piece.x * cellSize + 'px',
               'box-shadow':
-                '0 4px 12px 0 rgba(139, 69, 19, 0.25), inset 0 2px 8px 0 rgba(255, 255, 255, 0.15)'
+                '0 4px 12px 0 rgba(139, 69, 19, 0.25), inset 0 2px 8px 0 rgba(255, 255, 255, 0.15)',
             }"
             (cdkDragStarted)="onDragStart(piece, $event)"
             (cdkDragEnded)="onDragEnd($event)"
           >
             <div
-              class="w-full h-full rounded-md border-[3px] border-solid border-[#b8864b]"
+              class="h-full w-full rounded-md border-[3px] border-solid border-[#b8864b]"
               [ngStyle]="{
-            'background-image':
-              ' url(' + piece.img + ')',
-              'background-blend-mode': 'multiply, normal',
-            'background-size': 'cover, contain',
-            'background-position': 'center, center',
-          }"
+                'background-image': ' url(' + piece.img + ')',
+                'background-blend-mode': 'multiply, normal',
+                'background-size': 'cover, contain',
+                'background-position': 'center, center',
+              }"
             ></div>
           </div>
 
@@ -107,7 +106,7 @@
               class="absolute bottom-0 left-0 h-full w-1/4 border-b-4 border-solid border-yellow-800 dark:border-yellow-700"
             ></div>
             <div
-              class="absolute flex justify-center items-center bottom-0 left-1/4 h-full w-2/4"
+              class="absolute bottom-0 left-1/4 flex h-full w-2/4 items-center justify-center"
             >
               <span class="text-xl">出口</span>
             </div>
@@ -120,11 +119,11 @@
 
       <!-- 右侧信息卡片 -->
       <div
-        class="w-80 bg-wood-light dark:bg-dark-wood-lighter dark:text-wood shadow-lg m-6 rounded-lg flex flex-col border-2 border-wood-border"
+        class="m-6 flex w-80 flex-col rounded-lg border-2 border-wood-border bg-wood-light shadow-lg dark:bg-dark-wood-lighter dark:text-wood"
       >
-        <div class="p-6 border-b border-wood-border rounded-t-lg">
+        <div class="rounded-t-lg border-b border-wood-border p-6">
           <h2
-            class="text-xl font-bold text-wood-text dark:text-wood-lighter mb-4"
+            class="mb-4 text-xl font-bold text-wood-text dark:text-wood-lighter"
           >
             游戏控制
           </h2>
@@ -132,18 +131,18 @@
           <!-- 当前关卡信息 -->
           <div class="mb-6">
             <label
-              class="block text-sm font-medium text-wood-text dark:text-wood-lighter mb-2"
+              class="mb-2 block text-sm font-medium text-wood-text dark:text-wood-lighter"
             >
               当前关卡
             </label>
             <div
-              class="w-full rounded-lg border border-wood-border bg-wood/50 dark:bg-wood-dark/50 px-4 py-2 text-wood-text dark:text-wood-lighter shadow-inner"
+              class="w-full rounded-lg border border-wood-border bg-wood/50 px-4 py-2 text-wood-text shadow-inner dark:bg-wood-dark/50 dark:text-wood-lighter"
             >
               <div class="font-semibold">
                 {{ currentLevel?.name || "未知关卡" }}
               </div>
               <div
-                class="text-xs text-wood-text/70 dark:text-wood-lighter/70 mt-1"
+                class="mt-1 text-xs text-wood-text/70 dark:text-wood-lighter/70"
               >
                 难度：{{ currentLevel?.difficulty || "未知" }}
               </div>
@@ -157,7 +156,7 @@
                 >当前步数：</span
               >
               <div
-                class="rounded-lg bg-wood/50 text-wood-text dark:text-wood-lighter px-4 py-2"
+                class="rounded-lg bg-wood/50 px-4 py-2 text-wood-text dark:text-wood-lighter"
               >
                 {{ steps }}
               </div>
@@ -166,15 +165,15 @@
               <span class="text-wood-text dark:text-wood-lighter"
                 >游戏状态：</span
               >
-              <div class="rounded-lg px-4 py-2 bg-wood/50">
-                @if(finished()) {
-                <span class="text-green-600 dark:text-green-300"
-                  >✅ 已完成</span
-                >
+              <div class="rounded-lg bg-wood/50 px-4 py-2">
+                @if (finished()) {
+                  <span class="text-green-600 dark:text-green-300"
+                    >✅ 已完成</span
+                  >
                 } @else {
-                <span class="text-wood-text dark:text-wood-lighter"
-                  >⏳ 进行中</span
-                >
+                  <span class="text-wood-text dark:text-wood-lighter"
+                    >⏳ 进行中</span
+                  >
                 }
               </div>
             </div>
@@ -183,7 +182,7 @@
 
         <div class="flex-1 p-6">
           <h3
-            class="text-lg font-semibold text-wood-text dark:text-wood-lighter mb-4"
+            class="mb-4 text-lg font-semibold text-wood-text dark:text-wood-lighter"
           >
             游戏说明
           </h3>
@@ -199,14 +198,14 @@
   </div>
 
   <!-- 移动端上下布局 -->
-  <div class="lg:hidden flex flex-col h-full">
+  <div class="flex h-full flex-col lg:hidden">
     <header
-      class="py-6 px-4 text-center bg-wood-light dark:bg-dark-wood-dark border-b-4 border-wood-border dark:border-dark-wood-border flex-shrink-0"
+      class="flex-shrink-0 border-b-4 border-wood-border bg-wood-light px-4 py-6 text-center dark:border-dark-wood-border dark:bg-dark-wood-dark"
     >
       <div class="flex items-center justify-between">
         <button
           (click)="goToLevelSelect()"
-          class="text-wood-text dark:text-wood-lighter hover:bg-wood-light dark:hover:bg-dark-wood rounded-full p-2"
+          class="rounded-full p-2 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -231,7 +230,7 @@
         <div class="w-10"></div>
         <button
           (click)="showInstructions = !showInstructions"
-          class="absolute right-4 rounded-full bg-wood-light dark:bg-dark-wood-lighter dark:text-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30"
+          class="absolute right-4 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -253,7 +252,7 @@
 
     <div class="w-full bg-wood-light/70 dark:bg-dark-wood-darker/70">
       <div
-        class="flex items-center justify-between bg-wood-light px-4 py-2 shadow-sm backdrop-blur-sm transition-colors duration-300 border-b-2 border-wood-border dark:bg-dark-wood-dark"
+        class="flex items-center justify-between border-b-2 border-wood-border bg-wood-light px-4 py-2 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-dark-wood-dark"
       >
         <div class="flex w-full flex-col space-y-2 px-2">
           <!-- 棋局选择区域 -->
@@ -264,7 +263,7 @@
               当前关卡：
             </span>
             <div
-              class="flex-1 rounded-lg border border-wood-border bg-wood-lighter dark:bg-wood-dark/50 px-2 py-1 text-xs text-wood-text dark:text-wood-lighter shadow-inner"
+              class="flex-1 rounded-lg border border-wood-border bg-wood-lighter px-2 py-1 text-xs text-wood-text shadow-inner dark:bg-wood-dark/50 dark:text-wood-lighter"
             >
               <div class="flex items-center justify-between">
                 <span class="font-semibold">{{
@@ -280,19 +279,19 @@
           </div>
 
           <!-- 状态显示区域 -->
-          <div class="flex justify-between items-center">
+          <div class="flex items-center justify-between">
             <div
-              class="rounded-lg bg-wood/50 px-2 py-1 text-xs text-wood-text dark:text-wood-lighter shadow-inner transition-colors duration-300"
+              class="rounded-lg bg-wood/50 px-2 py-1 text-xs text-wood-text shadow-inner transition-colors duration-300 dark:text-wood-lighter"
             >
               步数: {{ steps }}
             </div>
-            <div class="rounded-lg px-2 py-1 text-xs shadow-inner bg-wood/50">
-              @if(finished()) {
-              <span class="text-green-600 dark:text-green-300">状态: ✅</span>
+            <div class="rounded-lg bg-wood/50 px-2 py-1 text-xs shadow-inner">
+              @if (finished()) {
+                <span class="text-green-600 dark:text-green-300">状态: ✅</span>
               } @else {
-              <span class="text-wood-text dark:text-wood-lighter"
-                >状态: ⏳</span
-              >
+                <span class="text-wood-text dark:text-wood-lighter"
+                  >状态: ⏳</span
+                >
               }
             </div>
           </div>
@@ -301,7 +300,7 @@
     </div>
 
     <div
-      class="flex-1 flex items-center justify-center"
+      class="flex flex-1 items-center justify-center"
       [style.padding]="isMobile() ? '0.5rem' : '1rem'"
     >
       <div
@@ -309,14 +308,14 @@
           width: boardWidth * cellSize + cellOffset + 'px',
           height: boardHeight * cellSize + cellOffset + 'px',
         }"
-        class="relative border-4 border-b-0 border-solid border-yellow-800 dark:border-yellow-700 rounded-md"
+        class="relative rounded-md border-4 border-b-0 border-solid border-yellow-800 dark:border-yellow-700"
         [style.max-width]="'100%'"
         [style.max-height]="'100%'"
       >
         <div
           cdkDrag
           *ngFor="let piece of pieces()"
-          class="absolute p-1 border border-yellow-900 z-10 box-border flex cursor-pointer items-center justify-center rounded-md bg-cover bg-center text-2xl font-medium text-[#6b4f27] shadow-lg backdrop-blur-md hover:shadow-xl"
+          class="absolute z-10 box-border flex cursor-pointer items-center justify-center rounded-md border border-yellow-900 bg-cover bg-center p-1 text-2xl font-medium text-[#6b4f27] shadow-lg backdrop-blur-md hover:shadow-xl"
           [ngStyle]="{
             'background-color': isDarkMode()
               ? 'rgba(255, 255, 255, 0.3)'
@@ -329,20 +328,19 @@
             top: piece.y * cellSize + 'px',
             left: piece.x * cellSize + 'px',
             'box-shadow':
-              '0 4px 12px 0 rgba(139, 69, 19, 0.25), inset 0 2px 8px 0 rgba(255, 255, 255, 0.15)'
+              '0 4px 12px 0 rgba(139, 69, 19, 0.25), inset 0 2px 8px 0 rgba(255, 255, 255, 0.15)',
           }"
           (cdkDragStarted)="onDragStart(piece, $event)"
           (cdkDragEnded)="onDragEnd($event)"
         >
           <div
-            class="w-full h-full rounded-md border-[3px] border-solid border-[#b8864b]"
+            class="h-full w-full rounded-md border-[3px] border-solid border-[#b8864b]"
             [ngStyle]="{
-            'background-image':
-              ' url(' + piece.img + ')',
+              'background-image': ' url(' + piece.img + ')',
               'background-blend-mode': 'multiply, normal',
-            'background-size': 'cover, contain',
-            'background-position': 'center, center',
-          }"
+              'background-size': 'cover, contain',
+              'background-position': 'center, center',
+            }"
           ></div>
         </div>
 
@@ -351,7 +349,7 @@
             class="absolute bottom-0 left-0 h-full w-1/4 border-b-4 border-solid border-yellow-800 dark:border-yellow-700"
           ></div>
           <div
-            class="absolute flex justify-center items-center bottom-0 left-1/4 h-full w-2/4"
+            class="absolute bottom-0 left-1/4 flex h-full w-2/4 items-center justify-center"
           >
             <span class="text-xl">出口</span>
           </div>
@@ -374,17 +372,18 @@
 </div>
 
 @if (showSuccess) {
-<app-scatter-flowers></app-scatter-flowers>
-} @if (showInstructions) {
-<div
-  class="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
-  (click)="showInstructions = false"
-></div>
+  <app-scatter-flowers></app-scatter-flowers>
+}
+@if (showInstructions) {
+  <div
+    class="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
+    (click)="showInstructions = false"
+  ></div>
 }
 
 <div
   *ngIf="showInstructions"
-  class="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-wood-light/95 dark:bg-dark-wood-lighter p-6 shadow-2xl backdrop-blur-sm transition-all border-2 border-wood-border"
+  class="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border-2 border-wood-border bg-wood-light/95 p-6 shadow-2xl backdrop-blur-sm transition-all dark:bg-dark-wood-lighter"
 >
   <div class="mb-4 flex items-center justify-between">
     <h3 class="text-2xl font-bold text-wood-text dark:text-wood-lighter">
@@ -392,7 +391,7 @@
     </h3>
     <button
       (click)="showInstructions = false"
-      class="text-wood-text dark:text-wood-lighter hover:bg-wood-dark"
+      class="text-wood-text hover:bg-wood-dark dark:text-wood-lighter"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -468,7 +467,7 @@
 
   <button
     (click)="showInstructions = false"
-    class="mt-6 w-full rounded-lg bg-wood-dark py-3 font-medium text-wood-text dark:text-wood-light dark:bg-wood/30 transition-colors hover:bg-wood/60"
+    class="mt-6 w-full rounded-lg bg-wood-dark py-3 font-medium text-wood-text transition-colors hover:bg-wood/60 dark:bg-wood/30 dark:text-wood-light"
   >
     开始游戏
   </button>

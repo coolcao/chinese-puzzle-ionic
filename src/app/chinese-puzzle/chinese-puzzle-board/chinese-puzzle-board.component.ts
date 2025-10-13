@@ -5,6 +5,7 @@ import { timer } from 'rxjs';
 
 import { ChinesePuzzleStore } from '../chinese-puzzle.store';
 import { ToolsService } from '../services/tools.service';
+import { AudioService } from '../services/audio.service';
 import { Direction, Piece } from '../chinese-puzzle.type';
 import { ImagePreloaderService } from '../services/image-preloader.service';
 import { PieceImageService } from '../services/piece-image.service';
@@ -20,6 +21,7 @@ import { levels } from '../data-set';
 export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
   private store = inject(ChinesePuzzleStore);
   private tools = inject(ToolsService);
+  private audioService = inject(AudioService);
   private imagePreLoader = inject(ImagePreloaderService);
   private pieceImageService = inject(PieceImageService);
   private route = inject(ActivatedRoute);
@@ -59,6 +61,8 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
     effect(() => {
       if (this.finished()) {
         this.showSuccess = true;
+        // 播放成功音效
+        this.audioService.playSuccessSound();
         timer(2500).subscribe(() => {
           this.showSuccess = false;
         });
@@ -214,6 +218,12 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
       this.store.updateBoard(boardState);
 
       this.steps += 1;
+
+      // 播放移动音效
+      this.audioService.playWoodSound();
+    } else {
+      // 播放失败音效
+      this.audioService.playFailSound();
     }
   }
 

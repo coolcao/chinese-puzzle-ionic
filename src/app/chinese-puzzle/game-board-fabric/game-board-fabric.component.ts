@@ -7,6 +7,7 @@ import { GameManagementService } from '../services/game-management.service';
 import { Piece, Direction } from '../chinese-puzzle.type';
 import { ImageLoadingService } from '../services/image-loading.service';
 import { PieceMovementService } from '../services/piece-movement.service';
+import { AudioService } from '../services/audio.service';
 import { FabricGameService } from './services/fabric-game.service';
 import { FabricDrawingService } from './services/fabric-drawing.service';
 import { FabricInteractionService } from './services/fabric-interaction.service';
@@ -28,6 +29,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   private fabricInteractionService = inject(FabricInteractionService);
   private imageLoadingService = inject(ImageLoadingService);
   private pieceMovementService = inject(PieceMovementService);
+  private audioService = inject(AudioService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -63,6 +65,9 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   constructor() {
     effect(() => {
       if (this.finished()) {
+        // 播放成功音效
+        this.audioService.playSuccessSound();
+
         // 保存游戏进度
         this.gameManagement.saveGameProgress(this.steps, 0); // 暂时传0作为时间
 
@@ -356,12 +361,17 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
     // 如果至少移动了一步，更新 Fabric 中的棋子位置
     if (totalStepsMoved > 0) {
+      // 播放移动音效
+      this.audioService.playWoodSound();
+
       // 使用 FabricDrawingService 的动画方法更新位置
       this.fabricDrawingService.updatePiecePosition(currentPiece);
 
       // 通知交互服务移动已完成（用于路径执行）
       this.fabricInteractionService.notifyMoveCompleted(currentPiece);
     } else {
+      // 播放失败音效
+      this.audioService.playFailSound();
     }
   }
 
@@ -373,6 +383,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   changeDataSet(dataSetName: string) {
+    this.audioService.playClickSound();
     this.gameManagement.changeLevel(dataSetName);
     this.steps = 0;
     // 直接重新绘制棋盘即可
@@ -383,7 +394,8 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   // 返回到关卡选择页面
   goToLevelSelect() {
-    this.router.navigate(['level-select'], { replaceUrl: true });
+    this.audioService.playClickSound();
+    this.router.navigate(['levels'], { replaceUrl: true });
   }
 
   onDataSetChange(dataSetName: string) {
@@ -433,6 +445,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   // 前往下一关
   goToNextLevel() {
+    this.audioService.playClickSound();
     const currentNames = this.dataSetNames();
     const currentName = this.dataSetName();
     const currentIndex = currentNames.indexOf(currentName);
@@ -457,6 +470,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   // 关闭完成Modal
   closeCompletionModal() {
+    this.audioService.playClickSound();
     this.showCompletionModal = false;
 
     // 关闭Modal后，确保游戏状态仍然锁定（如果游戏已完成）

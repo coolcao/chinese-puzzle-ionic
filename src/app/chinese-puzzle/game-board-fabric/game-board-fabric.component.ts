@@ -4,10 +4,11 @@ import { timer } from 'rxjs';
 
 import { ChinesePuzzleStore } from '../chinese-puzzle.store';
 import { GameManagementService } from '../services/game-management.service';
-import { Piece, Direction } from '../chinese-puzzle.type';
+import { Piece, Direction, TutorialStep } from '../chinese-puzzle.type';
 import { ImageLoadingService } from '../services/image-loading.service';
 import { PieceMovementService } from '../services/piece-movement.service';
 import { AudioService } from '../services/audio.service';
+import { GameStorageService } from '../services/game-storage.service';
 import { FabricGameService } from './services/fabric-game.service';
 import { FabricDrawingService } from './services/fabric-drawing.service';
 import { FabricInteractionService } from './services/fabric-interaction.service';
@@ -30,6 +31,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   private imageLoadingService = inject(ImageLoadingService);
   private pieceMovementService = inject(PieceMovementService);
   private audioService = inject(AudioService);
+  private gameStorage = inject(GameStorageService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -48,6 +50,13 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
 
   steps = 0;
+
+  // 教程相关属性
+  isTutorialMode = false;
+  currentTutorialStep = 0;
+  tutorialSteps: TutorialStep[] = [];
+  showTutorialModal = false;
+  currentTutorialData: TutorialStep | null = null;
 
   showSuccess = false;
   showInstructions = false;
@@ -117,15 +126,23 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnInit() {
-    // 从查询参数中获取关卡ID
+    // 从查询参数中获取关卡ID和教程标识
     this.route.queryParams.subscribe(params => {
-      const levelId = params['level'];
+      const levelId = params['levelId'];
+      const isTutorial = params['isTutorial'] === 'true';
+
+      this.isTutorialMode = isTutorial;
 
       if (levelId) {
         // URL中指定了关卡，先加载设置，然后手动切换到指定关卡
         const decodedLevelId = decodeURIComponent(levelId);
         this.gameManagement.loadSettings().then(() => {
           this.gameManagement.changeLevel(decodedLevelId);
+          
+          // 如果是教程模式，初始化教程
+          if (this.isTutorialMode) {
+            this.initTutorial();
+          }
         });
       } else {
         // 如果没有指定关卡，恢复最近关卡
@@ -151,6 +168,188 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   ngOnDestroy(): void {
     this.destroyResizeObserver();
     this.fabricGameService.dispose();
+  }
+
+  // ========== 教程相关方法 ==========
+
+  private initTutorial() {
+    const currentLevel = this.store.currentLevel();
+    if (currentLevel && currentLevel.isTutorial && currentLevel.tutorialSteps) {
+      this.tutorialSteps = currentLevel.tutorialSteps;
+      this.currentTutorialStep = 0;
+      
+      // 延迟开始教程，等待棋盘渲染完成
+      setTimeout(() => {
+        this.startTutorial();
+      }, 1000);
+    }
+  }
+
+  private startTutorial() {
+    if (this.tutorialSteps.length > 0) {
+      this.showTutorialStep(0);
+    }
+  }
+
+  private showTutorialStep(stepIndex: number) {
+    if (stepIndex >= this.tutorialSteps.length) {
+      this.completeTutorial();
+      return;
+    }
+
+    this.currentTutorialStep = stepIndex;
+    this.currentTutorialData = this.tutorialSteps[stepIndex];
+    this.showTutorialModal = true;
+
+    // 根据步骤类型执行不同操作
+    this.handleTutorialStep(this.currentTutorialData);
+  }
+
+  private handleTutorialStep(step: TutorialStep) {
+    switch (step.type) {
+      case 'highlight':
+        this.highlightElement(step);
+        break;
+      case 'move':
+        this.demonstrateMove(step);
+        break;
+      case 'explain':
+        // 只显示说明，不需要额外操作
+        break;
+      case 'interact':
+        // 等待用户交互
+        this.waitForUserInteraction(step);
+        break;
+    }
+
+    // 对于说明类步骤，不自动跳转，让用户手动点击"下一步"
+    // 这样用户可以有足够时间阅读和理解
+  }
+
+  private highlightElement(step: TutorialStep) {
+    // 高亮指定棋子或区域
+    if (step.targetPieceId) {
+      this.highlightPiece(step.targetPieceId);
+      
+      // 显示方向箭头
+      if (step.showDirectionArrow && step.moveDirection) {
+        const pieces = this.pieces();
+        const targetPiece = pieces.find(p => p.id === step.targetPieceId);
+        if (targetPiece) {
+          this.fabricDrawingService.showDirectionArrow(targetPiece, step.moveDirection);
+        }
+      }
+    } else if (step.highlightArea) {
+      this.highlightArea(step.highlightArea);
+    }
+
+    // 高亮目标位置
+    if (step.highlightTargetPosition && step.targetPosition) {
+      // 根据棋子类型确定尺寸
+      let width = 1, height = 1;
+      if (step.targetPieceId) {
+        const pieces = this.pieces();
+        const targetPiece = pieces.find(p => p.id === step.targetPieceId);
+        if (targetPiece) {
+          width = targetPiece.width;
+          height = targetPiece.height;
+        }
+      }
+      this.fabricDrawingService.highlightTargetPosition(step.targetPosition, width, height);
+    }
+  }
+
+  private highlightPiece(pieceId: number) {
+    // 在fabric canvas上高亮指定棋子
+    const pieces = this.pieces();
+    const targetPiece = pieces.find(p => p.id === pieceId);
+    if (targetPiece) {
+      this.fabricDrawingService.highlightPiece(targetPiece);
+    }
+  }
+
+  private highlightArea(area: {x: number, y: number, width: number, height: number}) {
+    // 在fabric canvas上高亮指定区域
+    this.fabricDrawingService.highlightArea(area);
+  }
+
+  private demonstrateMove(step: TutorialStep) {
+    // 演示移动操作
+    if (step.targetPieceId && step.moveDirection) {
+      const pieces = this.pieces();
+      const targetPiece = pieces.find(p => p.id === step.targetPieceId);
+      if (targetPiece) {
+        // 执行移动动画
+        this.handlePieceMove(targetPiece, step.moveDirection, 1);
+      }
+    }
+  }
+
+  private waitForUserInteraction(step: TutorialStep) {
+    // 对于交互步骤，同时显示高亮、箭头和目标位置
+    this.highlightElement(step);
+    
+    // 设置交互监听，等待用户操作指定棋子
+    if (step.targetPieceId) {
+      this.fabricInteractionService.setTutorialMode(
+        true, 
+        step.targetPieceId, 
+        step.strictMovement ? step.moveDirection : undefined,
+        step.strictMovement ? step.targetPosition : undefined
+      );
+    }
+  }
+
+  // 检查教程进度
+  private checkTutorialProgress(movedPiece: Piece) {
+    const currentStep = this.currentTutorialData;
+    if (!currentStep || !currentStep.waitForUser) return;
+
+    // 检查是否移动了目标棋子
+    if (currentStep.targetPieceId && movedPiece.id === currentStep.targetPieceId) {
+      // 用户完成了要求的操作，自动进入下一步
+      setTimeout(() => {
+        this.nextTutorialStep();
+      }, 1000); // 延迟1秒让用户看到操作结果
+    } else if (!currentStep.targetPieceId) {
+      // 没有指定目标棋子，任何移动都算完成
+      setTimeout(() => {
+        this.nextTutorialStep();
+      }, 1000);
+    }
+  }
+
+  nextTutorialStep() {
+    this.showTutorialModal = false;
+    this.fabricDrawingService.clearHighlights();
+    
+    setTimeout(() => {
+      this.showTutorialStep(this.currentTutorialStep + 1);
+    }, 500);
+  }
+
+  skipTutorial() {
+    this.showTutorialModal = false;
+    this.fabricDrawingService.clearHighlights();
+    this.completeTutorial();
+  }
+
+  private async completeTutorial() {
+    this.isTutorialMode = false;
+    this.showTutorialModal = false;
+    this.fabricDrawingService.clearHighlights();
+    this.fabricInteractionService.setTutorialMode(false);
+    
+    // 标记教程已完成
+    await this.gameStorage.markTutorialCompleted();
+    
+    // 显示完成提示
+    this.audioService.playSuccessSound();
+    
+    // 跳转到关卡选择页面
+    setTimeout(() => {
+      this.router.navigate(['/levels']);
+    }, 2000);
   }
 
   // 初始化Canvas
@@ -350,6 +549,11 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
           this.steps += 1;
           totalStepsMoved += 1;
           currentPiece = moveResult.updatedPiece;
+          
+          // 教程模式下检查是否完成了要求的操作
+          if (this.isTutorialMode && this.currentTutorialData?.waitForUser) {
+            this.checkTutorialProgress(currentPiece);
+          }
 
         } else {
           break;

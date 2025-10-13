@@ -352,8 +352,24 @@ export class GameStorageService {
       smoothDragMode: true,
       soundEffectsEnabled: true,
       backgroundMusicEnabled: false, // 默认关闭背景音乐
-      vibrationEnabled: true
+      vibrationEnabled: true,
+      tutorialCompleted: false
     };
+  }
+
+  // ========== 教程状态管理 ==========
+
+  async markTutorialCompleted(): Promise<void> {
+    await this.updateSetting('tutorialCompleted', true);
+  }
+
+  async isTutorialCompleted(): Promise<boolean> {
+    const settings = await this.getSettings();
+    return settings.tutorialCompleted;
+  }
+
+  async resetTutorial(): Promise<void> {
+    await this.updateSetting('tutorialCompleted', false);
   }
 
   private getDefaultStats(): GameStats {

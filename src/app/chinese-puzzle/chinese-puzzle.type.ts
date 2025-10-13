@@ -26,6 +26,26 @@ export interface Level {
   difficulty: string;
   minSteps?: number;
   pieces: Piece[];
+  isTutorial?: boolean;  // 是否为教程关卡
+  tutorialSteps?: TutorialStep[];  // 教程步骤
+}
+
+// 教程步骤接口
+export interface TutorialStep {
+  id: number;
+  type: 'highlight' | 'move' | 'explain' | 'interact';
+  title: string;
+  description: string;
+  targetPieceId?: number;  // 目标棋子ID
+  targetPosition?: Position;  // 目标位置
+  moveDirection?: Direction;  // 移动方向
+  highlightArea?: {x: number, y: number, width: number, height: number};  // 高亮区域
+  autoPlay?: boolean;  // 是否自动播放
+  waitForUser?: boolean;  // 是否等待用户操作
+  nextStepDelay?: number;  // 下一步延迟（毫秒）
+  strictMovement?: boolean;  // 是否严格按照指定方向移动
+  showDirectionArrow?: boolean;  // 是否显示方向箭头
+  highlightTargetPosition?: boolean;  // 是否高亮目标位置
 }
 
 // 用户设置数据结构
@@ -35,6 +55,7 @@ export interface UserSettings {
   soundEffectsEnabled: boolean;    // 音效开关
   backgroundMusicEnabled: boolean; // 背景音乐开关
   vibrationEnabled: boolean;  // 震动开关
+  tutorialCompleted: boolean;  // 教程是否已完成
 }
 
 // 游戏进度数据结构

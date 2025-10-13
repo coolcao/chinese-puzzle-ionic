@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Canvas, Rect, Line, Text, Group, Pattern, Gradient, Shadow, Image } from 'fabric';
+import { Canvas, Rect, Line, Text, Group, Pattern, Gradient, Shadow, Image, Polygon } from 'fabric';
 import { Piece } from '../../chinese-puzzle.type';
 import { FabricGameService } from './fabric-game.service';
 import { ImageLoadingService } from '../../services/image-loading.service';
@@ -9,6 +9,8 @@ import { PieceImageService } from '../../services/piece-image.service';
   providedIn: 'root'
 })
 export class FabricDrawingService {
+  private highlightObjects: any[] = []; // 存储高亮对象
+
   constructor(
     private fabricGameService: FabricGameService,
     private imageLoadingService: ImageLoadingService,
@@ -562,6 +564,243 @@ export class FabricDrawingService {
   // 缓出四次方函数 - 更明显的缓动效果
   private easeOutQuart(t: number): number {
     return 1 - Math.pow(1 - t, 4);
+  }
+
+  // ========== 教程支持方法 ==========
+
+  // 高亮指定棋子
+  highlightPiece(piece: Piece): void {
+    const canvas = this.fabricGameService.canvas;
+    if (!canvas) return;
+
+    this.clearHighlights(); // 清除之前的高亮
+
+    const cellSize = this.fabricGameService.cellSizeSignal();
+    const highlight = new Rect({
+      left: piece.x * cellSize,
+      top: piece.y * cellSize,
+      width: piece.width * cellSize,
+      height: piece.height * cellSize,
+      fill: 'rgba(255, 255, 0, 0.3)',
+      stroke: '#FFD700',
+      strokeWidth: 3,
+      selectable: false,
+      evented: false,
+      strokeDashArray: [10, 5]
+    });
+
+    canvas.add(highlight);
+    this.highlightObjects.push(highlight);
+    canvas.renderAll();
+
+    // 添加闪烁效果
+    this.addBlinkEffect(highlight);
+  }
+
+  // 高亮指定区域
+  highlightArea(area: {x: number, y: number, width: number, height: number}): void {
+    const canvas = this.fabricGameService.canvas;
+    if (!canvas) return;
+
+    this.clearHighlights(); // 清除之前的高亮
+
+    const cellSize = this.fabricGameService.cellSizeSignal();
+    const highlight = new Rect({
+      left: area.x * cellSize,
+      top: area.y * cellSize,
+      width: area.width * cellSize,
+      height: area.height * cellSize,
+      fill: 'rgba(0, 255, 0, 0.2)',
+      stroke: '#00FF00',
+      strokeWidth: 4,
+      selectable: false,
+      evented: false,
+      strokeDashArray: [15, 10]
+    });
+
+    canvas.add(highlight);
+    this.highlightObjects.push(highlight);
+    canvas.renderAll();
+
+    // 添加脉动效果
+    this.addPulseEffect(highlight);
+  }
+
+  // 清除所有高亮
+  clearHighlights(): void {
+    const canvas = this.fabricGameService.canvas;
+    if (!canvas) return;
+
+    this.highlightObjects.forEach(obj => {
+      canvas.remove(obj);
+    });
+    this.highlightObjects = [];
+    canvas.renderAll();
+  }
+
+  // 高亮目标位置
+  highlightTargetPosition(targetPos: {x: number, y: number}, width: number = 1, height: number = 1): void {
+    const canvas = this.fabricGameService.canvas;
+    if (!canvas) return;
+
+    const cellSize = this.fabricGameService.cellSizeSignal();
+    const highlight = new Rect({
+      left: targetPos.x * cellSize,
+      top: targetPos.y * cellSize,
+      width: width * cellSize,
+      height: height * cellSize,
+      fill: 'rgba(0, 255, 0, 0.3)',
+      stroke: '#00FF00',
+      strokeWidth: 3,
+      selectable: false,
+      evented: false,
+      strokeDashArray: [8, 4]
+    });
+
+    canvas.add(highlight);
+    this.highlightObjects.push(highlight);
+    
+    // 添加脉动效果
+    this.addPulseEffect(highlight);
+    canvas.renderAll();
+  }
+
+  // 显示方向箭头
+  showDirectionArrow(fromPiece: any, direction: string): void {
+    const canvas = this.fabricGameService.canvas;
+    if (!canvas) return;
+
+    const cellSize = this.fabricGameService.cellSizeSignal();
+    const centerX = (fromPiece.x + fromPiece.width / 2) * cellSize;
+    const centerY = (fromPiece.y + fromPiece.height / 2) * cellSize;
+    
+    let arrowEndX = centerX;
+    let arrowEndY = centerY;
+    
+    // 根据方向计算箭头终点
+    switch (direction) {
+      case 'up':
+        arrowEndY -= cellSize * 1.5;
+        break;
+      case 'down':
+        arrowEndY += cellSize * 1.5;
+        break;
+      case 'left':
+        arrowEndX -= cellSize * 1.5;
+        break;
+      case 'right':
+        arrowEndX += cellSize * 1.5;
+        break;
+    }
+
+    // 创建箭头线条
+    const arrowLine = new Line([centerX, centerY, arrowEndX, arrowEndY], {
+      stroke: '#FF6B00',
+      strokeWidth: 4,
+      selectable: false,
+      evented: false
+    });
+
+    // 创建箭头头部
+    const arrowHead = this.createArrowHead(arrowEndX, arrowEndY, direction);
+
+    canvas.add(arrowLine);
+    canvas.add(arrowHead);
+    this.highlightObjects.push(arrowLine);
+    this.highlightObjects.push(arrowHead);
+
+    // 添加闪烁效果
+    this.addBlinkEffect(arrowLine);
+    this.addBlinkEffect(arrowHead);
+    canvas.renderAll();
+  }
+
+  // 创建箭头头部
+  private createArrowHead(x: number, y: number, direction: string): any {
+    const size = 15;
+    let points: number[] = [];
+
+    switch (direction) {
+      case 'up':
+        points = [x, y, x - size, y + size, x + size, y + size];
+        break;
+      case 'down':
+        points = [x, y, x - size, y - size, x + size, y - size];
+        break;
+      case 'left':
+        points = [x, y, x + size, y - size, x + size, y + size];
+        break;
+      case 'right':
+        points = [x, y, x - size, y - size, x - size, y + size];
+        break;
+    }
+
+    const triangle = new Polygon(
+      points.reduce((acc: any[], val: number, index: number) => {
+        if (index % 2 === 0) {
+          acc.push({ x: val, y: points[index + 1] });
+        }
+        return acc;
+      }, []),
+      {
+        fill: '#FF6B00',
+        stroke: '#FF6B00',
+        strokeWidth: 2,
+        selectable: false,
+        evented: false
+      }
+    );
+
+    return triangle;
+  }
+
+  // 闪烁效果
+  private addBlinkEffect(object: any): void {
+    let opacity = 0.8;
+    let increasing = false;
+    
+    const animate = () => {
+      if (increasing) {
+        opacity += 0.05;
+        if (opacity >= 0.8) increasing = false;
+      } else {
+        opacity -= 0.05;
+        if (opacity <= 0.3) increasing = true;
+      }
+      
+      object.set('opacity', opacity);
+      object.canvas?.renderAll();
+      
+      setTimeout(animate, 100);
+    };
+    
+    animate();
+  }
+
+  // 脉动效果
+  private addPulseEffect(object: any): void {
+    let scale = 1;
+    let increasing = true;
+    
+    const animate = () => {
+      if (increasing) {
+        scale += 0.02;
+        if (scale >= 1.1) increasing = false;
+      } else {
+        scale -= 0.02;
+        if (scale <= 0.9) increasing = true;
+      }
+      
+      object.set({
+        scaleX: scale,
+        scaleY: scale
+      });
+      object.canvas?.renderAll();
+      
+      setTimeout(animate, 50);
+    };
+    
+    animate();
   }
 
 }

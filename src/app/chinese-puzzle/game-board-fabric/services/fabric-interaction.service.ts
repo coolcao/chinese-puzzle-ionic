@@ -16,6 +16,13 @@ export class FabricInteractionService {
   private moveCallback?: (piece: Piece, direction: Direction, steps: number) => void;
   private boardStateCallback?: () => string[][];
 
+  // 教程模式相关
+  private tutorialMode = false;
+  private tutorialTargetPieceId?: number;
+  private tutorialCallback?: () => void;
+  private tutorialRequiredDirection?: string;
+  private tutorialTargetPosition?: {x: number, y: number};
+
   // 路径执行状态
   private executingPath = false;
   private pathMoves: { direction: Direction, steps: number }[] = [];
@@ -343,6 +350,32 @@ export class FabricInteractionService {
     if (this.moveCallback) {
       // 检查是否可以移动到目标位置（支持多步移动）
       if (this.canMoveMultipleSteps(piece, direction, steps)) {
+        // 计算移动后的目标位置
+        let targetX = originalX;
+        let targetY = originalY;
+        
+        switch (direction) {
+          case Direction.Up:
+            targetY -= steps;
+            break;
+          case Direction.Down:
+            targetY += steps;
+            break;
+          case Direction.Left:
+            targetX -= steps;
+            break;
+          case Direction.Right:
+            targetX += steps;
+            break;
+        }
+
+        // 教程模式下验证移动
+        if (this.tutorialMode && !this.validateTutorialMove(piece, direction, targetX, targetY)) {
+          console.log('教程模式：移动不符合要求，请按照提示操作');
+          this.animateToOriginalPosition(obj);
+          return; // 阻止移动
+        }
+
         this.moveCallback(piece, direction, steps);
         // 移动成功的话，主组件会更新 Fabric 中的位置
       } else {
@@ -974,6 +1007,78 @@ export class FabricInteractionService {
   // 缓出二次方函数
   private easeOutQuad(t: number): number {
     return 1 - (1 - t) * (1 - t);
+  }
+
+  // ========== 教程支持方法 ==========
+
+  // 设置教程模式
+  setTutorialMode(
+    enabled: boolean, 
+    targetPieceId?: number, 
+    requiredDirection?: string,
+    targetPosition?: {x: number, y: number},
+    callback?: () => void
+  ): void {
+    this.tutorialMode = enabled;
+    this.tutorialTargetPieceId = targetPieceId;
+    this.tutorialRequiredDirection = requiredDirection;
+    this.tutorialTargetPosition = targetPosition;
+    this.tutorialCallback = callback;
+  }
+
+  // 检查是否允许拖拽（教程模式下只允许拖拽目标棋子）
+  private isTutorialDragAllowed(pieceId: number): boolean {
+    if (!this.tutorialMode) return true;
+    return !this.tutorialTargetPieceId || pieceId === this.tutorialTargetPieceId;
+  }
+
+  // 验证教程移动是否符合要求
+  private validateTutorialMove(piece: Piece, direction: Direction, targetX: number, targetY: number): boolean {
+    if (!this.tutorialMode || !this.tutorialRequiredDirection || !this.tutorialTargetPosition) {
+      return true; // 非严格模式，允许移动
+    }
+
+    // 检查棋子是否是目标棋子
+    if (this.tutorialTargetPieceId && piece.id !== this.tutorialTargetPieceId) {
+      return false;
+    }
+
+    // 检查移动方向是否正确
+    if (direction !== this.tutorialRequiredDirection) {
+      this.showTutorialDirectionHint();
+      return false;
+    }
+
+    // 检查目标位置是否正确
+    if (targetX !== this.tutorialTargetPosition.x || targetY !== this.tutorialTargetPosition.y) {
+      this.showTutorialPositionHint();
+      return false;
+    }
+
+    return true;
+  }
+
+  // 显示方向提示
+  private showTutorialDirectionHint(): void {
+    console.log(`请按照教程提示向${this.getDirectionText(this.tutorialRequiredDirection!)}移动`);
+    // 这里可以添加更多的视觉提示
+  }
+
+  // 显示位置提示
+  private showTutorialPositionHint(): void {
+    console.log('请移动到高亮显示的目标位置');
+    // 这里可以添加更多的视觉提示
+  }
+
+  // 获取方向文本
+  private getDirectionText(direction: string): string {
+    switch (direction) {
+      case 'up': return '上';
+      case 'down': return '下';
+      case 'left': return '左';
+      case 'right': return '右';
+      default: return '指定方向';
+    }
   }
 
 }

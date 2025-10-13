@@ -11,6 +11,7 @@ const routes: Routes = [
   { path: 'levels', component: LevelSelectComponent },
   { path: 'board', component: ChinesePuzzleBoardComponent },
   { path: 'fabric', component: GameBoardFabricComponent },
+  { path: 'tutorial', component: GameBoardFabricComponent },
   { path: 'generator', component: LevelGeneratorComponent },
 ];
 

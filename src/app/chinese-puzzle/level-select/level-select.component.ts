@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { levels } from '../data-set';
+import { levels } from '../data/data-set';
 
 @Component({
   selector: 'app-level-select',
@@ -12,7 +12,7 @@ export class LevelSelectComponent implements OnInit {
 
   constructor(private router: Router) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   selectLevel(levelId: string) {
     this.router.navigate(['fabric'], {

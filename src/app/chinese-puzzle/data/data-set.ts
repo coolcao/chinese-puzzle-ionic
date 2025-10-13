@@ -1,4 +1,5 @@
-import { Level, Piece } from "./chinese-puzzle.type";
+import { Level, Piece } from "../chinese-puzzle.type";
+import { tutorialDataSetEntry, tutorialLevel } from "./tutorial-data";
 
 const caocao = { id: 1, name: '曹操', width: 2, height: 2, x: 1, y: 0, img: 'assets/img/chinese-puzzle/曹操.png' };
 const guanyu = { id: 2, name: '关羽', width: 2, height: 1, x: 1, y: 2, img: 'assets/img/chinese-puzzle/关羽21.png' };
@@ -12,6 +13,8 @@ const zu3 = { id: 9, name: '卒3', width: 1, height: 1, x: 2, y: 3, img: 'assets
 const zu4 = { id: 10, name: '卒4', width: 1, height: 1, x: 3, y: 4, img: 'assets/img/chinese-puzzle/卒.png' };
 
 export const dataSet: Record<string, Piece[]> = {
+  // 引入教程关卡数据
+  ...tutorialDataSetEntry,
   '横刀立马': [
     caocao, guanyu, zhangfei, zhaoyun, machao, huangzhong, zu1, zu2, zu3, zu4
   ],
@@ -223,6 +226,8 @@ export const dataSet: Record<string, Piece[]> = {
 };
 
 export const levels: Level[] = [
+  // 引入教程关卡
+  tutorialLevel,
   { id: '横刀立马', name: '横刀立马', difficulty: '高级', minSteps: 81, pieces: dataSet['横刀立马'] },
   { id: '将拥曹营', name: '将拥曹营', difficulty: '初级', minSteps: 72, pieces: dataSet['将拥曹营'] },
   { id: '齐头并进', name: '齐头并进', difficulty: '中级', minSteps: 60, pieces: dataSet['齐头并进'] },

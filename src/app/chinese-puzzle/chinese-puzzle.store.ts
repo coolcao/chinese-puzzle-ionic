@@ -3,7 +3,7 @@ import { ToolsService } from "./services/tools.service";
 import { PieceImageService } from "./services/piece-image.service";
 import { Piece, UserSettings } from "./chinese-puzzle.type";
 
-import { dataSet, levels } from './data-set';
+import { dataSet, levels } from './data/data-set';
 
 
 
@@ -23,7 +23,8 @@ export class ChinesePuzzleStore {
     smoothDragMode: true,
     soundEffectsEnabled: true,
     backgroundMusicEnabled: false,
-    vibrationEnabled: true
+    vibrationEnabled: true,
+    tutorialCompleted: false
   });
 
   private _dataSetName = signal(dataSetNames[0]);
@@ -36,7 +37,7 @@ export class ChinesePuzzleStore {
     const initialPieces = this.tools.deepClone(dataSet[this._dataSetName()]);
     const processedPieces = this.pieceImageService.updatePiecesImagePaths(initialPieces);
     this._pieces.set(processedPieces);
-    
+
     // 在Store初始化时就创建初始的棋盘状态
     this.initBoard();
   }

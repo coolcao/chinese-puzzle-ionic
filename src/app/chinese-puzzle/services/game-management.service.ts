@@ -108,7 +108,8 @@ export class GameManagementService {
         smoothDragMode: true,
         soundEffectsEnabled: true,
         backgroundMusicEnabled: false,
-        vibrationEnabled: true
+        vibrationEnabled: true,
+        tutorialCompleted: false
       };
     }
   }

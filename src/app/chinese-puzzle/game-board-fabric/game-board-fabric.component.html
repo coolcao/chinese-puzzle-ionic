@@ -15,6 +15,7 @@
       <div class="relative mx-auto flex max-w-7xl items-center justify-between">
         <button
           (click)="goToLevelSelect()"
+          appClickSound
           class="rounded-full p-2 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
         >
           <svg
@@ -40,6 +41,7 @@
         <div class="w-10"></div>
         <button
           (click)="showInstructions = !showInstructions"
+          appClickSound
           class="absolute right-0 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light"
         >
           <svg
@@ -498,6 +500,7 @@
       <div class="mb-4 flex flex-col space-y-3">
         <button
           (click)="goToNextLevel(); closeCompletionModal()"
+          appClickSound
           [disabled]="!hasNextLevel()"
           class="flex w-full transform items-center justify-center gap-2 rounded-xl border-2 border-blue-800 bg-blue-600 px-4 py-3 font-medium text-white shadow-lg transition duration-300 hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:border-gray-500 disabled:bg-gray-400"
         >
@@ -520,6 +523,7 @@
 
         <button
           (click)="goToLevelSelect(); closeCompletionModal()"
+          appClickSound
           class="flex w-full transform items-center justify-center gap-2 rounded-xl border-2 border-wood-border bg-wood px-4 py-3 font-medium text-wood-text shadow-lg transition duration-300 hover:bg-wood-hover active:scale-95 dark:border-dark-wood-border dark:bg-dark-wood dark:text-wood-lighter dark:hover:bg-dark-wood-hover"
         >
           <svg

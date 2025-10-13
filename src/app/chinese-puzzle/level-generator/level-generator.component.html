@@ -8,6 +8,7 @@
     <div class="mx-auto flex max-w-6xl items-center justify-between">
       <button
         (click)="goHome()"
+        appClickSound
         class="rounded-full p-2 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
       >
         <svg
@@ -168,6 +169,7 @@
                 <div class="flex flex-wrap justify-center gap-4">
                   <button
                     (click)="validateData()"
+                    appClickSound
                     [disabled]="isAnimating"
                     class="flex transform items-center gap-2 rounded-xl border-2 border-wood-border bg-wood px-6 py-3 font-bold text-wood-text shadow-lg transition duration-300 hover:bg-wood-hover active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-dark-wood-border dark:bg-dark-wood dark:text-wood-lighter dark:hover:bg-dark-wood-hover"
                   >
@@ -190,6 +192,7 @@
                   <button
                     *ngIf="solutionPath && !isAnimating"
                     (click)="animateSolution()"
+                    appClickSound
                     class="flex transform items-center gap-2 rounded-xl border-2 border-blue-800 bg-blue-600 px-6 py-3 font-bold text-white shadow-lg transition duration-300 hover:bg-blue-700 active:scale-95"
                   >
                     <svg
@@ -210,6 +213,7 @@
                   </button>
                   <button
                     (click)="generateAndCopy()"
+                    appClickSound
                     [disabled]="isAnimating"
                     class="flex transform items-center gap-2 rounded-xl border-2 border-green-800 bg-green-600 px-6 py-3 font-bold text-white shadow-lg transition duration-300 hover:bg-green-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                   >
@@ -231,6 +235,7 @@
                   </button>
                   <button
                     (click)="resetBoard()"
+                    appClickSound
                     [disabled]="isAnimating"
                     class="flex transform items-center gap-2 rounded-xl border-2 border-red-700 bg-red-500 px-6 py-3 font-bold text-white shadow-lg transition duration-300 hover:bg-red-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                   >
@@ -272,6 +277,7 @@
                 <div *ngIf="isAnimating" class="mt-4 flex justify-center gap-3">
                   <button
                     (click)="pauseAnimation()"
+                    appClickSound
                     class="flex transform items-center gap-2 rounded-lg border border-orange-600 bg-orange-500 px-5 py-2 font-medium text-white shadow-md transition duration-300 hover:bg-orange-600 active:scale-95"
                   >
                     <svg
@@ -308,6 +314,7 @@
                   </button>
                   <button
                     (click)="stopAnimation()"
+                    appClickSound
                     class="flex transform items-center gap-2 rounded-lg border border-red-600 bg-red-500 px-5 py-2 font-medium text-white shadow-md transition duration-300 hover:bg-red-600 active:scale-95"
                   >
                     <svg

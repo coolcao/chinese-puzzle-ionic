@@ -17,6 +17,7 @@
     <div class="mb-16 w-full max-w-xs">
       <button
         (click)="startGame()"
+        appClickSound
         class="w-full transform rounded-2xl border-2 border-wood-border bg-wood py-4 text-xl font-bold text-wood-text shadow-lg transition duration-300 hover:bg-wood-hover active:scale-95 dark:border-dark-wood-border dark:bg-dark-wood dark:text-wood-lighter dark:hover:bg-dark-wood-hover"
       >
         开始游戏
@@ -30,6 +31,7 @@
       <!-- 游戏说明按钮 -->
       <button
         (click)="openGameInstructions()"
+        appClickSound
         class="flex flex-col items-center"
       >
         <div
@@ -56,7 +58,7 @@
       </button>
 
       <!-- 设置按钮 -->
-      <button (click)="openSettings()" class="flex flex-col items-center">
+      <button (click)="openSettings()" appClickSound class="flex flex-col items-center">
         <div
           class="flex h-16 w-16 items-center justify-center rounded-full border-2 border-wood-border bg-wood-light shadow-lg dark:border-dark-wood-border dark:bg-dark-wood-light"
         >
@@ -87,7 +89,7 @@
       </button>
 
       <!-- 我的按钮 -->
-      <button (click)="openMyProfile()" class="flex flex-col items-center">
+      <button (click)="openMyProfile()" appClickSound class="flex flex-col items-center">
         <div
           class="flex h-16 w-16 items-center justify-center rounded-full border-2 border-wood-border bg-wood-light shadow-lg dark:border-dark-wood-border dark:bg-dark-wood-light"
         >
@@ -115,6 +117,7 @@
       <button
         *ngIf="isDevMode()"
         (click)="goToGenerator()"
+        appClickSound
         class="flex flex-col items-center"
       >
         <div
@@ -158,6 +161,7 @@
         </h3>
         <button
           (click)="closeInstructions()"
+          appClickSound
           class="rounded-full p-1 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
         >
           <svg
@@ -210,6 +214,7 @@
         </h3>
         <button
           (click)="closeSettings()"
+          appClickSound
           class="rounded-full p-1 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
         >
           <svg
@@ -233,6 +238,7 @@
           <span class="text-wood-text dark:text-wood-lighter">黑暗模式</span>
           <button
             (click)="toggleDarkMode()"
+            appClickSound
             class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
             [ngClass]="{
               'bg-wood-darker dark:bg-dark-wood-darker': isDarkMode(),
@@ -261,6 +267,7 @@
           <span class="text-wood-text dark:text-wood-lighter">音效</span>
           <button
             (click)="toggleSoundEffects()"
+            appClickSound
             class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
             [ngClass]="{
               'bg-wood-darker dark:bg-dark-wood-darker':
@@ -296,6 +303,7 @@
           <span class="text-wood-text dark:text-wood-lighter">背景音乐</span>
           <button
             (click)="toggleBackgroundMusic()"
+            appClickSound
             class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
             [ngClass]="{
               'bg-wood-darker dark:bg-dark-wood-darker':
@@ -330,6 +338,7 @@
           <span class="text-wood-text dark:text-wood-lighter">震动反馈</span>
           <button
             (click)="toggleVibration()"
+            appClickSound
             class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
             [ngClass]="{
               'bg-wood-darker dark:bg-dark-wood-darker':
@@ -388,6 +397,7 @@
           </div>
           <button
             (click)="toggleSmoothDrag()"
+            appClickSound
             class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
             [ngClass]="{
               'bg-wood-darker dark:bg-dark-wood-darker':
@@ -438,6 +448,7 @@
         </h3>
         <button
           (click)="closeProfile()"
+          appClickSound
           class="rounded-full p-1 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
         >
           <svg

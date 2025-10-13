@@ -13,6 +13,7 @@
       <div class="relative mx-auto flex max-w-7xl items-center justify-between">
         <button
           (click)="goToLevelSelect()"
+          appClickSound
           class="rounded-full p-2 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
         >
           <svg
@@ -38,6 +39,7 @@
         <div class="w-10"></div>
         <button
           (click)="showInstructions = !showInstructions"
+          appClickSound
           class="absolute right-0 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light"
         >
           <svg

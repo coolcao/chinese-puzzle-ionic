@@ -3,6 +3,7 @@ import { Canvas, Rect, Line, Text, Group, Pattern, Gradient, Shadow, Image } fro
 import { Piece } from '../../chinese-puzzle.type';
 import { FabricGameService } from './fabric-game.service';
 import { ImageLoadingService } from '../../services/image-loading.service';
+import { PieceImageService } from '../../services/piece-image.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,8 @@ import { ImageLoadingService } from '../../services/image-loading.service';
 export class FabricDrawingService {
   constructor(
     private fabricGameService: FabricGameService,
-    private imageLoadingService: ImageLoadingService
+    private imageLoadingService: ImageLoadingService,
+    private pieceImageService: PieceImageService
   ) {}
 
   // 绘制棋盘
@@ -546,47 +548,12 @@ export class FabricDrawingService {
 
   // 根据棋子尺寸获取正确的图片
   private getCorrectPieceImage(piece: Piece): HTMLImageElement | undefined {
-    // 首先尝试使用原始图片路径（如果存在）
+    // 直接使用piece.img，因为Store已经在加载时设置了正确的路径
     if (piece.img) {
-      const originalImage = this.imageLoadingService.getPieceImage(piece.img);
-      if (originalImage && originalImage.complete) {
-        return originalImage;
+      const image = this.imageLoadingService.getPieceImage(piece.img);
+      if (image && image.complete) {
+        return image;
       }
-    }
-
-    // 根据棋子名称和尺寸确定正确的图片路径
-    const baseName = piece.name.replace(/[12]$/, ''); // 移除可能的尺寸后缀
-    
-    // 检查是否是需要特殊处理的角色
-    const specialCharacters = ['张飞', '马超', '关羽', '赵云', '黄忠'];
-    
-    if (specialCharacters.some(char => baseName.includes(char))) {
-      // 根据棋子的实际尺寸确定图片名称
-      const sizeCode = `${piece.width}${piece.height}`;
-      const imagePath = `assets/img/chinese-puzzle/${baseName}${sizeCode}.png`;
-      
-      // 尝试从ImageLoadingService获取这个图片
-      const correctImage = this.imageLoadingService.getPieceImage(imagePath);
-      if (correctImage && correctImage.complete) {
-        return correctImage;
-      }
-
-      // 如果当前尺寸的图片不存在，尝试其他尺寸的图片作为回退
-      const alternateSizes = ['12', '21'];
-      for (const altSize of alternateSizes) {
-        if (altSize !== sizeCode) {
-          const altImagePath = `assets/img/chinese-puzzle/${baseName}${altSize}.png`;
-          const altImage = this.imageLoadingService.getPieceImage(altImagePath);
-          if (altImage && altImage.complete) {
-            return altImage;
-          }
-        }
-      }
-    }
-
-    // 对于其他角色（如曹操、卒等），直接使用原始图片路径
-    if (piece.img) {
-      return this.imageLoadingService.getPieceImage(piece.img);
     }
     
     return undefined;

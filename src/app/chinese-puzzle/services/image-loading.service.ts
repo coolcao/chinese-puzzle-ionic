@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ImagePreloaderService } from './image-preloader.service';
+import { PieceImageService } from './piece-image.service';
 import { Piece } from '../chinese-puzzle.type';
 
 @Injectable({
@@ -13,7 +14,10 @@ export class ImageLoadingService {
 
   private resourceLoading = false;
 
-  constructor(private imagePreLoader: ImagePreloaderService) { }
+  constructor(
+    private imagePreLoader: ImagePreloaderService,
+    private pieceImageService: PieceImageService
+  ) { }
 
   // 获取棋子图片
   getPieceImage(imageUrl: string): HTMLImageElement | undefined {
@@ -94,9 +98,10 @@ export class ImageLoadingService {
         }
       };
 
-      // 预加载棋子图片
-      const imageUrls = [...new Set(pieces.filter(p => !!p.img).map(piece => piece.img!))];
-      if (!imageUrls || imageUrls.length == 0) {
+      // 使用PieceImageService获取所有需要预加载的图片路径
+      const allImageUrls = this.pieceImageService.getAllRequiredImagePaths(pieces);
+      
+      if (!allImageUrls || allImageUrls.length == 0) {
         this.resourceLoading = false;
         // 即使没有图片也要resolve
         requestAnimationFrame(() => {
@@ -109,13 +114,13 @@ export class ImageLoadingService {
         return;
       }
 
-      this.imagePreLoader.preloadImages(imageUrls).then(success => {
+      this.imagePreLoader.preloadImages(allImageUrls).then(success => {
         if (success) {
           // 加载成功后，为每个棋子创建图片对象
           let loadedImages = 0;
-          const totalImages = imageUrls.length;
+          const totalImages = allImageUrls.length;
 
-          imageUrls.forEach(imageUrl => {
+          allImageUrls.forEach(imageUrl => {
             const img = new Image();
             img.src = imageUrl;
             img.onload = () => {

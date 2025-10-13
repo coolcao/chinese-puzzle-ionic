@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, signal } from "@angular/core";
 import { ToolsService } from "./services/tools.service";
+import { PieceImageService } from "./services/piece-image.service";
 import { Piece, UserSettings } from "./chinese-puzzle.type";
 
 import { dataSet, levels } from './data-set';
@@ -13,6 +14,7 @@ const dataSetNames = Object.keys(dataSet);
 })
 export class ChinesePuzzleStore {
   private tools = inject(ToolsService);
+  private pieceImageService = inject(PieceImageService);
 
   private _boardWidth = signal(4);
   private _boardHeight = signal(5);
@@ -26,10 +28,15 @@ export class ChinesePuzzleStore {
 
   private _dataSetName = signal(dataSetNames[0]);
 
-  private _pieces = signal(this.tools.deepClone(dataSet[this._dataSetName()]));
+  private _pieces = signal<Piece[]>([]);
   private _board = signal<string[][]>([]);
 
   constructor() {
+    // 初始化时设置正确的图片路径
+    const initialPieces = this.tools.deepClone(dataSet[this._dataSetName()]);
+    const processedPieces = this.pieceImageService.updatePiecesImagePaths(initialPieces);
+    this._pieces.set(processedPieces);
+    
     // 在Store初始化时就创建初始的棋盘状态
     this.initBoard();
   }
@@ -112,14 +119,9 @@ export class ChinesePuzzleStore {
     const levelPieces = dataSet[dataSetName];
 
     if (levelPieces) {
-      const processedPieces = this.tools.deepClone(levelPieces).map((p: Piece) => {
-        // Dynamically set the image path for rectangular pieces based on their dimensions.
-        if (p.width !== p.height) {
-          const baseName = p.name.replace(/\d+$/, '');
-          p.img = `assets/img/chinese-puzzle/${baseName}${p.width}${p.height}.png`;
-        }
-        return p;
-      });
+      // 使用PieceImageService为所有棋子设置正确的图片路径
+      const clonedPieces = this.tools.deepClone(levelPieces);
+      const processedPieces = this.pieceImageService.updatePiecesImagePaths(clonedPieces);
 
       this._dataSetName.set(dataSetName);
       this._pieces.set(processedPieces);

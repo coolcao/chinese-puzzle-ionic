@@ -7,6 +7,7 @@ import { ChinesePuzzleStore } from '../chinese-puzzle.store';
 import { ToolsService } from '../services/tools.service';
 import { Direction, Piece } from '../chinese-puzzle.type';
 import { ImagePreloaderService } from '../services/image-preloader.service';
+import { PieceImageService } from '../services/piece-image.service';
 import { levels } from '../data-set';
 
 @Component({
@@ -20,6 +21,7 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
   private store = inject(ChinesePuzzleStore);
   private tools = inject(ToolsService);
   private imagePreLoader = inject(ImagePreloaderService);
+  private pieceImageService = inject(PieceImageService);
   private route = inject(ActivatedRoute);
   // 响应式单元格尺寸
   cellSize = 150;
@@ -269,8 +271,10 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
 
   private preLoadImage() {
     this.resourceLoading = true;
-    const imageUrls = this.pieces().filter(p => !!p.img).map(piece => piece.img!);
+    // 使用PieceImageService获取所有需要预加载的图片路径
+    const imageUrls = this.pieceImageService.getAllRequiredImagePaths(this.pieces());
     if (!imageUrls || imageUrls.length == 0) {
+      this.resourceLoading = false;
       return;
     }
 
@@ -279,9 +283,11 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
         this.resourceLoading = false;
       } else {
         console.error('图片预加载失败');
+        this.resourceLoading = false;
       }
     })
   }
+
 
   // 检查是否为移动端
   isMobile(): boolean {

@@ -6,7 +6,6 @@ import { FormsModule } from '@angular/forms';
 import { ChinesePuzzleRoutingModule } from './chinese-puzzle-routing.module';
 import { ChinesePuzzleBoardComponent } from './chinese-puzzle-board/chinese-puzzle-board.component';
 import { ScatterFlowersComponent } from './scatter-flowers/scatter-flowers.component';
-import { GameBoardCanvasComponent } from './game-board-canvas/game-board-canvas.component';
 import { GameBoardFabricComponent } from './game-board-fabric/game-board-fabric.component';
 import { HomeComponent } from './home/home.component';
 import { LevelSelectComponent } from './level-select/level-select.component';
@@ -20,7 +19,6 @@ import { LevelGeneratorComponent } from './level-generator/level-generator.compo
     LevelPreviewComponent,
     ChinesePuzzleBoardComponent,
     ScatterFlowersComponent,
-    GameBoardCanvasComponent,
     GameBoardFabricComponent,
     LevelGeneratorComponent,
   ],

@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, OnDestroy, OnInit } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
@@ -30,7 +30,7 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
 
   showInstructions = false;
 
-  isDarkMode = this.store.isDarkMode();
+  isDarkMode = computed(() => this.store.settings().isDarkMode);
 
 
   boardWidth = this.store.boardWidth();

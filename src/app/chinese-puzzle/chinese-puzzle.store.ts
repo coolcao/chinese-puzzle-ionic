@@ -16,7 +16,6 @@ export class ChinesePuzzleStore {
 
   private _boardWidth = signal(4);
   private _boardHeight = signal(5);
-  private _isDarkMode = signal(false);
   private _settings = signal<UserSettings>({
     isDarkMode: false,
     smoothDragMode: true,
@@ -36,7 +35,6 @@ export class ChinesePuzzleStore {
   }
 
 
-  readonly isDarkMode = this._isDarkMode.asReadonly();
   readonly settings = this._settings.asReadonly();
   readonly dataSetNames = signal(dataSetNames);
   readonly dataSetName = this._dataSetName.asReadonly();
@@ -86,9 +84,7 @@ export class ChinesePuzzleStore {
     this._pieces.set(this.tools.deepClone(pieces));
   }
 
-
   setDarkMode(isDarkMode: boolean) {
-    this._isDarkMode.set(isDarkMode);
     // 同时更新settings对象
     const currentSettings = this._settings();
     this._settings.set({
@@ -100,8 +96,6 @@ export class ChinesePuzzleStore {
   // 设置相关方法
   updateSettings(settings: UserSettings) {
     this._settings.set(settings);
-    // 同时更新isDarkMode信号，保持向后兼容
-    this._isDarkMode.set(settings.isDarkMode);
   }
 
   updateSetting<K extends keyof UserSettings>(key: K, value: UserSettings[K]) {
@@ -112,16 +106,11 @@ export class ChinesePuzzleStore {
     } as UserSettings;
 
     this._settings.set(updatedSettings);
-
-    // 如果是isDarkMode设置，也更新对应的信号，保持向后兼容
-    if (key === 'isDarkMode') {
-      this._isDarkMode.set(value as boolean);
-    }
   }
 
   changeDataSet(dataSetName: string) {
     const levelPieces = dataSet[dataSetName];
-    
+
     if (levelPieces) {
       const processedPieces = this.tools.deepClone(levelPieces).map((p: Piece) => {
         // Dynamically set the image path for rectangular pieces based on their dimensions.

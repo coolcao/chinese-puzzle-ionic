@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inject, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inject, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 
@@ -42,7 +42,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   pieces = this.store.pieces;
   boardState = this.store.board;
   finished = this.store.finished;
-  isDarkMode = this.store.isDarkMode;
+  isDarkMode = computed(() => this.store.settings().isDarkMode);
 
 
   steps = 0;
@@ -115,7 +115,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     // 从查询参数中获取关卡ID
     this.route.queryParams.subscribe(params => {
       const levelId = params['level'];
-      
+
       if (levelId) {
         // URL中指定了关卡，先加载设置，然后手动切换到指定关卡
         const decodedLevelId = decodeURIComponent(levelId);

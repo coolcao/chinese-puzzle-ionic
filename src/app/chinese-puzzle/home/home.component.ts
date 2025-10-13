@@ -1,4 +1,4 @@
-import { Component, OnInit, effect, inject } from '@angular/core';
+import { Component, OnInit, computed, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChinesePuzzleStore } from '../chinese-puzzle.store';
 import { GameManagementService } from '../services/game-management.service';
@@ -19,17 +19,10 @@ export class HomeComponent implements OnInit {
   private store = inject(ChinesePuzzleStore);
   private gameManagement = inject(GameManagementService);
 
-  isDarkMode = this.store.isDarkMode;
   settings = this.store.settings;
+  isDarkMode = computed(() => this.settings().isDarkMode);
 
   constructor(private router: Router) {
-    effect(() => {
-      if (this.isDarkMode()) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    });
   }
 
   async ngOnInit() {
@@ -45,7 +38,7 @@ export class HomeComponent implements OnInit {
 
   startGame() {
     // 默认开始第一个关卡
-    this.router.navigate(['level-select']);
+    this.router.navigate(['levels']);
   }
 
   // 模态框控制方法

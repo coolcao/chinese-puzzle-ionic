@@ -74,7 +74,7 @@
             *ngFor="let piece of pieces()"
             class="absolute p-1 border border-yellow-900 z-10 box-border flex cursor-pointer items-center justify-center rounded-md bg-cover bg-center text-2xl font-medium text-[#6b4f27] shadow-lg backdrop-blur-md hover:shadow-xl"
             [ngStyle]="{
-              'background-color': isDarkMode
+              'background-color': isDarkMode()
                 ? 'rgba(255, 255, 255, 0.3)'
                 : 'rgba(0, 0, 0, 0.3)',
               'background-blend-mode': 'multiply, normal',
@@ -318,7 +318,7 @@
           *ngFor="let piece of pieces()"
           class="absolute p-1 border border-yellow-900 z-10 box-border flex cursor-pointer items-center justify-center rounded-md bg-cover bg-center text-2xl font-medium text-[#6b4f27] shadow-lg backdrop-blur-md hover:shadow-xl"
           [ngStyle]="{
-            'background-color': isDarkMode
+            'background-color': isDarkMode()
               ? 'rgba(255, 255, 255, 0.3)'
               : 'rgba(0, 0, 0, 0.3)',
             'background-blend-mode': 'multiply, normal',

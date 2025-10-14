@@ -49,59 +49,20 @@ export class ImageLoadingService {
     this.woodLightImage = null;
 
     return new Promise((resolve) => {
-      // 预加载木质纹理图片
-      const woodDarkImg = new Image();
-      woodDarkImg.src = 'assets/img/wood_dark.png';
-      woodDarkImg.onload = () => {
-        this.woodDarkImage = woodDarkImg;
-        // 如果棋子图片已经加载完成，则resolve
-        if (!this.resourceLoading) {
-          resolve({
-            pieceImages: this.pieceImages,
-            woodDarkImage: this.woodDarkImage,
-            woodLightImage: this.woodLightImage
-          });
-        }
-      };
-      woodDarkImg.onerror = () => {
-        // 即使wood dark图片加载失败也要resolve
-        if (!this.resourceLoading) {
-          resolve({
-            pieceImages: this.pieceImages,
-            woodDarkImage: this.woodDarkImage,
-            woodLightImage: this.woodLightImage
-          });
-        }
-      };
-
-      const woodLightImg = new Image();
-      woodLightImg.src = 'assets/img/wood_light.png';
-      woodLightImg.onload = () => {
-        this.woodLightImage = woodLightImg;
-        // 如果棋子图片已经加载完成，则resolve
-        if (!this.resourceLoading) {
-          resolve({
-            pieceImages: this.pieceImages,
-            woodDarkImage: this.woodDarkImage,
-            woodLightImage: this.woodLightImage
-          });
-        }
-      };
-      woodLightImg.onerror = () => {
-        // 即使wood light图片加载失败也要resolve
-        if (!this.resourceLoading) {
-          resolve({
-            pieceImages: this.pieceImages,
-            woodDarkImage: this.woodDarkImage,
-            woodLightImage: this.woodLightImage
-          });
-        }
-      };
-
-      // 使用PieceImageService获取所有需要预加载的图片路径
+      // 获取所有需要预加载的图片路径（现在包含所有棋子图片）
       const allImageUrls = this.pieceImageService.getAllRequiredImagePaths(pieces);
       
-      if (!allImageUrls || allImageUrls.length == 0) {
+      // 添加背景纹理图片到预加载列表
+      const backgroundImages = [
+        'assets/img/wood_dark.png',
+        'assets/img/wood_light.png',
+        'assets/img/wood-pattern.png'
+      ];
+      
+      // 合并所有图片路径
+      const allImagesToLoad = [...allImageUrls, ...backgroundImages];
+      
+      if (!allImagesToLoad || allImagesToLoad.length == 0) {
         this.resourceLoading = false;
         // 即使没有图片也要resolve
         requestAnimationFrame(() => {
@@ -114,59 +75,54 @@ export class ImageLoadingService {
         return;
       }
 
-      this.imagePreLoader.preloadImages(allImageUrls).then(success => {
-        if (success) {
-          // 加载成功后，为每个棋子创建图片对象
-          let loadedImages = 0;
-          const totalImages = allImageUrls.length;
+      // 统一加载所有图片（棋子图片 + 背景图片）
+      let loadedImages = 0;
+      const totalImages = allImagesToLoad.length;
 
-          allImageUrls.forEach(imageUrl => {
-            const img = new Image();
-            img.src = imageUrl;
-            img.onload = () => {
-              this.pieceImages.set(imageUrl, img);
-              loadedImages++;
-              // 所有图片加载完成后resolve
-              if (loadedImages === totalImages) {
-                this.resourceLoading = false;
-                // 使用requestAnimationFrame确保在下次重绘之前执行
-                requestAnimationFrame(() => {
-                  resolve({
-                    pieceImages: this.pieceImages,
-                    woodDarkImage: this.woodDarkImage,
-                    woodLightImage: this.woodLightImage
-                  });
-                });
-              }
-            };
-            img.onerror = () => {
-              loadedImages++;
-              // 即使有图片加载失败也要resolve
-              if (loadedImages === totalImages) {
-                this.resourceLoading = false;
-                // 使用requestAnimationFrame确保在下次重绘之前执行
-                requestAnimationFrame(() => {
-                  resolve({
-                    pieceImages: this.pieceImages,
-                    woodDarkImage: this.woodDarkImage,
-                    woodLightImage: this.woodLightImage
-                  });
-                });
-              }
-            };
-          });
-        } else {
-          console.error('图片预加载失败');
-          this.resourceLoading = false;
-          // 即使预加载失败也要resolve
-          requestAnimationFrame(() => {
-            resolve({
-              pieceImages: this.pieceImages,
-              woodDarkImage: this.woodDarkImage,
-              woodLightImage: this.woodLightImage
+      allImagesToLoad.forEach(imageUrl => {
+        const img = new Image();
+        img.src = imageUrl;
+        img.onload = () => {
+          // 根据图片类型分别存储
+          if (imageUrl.includes('wood_dark.png')) {
+            this.woodDarkImage = img;
+          } else if (imageUrl.includes('wood_light.png')) {
+            this.woodLightImage = img;
+          } else {
+            // 棋子图片和其他图片统一存储到pieceImages中
+            this.pieceImages.set(imageUrl, img);
+          }
+          
+          loadedImages++;
+          // 所有图片加载完成后resolve
+          if (loadedImages === totalImages) {
+            this.resourceLoading = false;
+            // 使用requestAnimationFrame确保在下次重绘之前执行
+            requestAnimationFrame(() => {
+              resolve({
+                pieceImages: this.pieceImages,
+                woodDarkImage: this.woodDarkImage,
+                woodLightImage: this.woodLightImage
+              });
             });
-          });
-        }
+          }
+        };
+        img.onerror = () => {
+          console.warn(`图片加载失败: ${imageUrl}`);
+          loadedImages++;
+          // 即使有图片加载失败也要resolve
+          if (loadedImages === totalImages) {
+            this.resourceLoading = false;
+            // 使用requestAnimationFrame确保在下次重绘之前执行
+            requestAnimationFrame(() => {
+              resolve({
+                pieceImages: this.pieceImages,
+                woodDarkImage: this.woodDarkImage,
+                woodLightImage: this.woodLightImage
+              });
+            });
+          }
+        };
       });
     });
   }

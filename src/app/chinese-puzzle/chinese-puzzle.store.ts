@@ -36,7 +36,7 @@ export class ChinesePuzzleStore {
     // 初始化时设置正确的图片路径
     const initialPieces = this.tools.deepClone(dataSet[this._dataSetName()]);
     const processedPieces = this.pieceImageService.updatePiecesImagePaths(initialPieces);
-    this._pieces.set(processedPieces);
+    this._pieces.set(this.tools.deepClone(processedPieces));
 
     // 在Store初始化时就创建初始的棋盘状态
     this.initBoard();
@@ -74,7 +74,7 @@ export class ChinesePuzzleStore {
         }
       }
     })
-    this._board.set(board);
+    this._board.set(this.tools.deepClone(board));
   }
 
   updateBoard(board: string[][]) {
@@ -125,7 +125,7 @@ export class ChinesePuzzleStore {
       const processedPieces = this.pieceImageService.updatePiecesImagePaths(clonedPieces);
 
       this._dataSetName.set(dataSetName);
-      this._pieces.set(processedPieces);
+      this._pieces.set(this.tools.deepClone(processedPieces));
       this.initBoard();
     } else {
       console.error(`[ChinesePuzzleStore] Error: Level data for "${dataSetName}" not found in dataSet. Falling back to default level.`);
@@ -141,7 +141,7 @@ export class ChinesePuzzleStore {
     const processedPieces = this.pieceImageService.updatePiecesImagePaths(clonedPieces);
 
     this._dataSetName.set(level.id);
-    this._pieces.set(processedPieces);
+    this._pieces.set(this.tools.deepClone(processedPieces));
     this.initBoard();
   }
 

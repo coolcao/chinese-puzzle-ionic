@@ -49,12 +49,7 @@ export class HomeComponent implements OnInit {
 
     if (!tutorialCompleted) {
       // 第一次玩游戏，跳转到教程关卡
-      this.router.navigate(['/fabric'], {
-        queryParams: {
-          levelId: '教程关卡',
-          isTutorial: 'true'
-        }
-      });
+      this.router.navigate(['tutorial']);
     } else {
       // 已完成教程，跳转到关卡选择
       this.router.navigate(['levels']);

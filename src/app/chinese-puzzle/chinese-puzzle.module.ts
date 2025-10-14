@@ -12,6 +12,7 @@ import { LevelSelectComponent } from './pages/level-select/level-select.componen
 import { LevelPreviewComponent } from './components/level-preview/level-preview.component';
 import { LevelGeneratorComponent } from './pages/level-generator/level-generator.component';
 import { ClickSoundDirective } from './directives/click-sound.directive';
+import { TutorialComponent } from './pages/tutorial/tutorial.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { ClickSoundDirective } from './directives/click-sound.directive';
     GameBoardFabricComponent,
     LevelGeneratorComponent,
     ClickSoundDirective,
+    TutorialComponent,
   ],
   imports: [
     CommonModule,

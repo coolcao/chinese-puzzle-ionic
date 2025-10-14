@@ -4,22 +4,24 @@ import { timer } from 'rxjs';
 
 import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
 import { GameManagementService } from '../../services/game-management.service';
-import { Piece, Direction } from '../../chinese-puzzle.type';
+import { tutorialLevel, tutorialSteps } from '../../data/tutorial-data';
+import { Piece, Direction, TutorialStep, Level } from '../../chinese-puzzle.type';
+
 import { ImageLoadingService } from '../../services/image-loading.service';
 import { PieceMovementService } from '../../services/piece-movement.service';
 import { AudioService } from '../../services/audio.service';
 import { GameStorageService } from '../../services/game-storage.service';
-import { FabricGameService } from './services/fabric-game.service';
-import { FabricDrawingService } from './services/fabric-drawing.service';
-import { FabricInteractionService } from './services/fabric-interaction.service';
+import { FabricGameService } from '../game-board-fabric/services/fabric-game.service';
+import { FabricDrawingService } from '../game-board-fabric/services/fabric-drawing.service';
+import { FabricInteractionService } from '../game-board-fabric/services/fabric-interaction.service';
 
 @Component({
-  selector: 'app-game-board-fabric',
+  selector: 'app-tutorial',
   standalone: false,
-  templateUrl: './game-board-fabric.component.html',
-  styleUrls: ['./game-board-fabric.component.css'],
+  templateUrl: './tutorial.component.html',
+  styleUrls: ['./tutorial.component.css'],
 })
-export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('gameCanvasPC', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('gameCanvasMobile', { static: false }) canvasMobileRef!: ElementRef<HTMLCanvasElement>;
 
@@ -40,9 +42,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   boardWidth = this.store.boardWidth();
   boardHeight = this.store.boardHeight();
 
-  dataSetNames = this.store.dataSetNames;
-  dataSetName = this.store.dataSetName;
-
   pieces = this.store.pieces;
   boardState = this.store.board;
   finished = this.store.finished;
@@ -51,10 +50,16 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   steps = 0;
 
+  // 教程相关属性
+  isTutorialMode = true;
+  currentTutorialStep = 0;
+  tutorialSteps: TutorialStep[] = [];
+  showTutorialModal = false;
+  currentTutorialData: TutorialStep | null = null;
+
   showSuccess = false;
   showInstructions = false;
   resourceLoading = false;
-  showCompletionModal = false;
 
   currentLevel = this.store.currentLevel;
 
@@ -65,24 +70,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   private darkModeListener: ((e: MediaQueryListEvent) => void) | null = null;
 
   constructor() {
-    effect(() => {
-      if (this.finished()) {
-        // 播放成功音效
-        this.audioService.playSuccessSound();
-
-        // 保存游戏进度
-        this.gameManagement.saveGameProgress(this.steps, 0); // 暂时传0作为时间
-
-        // 显示完成Modal
-        this.showCompletionModal = true;
-        // 同时显示撒花效果
-        this.showSuccess = true;
-        timer(2500).subscribe(() => {
-          this.showSuccess = false;
-        });
-      }
-    });
-
     // 监听FabricGameService的cellSizeSignal变化
     effect(() => {
       const cellSize = this.fabricGameService.cellSizeSignal();
@@ -119,24 +106,12 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnInit() {
-    // 从查询参数中获取关卡ID
-    this.route.queryParams.subscribe(params => {
-      const levelId = params['levelId'];
+    // 教程页面始终加载教程关卡
+    this.gameManagement.loadLevel(tutorialLevel);
+    this.initTutorial();
 
-      if (levelId) {
-        // URL中指定了关卡，先加载设置，然后手动切换到指定关卡
-        const decodedLevelId = decodeURIComponent(levelId);
-        this.gameManagement.loadSettings().then(() => {
-          this.gameManagement.changeLevel(decodedLevelId);
-        });
-      } else {
-        // 如果没有指定关卡，恢复最近关卡
-        this.gameManagement.restoreLastLevel();
-      }
-
-      // 在数据集更改后重新加载图片
-      this.preLoadImage();
-    });
+    // 在数据集更改后重新加载图片
+    this.preLoadImage();
   }
 
   ngAfterViewInit() {
@@ -153,6 +128,183 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   ngOnDestroy(): void {
     this.destroyResizeObserver();
     this.fabricGameService.dispose();
+  }
+
+  // ========== 教程相关方法 ==========
+
+  private initTutorial() {
+    this.tutorialSteps = tutorialSteps;
+    this.currentTutorialStep = 0;
+
+    // 延迟开始教程，等待棋盘渲染完成
+    setTimeout(() => {
+      this.startTutorial();
+    }, 1000);
+  }
+
+  private startTutorial() {
+    if (this.tutorialSteps.length > 0) {
+      this.showTutorialStep(0);
+    }
+  }
+
+  private showTutorialStep(stepIndex: number) {
+    if (stepIndex >= this.tutorialSteps.length) {
+      this.completeTutorial();
+      return;
+    }
+
+    this.currentTutorialStep = stepIndex;
+    this.currentTutorialData = this.tutorialSteps[stepIndex];
+    this.showTutorialModal = true;
+
+    // 根据步骤类型执行不同操作
+    this.handleTutorialStep(this.currentTutorialData);
+  }
+
+  private handleTutorialStep(step: TutorialStep) {
+    switch (step.type) {
+      case 'highlight':
+        this.highlightElement(step);
+        break;
+      case 'move':
+        this.demonstrateMove(step);
+        break;
+      case 'explain':
+        // 只显示说明，不需要额外操作
+        break;
+      case 'interact':
+        // 等待用户交互
+        this.waitForUserInteraction(step);
+        break;
+    }
+  }
+
+  private highlightElement(step: TutorialStep) {
+    // 高亮指定棋子或区域
+    if (step.targetPieceId) {
+      this.highlightPiece(step.targetPieceId);
+
+      // 显示方向箭头
+      if (step.showDirectionArrow && step.moveDirection) {
+        const pieces = this.pieces();
+        const targetPiece = pieces.find(p => p.id === step.targetPieceId);
+        if (targetPiece) {
+          this.fabricDrawingService.showDirectionArrow(targetPiece, step.moveDirection);
+        }
+      }
+    } else if (step.highlightArea) {
+      this.highlightArea(step.highlightArea);
+    }
+
+    // 高亮目标位置
+    if (step.highlightTargetPosition && step.targetPosition) {
+      // 根据棋子类型确定尺寸
+      let width = 1, height = 1;
+      if (step.targetPieceId) {
+        const pieces = this.pieces();
+        const targetPiece = pieces.find(p => p.id === step.targetPieceId);
+        if (targetPiece) {
+          width = targetPiece.width;
+          height = targetPiece.height;
+        }
+      }
+      this.fabricDrawingService.highlightTargetPosition(step.targetPosition, width, height);
+    }
+  }
+
+  private highlightPiece(pieceId: number) {
+    // 在fabric canvas上高亮指定棋子
+    const pieces = this.pieces();
+    const targetPiece = pieces.find(p => p.id === pieceId);
+    if (targetPiece) {
+      this.fabricDrawingService.highlightPiece(targetPiece);
+    }
+  }
+
+  private highlightArea(area: { x: number, y: number, width: number, height: number }) {
+    // 在fabric canvas上高亮指定区域
+    this.fabricDrawingService.highlightArea(area);
+  }
+
+  private demonstrateMove(step: TutorialStep) {
+    // 演示移动操作
+    if (step.targetPieceId && step.moveDirection) {
+      const pieces = this.pieces();
+      const targetPiece = pieces.find(p => p.id === step.targetPieceId);
+      if (targetPiece) {
+        // 执行移动动画
+        this.handlePieceMove(targetPiece, step.moveDirection, 1);
+      }
+    }
+  }
+
+  private waitForUserInteraction(step: TutorialStep) {
+    // 对于交互步骤，同时显示高亮、箭头和目标位置
+    this.highlightElement(step);
+
+    // 设置交互监听，等待用户操作指定棋子
+    if (step.targetPieceId) {
+      this.fabricInteractionService.setTutorialMode(
+        true,
+        step.targetPieceId,
+        step.strictMovement ? step.moveDirection : undefined,
+        step.strictMovement ? step.targetPosition : undefined
+      );
+    }
+  }
+
+  // 检查教程进度
+  private checkTutorialProgress(movedPiece: Piece) {
+    const currentStep = this.currentTutorialData;
+    if (!currentStep || !currentStep.waitForUser) return;
+
+    // 检查是否移动了目标棋子
+    if (currentStep.targetPieceId && movedPiece.id === currentStep.targetPieceId) {
+      // 用户完成了要求的操作，自动进入下一步
+      setTimeout(() => {
+        this.nextTutorialStep();
+      }, 1000); // 延迟1秒让用户看到操作结果
+    } else if (!currentStep.targetPieceId) {
+      // 没有指定目标棋子，任何移动都算完成
+      setTimeout(() => {
+        this.nextTutorialStep();
+      }, 1000);
+    }
+  }
+
+  nextTutorialStep() {
+    this.showTutorialModal = false;
+    this.fabricDrawingService.clearHighlights();
+
+    setTimeout(() => {
+      this.showTutorialStep(this.currentTutorialStep + 1);
+    }, 500);
+  }
+
+  skipTutorial() {
+    this.showTutorialModal = false;
+    this.fabricDrawingService.clearHighlights();
+    this.completeTutorial();
+  }
+
+
+  private async completeTutorial() {
+    this.isTutorialMode = false;
+    this.showTutorialModal = false;
+    this.fabricDrawingService.clearHighlights();
+    this.fabricInteractionService.setTutorialMode(false);
+
+    // 标记教程已完成
+    await this.gameStorage.markTutorialCompleted();
+
+    // 显示完成提示
+    this.audioService.playSuccessSound();
+
+    // 跳转到关卡选择页面
+    setTimeout(() => {
+      this.router.navigate(['/levels']);
+    }, 2000);
   }
 
   // 初始化Canvas
@@ -353,6 +505,11 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
           totalStepsMoved += 1;
           currentPiece = moveResult.updatedPiece;
 
+          // 教程模式下检查是否完成了要求的操作
+          if (this.isTutorialMode && this.currentTutorialData?.waitForUser) {
+            this.checkTutorialProgress(currentPiece);
+          }
+
         } else {
           break;
         }
@@ -384,24 +541,10 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     event.preventDefault();
   }
 
-  changeDataSet(dataSetName: string) {
-    this.audioService.playClickSound();
-    this.gameManagement.changeLevel(dataSetName);
-    this.steps = 0;
-    // 直接重新绘制棋盘即可
-    Promise.resolve().then(() => {
-      this.drawBoard();
-    });
-  }
-
   // 返回到关卡选择页面
   goToLevelSelect() {
     this.audioService.playClickSound();
     this.router.navigate(['levels'], { replaceUrl: true });
-  }
-
-  onDataSetChange(dataSetName: string) {
-    this.changeDataSet(dataSetName);
   }
 
   private preLoadImage() {
@@ -445,92 +588,10 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     }
   }
 
-  // 前往下一关
-  goToNextLevel() {
-    this.audioService.playClickSound();
-    const currentNames = this.dataSetNames();
-    const currentName = this.dataSetName();
-    const currentIndex = currentNames.indexOf(currentName);
-
-    if (currentIndex < currentNames.length - 1) {
-      const nextLevel = currentNames[currentIndex + 1];
-      this.router.navigate(['game-board-fabric'], {
-        queryParams: { level: nextLevel },
-        replaceUrl: true
-      });
-    }
-  }
-
-  // 检查是否有下一关
-  hasNextLevel(): boolean {
-    const currentNames = this.dataSetNames();
-    const currentName = this.dataSetName();
-    const currentIndex = currentNames.indexOf(currentName);
-
-    return currentIndex < currentNames.length - 1;
-  }
-
-  // 关闭完成Modal
-  closeCompletionModal() {
-    this.audioService.playClickSound();
-    this.showCompletionModal = false;
-
-    // 关闭Modal后，确保游戏状态仍然锁定（如果游戏已完成）
-    setTimeout(() => {
-      if (this.finished()) {
-        this.lockBoard();
-      }
-    }, 0);
-  }
-
-  // 处理Modal遮罩点击
-  onModalBackdropClick(event: Event) {
-    // 点击遮罩时关闭Modal
-    this.closeCompletionModal();
-  }
-
-  // 获取完成评价
-  getCompletionRating(): string {
-    const steps = this.steps;
-    const difficulty = this.currentLevel()?.difficulty || '中级';
-
-    // 根据步数和难度给出评价
-    let threshold: number;
-    switch (difficulty) {
-      case '初级':
-        threshold = 100;
-        break;
-      case '中级':
-        threshold = 150;
-        break;
-      case '高级':
-        threshold = 200;
-        break;
-      case '专家':
-        threshold = 250;
-        break;
-      case '大师':
-        threshold = 300;
-        break;
-      default:
-        threshold = 150;
-    }
-
-    if (steps <= threshold * 0.7) {
-      return '完美通关！🏆';
-    } else if (steps <= threshold) {
-      return '表现优秀！⭐';
-    } else if (steps <= threshold * 1.3) {
-      return '还不错！👍';
-    } else {
-      return '继续努力！💪';
-    }
-  }
-
   // 监听键盘事件
   onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Escape' && this.showCompletionModal) {
-      this.closeCompletionModal();
+    if (event.key === 'Escape') {
+      this.goToLevelSelect();
     }
   }
 }

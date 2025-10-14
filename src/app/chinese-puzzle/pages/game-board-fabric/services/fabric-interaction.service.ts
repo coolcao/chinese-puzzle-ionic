@@ -19,7 +19,6 @@ export class FabricInteractionService {
   // 教程模式相关
   private tutorialMode = false;
   private tutorialTargetPieceId?: number;
-  private tutorialCallback?: () => void;
   private tutorialRequiredDirection?: string;
   private tutorialTargetPosition?: { x: number, y: number };
 
@@ -75,8 +74,6 @@ export class FabricInteractionService {
     canvas.on('object:moving', (e: any) => {
       const obj = e.target as Group;
       if (!obj) return;
-
-      console.log(this.smoothDragMode());
 
       if (this.smoothDragMode()) {
         // 丝滑拖拽模式：只约束边界，保持拖拽连续性
@@ -1017,13 +1014,11 @@ export class FabricInteractionService {
     targetPieceId?: number,
     requiredDirection?: string,
     targetPosition?: { x: number, y: number },
-    callback?: () => void
   ): void {
     this.tutorialMode = enabled;
     this.tutorialTargetPieceId = targetPieceId;
     this.tutorialRequiredDirection = requiredDirection;
     this.tutorialTargetPosition = targetPosition;
-    this.tutorialCallback = callback;
   }
 
   // 检查是否允许拖拽（教程模式下只允许拖拽目标棋子）

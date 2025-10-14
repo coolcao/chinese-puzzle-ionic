@@ -1,7 +1,7 @@
 import { Injectable, effect, inject } from '@angular/core';
 import { ChinesePuzzleStore } from '../chinese-puzzle.store';
 import { GameStorageService } from './game-storage.service';
-import { UserSettings } from '../chinese-puzzle.type';
+import { Level, UserSettings } from '../chinese-puzzle.type';
 
 @Injectable({
   providedIn: 'root'
@@ -212,6 +212,10 @@ export class GameManagementService {
   changeLevel(levelId: string) {
     this.store.changeDataSet(levelId);
     // 自动保存由effect处理
+  }
+
+  loadLevel(level: Level) {
+    this.store.loadLevelFromObject(level);
   }
 
   // 重置游戏

@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from "@angular/core";
 import { ToolsService } from "./services/tools.service";
 import { PieceImageService } from "./services/piece-image.service";
-import { Piece, UserSettings } from "./chinese-puzzle.type";
+import { Piece, UserSettings, Level } from "./chinese-puzzle.type";
 
 import { dataSet, levels } from './data/data-set';
 
@@ -134,6 +134,15 @@ export class ChinesePuzzleStore {
         this.changeDataSet(dataSetNames[0]);
       }
     }
+  }
+
+  loadLevelFromObject(level: Level) {
+    const clonedPieces = this.tools.deepClone(level.pieces);
+    const processedPieces = this.pieceImageService.updatePiecesImagePaths(clonedPieces);
+
+    this._dataSetName.set(level.id);
+    this._pieces.set(processedPieces);
+    this.initBoard();
   }
 
 }

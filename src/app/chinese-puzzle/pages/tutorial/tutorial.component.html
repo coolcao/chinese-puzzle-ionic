@@ -142,21 +142,81 @@
             </div>
           </div>
 
-          <div class="flex-1 p-6">
-            <h3
-              class="mb-4 text-lg font-semibold text-wood-text dark:text-wood-lighter"
-            >
-              游戏说明
-            </h3>
-            <div
-              class="space-y-3 text-sm text-wood-text dark:text-wood-lighter"
-            >
-              <p>🎮 通过拖拽方块移动棋子</p>
-              <p>⭐ 优先移动大块棋子开路</p>
-              <p>🎯 将曹操移动到底部出口</p>
-              <p>🏆 挑战最少步数完成</p>
+          <div *ngIf="currentTutorialData" class="flex-1 p-6">
+            <div class="mb-4 flex items-center justify-between">
+              <div class="flex-1">
+                <div class="mb-2 flex items-center space-x-3">
+                  <span class="text-lg">
+                    {{
+                      currentTutorialData.type === "interact"
+                        ? "👆"
+                        : currentTutorialData.type === "highlight"
+                        ? "✨"
+                        : currentTutorialData.type === "move"
+                        ? "🎯"
+                        : "📖"
+                    }}
+                  </span>
+                  <h4
+                    class="text-lg font-bold text-wood-text dark:text-wood-lighter"
+                  >
+                    {{ currentTutorialData.title }}
+                  </h4>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-sm font-medium text-wood-text/80 dark:text-wood-lighter/80">
+                    步骤 {{ currentTutorialStep + 1 }}/{{ tutorialSteps.length }}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                (click)="skipTutorial()"
+                appClickSound
+                class="rounded-lg bg-wood-dark px-3 py-1.5 text-xs font-medium text-wood-lighter transition-colors hover:bg-wood-darker dark:bg-dark-wood-darker dark:hover:bg-dark-wood"
+              >
+                跳过
+              </button>
             </div>
+
+            <p class="mb-4 text-sm text-wood-text/90 dark:text-wood-light/90">
+              {{ currentTutorialData.description }}
+            </p>
+
+            <div class="mb-4 flex space-x-1.5">
+              <div
+                *ngFor="let step of tutorialSteps; let i = index"
+                class="h-1.5 flex-1 rounded-full transition-colors"
+                [ngClass]="{
+                  'bg-wood-darker dark:bg-wood-lighter': i === currentTutorialStep,
+                  'bg-wood-dark/60 dark:bg-wood/60': i < currentTutorialStep,
+                  'bg-wood/30 dark:bg-dark-wood/30': i > currentTutorialStep
+                }"
+              ></div>
+            </div>
+
+            <div *ngIf="currentTutorialData.waitForUser" class="flex items-center justify-center space-x-2 rounded-lg bg-wood/30 py-2 dark:bg-dark-wood/30">
+              <div class="flex space-x-1.5">
+                <div class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"></div>
+                <div class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter" style="animation-delay: 0.1s"></div>
+                <div class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter" style="animation-delay: 0.2s"></div>
+              </div>
+              <span class="text-sm font-medium text-wood-text dark:text-wood-lighter">请按提示操作</span>
+            </div>
+
+            <button
+              *ngIf="!currentTutorialData.waitForUser"
+              (click)="nextTutorialStep()"
+              appClickSound
+              class="w-full rounded-lg bg-wood-darker py-2.5 font-semibold text-wood-lighter transition-colors hover:bg-wood-dark dark:bg-wood-lighter dark:text-wood-text dark:hover:bg-wood"
+            >
+              {{
+                currentTutorialStep === tutorialSteps.length - 1 ? "完成教程" : "下一步"
+              }}
+            </button>
           </div>
+
+          
         </div>
       </div>
     </div>
@@ -216,8 +276,97 @@
     </header>
 
     <div class="w-full bg-wood-light/70 dark:bg-dark-wood-darker/70">
-      <!-- 正常状态栏 -->
+      <!-- 教程提示栏 - 替换状态栏位置 -->
       <div
+        *ngIf="currentTutorialData"
+        class="border-b-2 border-wood-border bg-wood-light px-4 py-3 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-dark-wood-dark"
+      >
+        <div class="mb-2 flex items-center justify-between">
+          <!-- 步骤和标题 -->
+          <div class="flex-1">
+            <div class="mb-1 flex items-center space-x-2">
+              <span class="text-sm font-bold text-wood-text dark:text-wood-lighter"
+                >第 {{ currentTutorialStep + 1 }} 步</span
+              >
+              <span class="text-lg">
+                {{
+                  currentTutorialData.type === "interact"
+                    ? "👆"
+                    : currentTutorialData.type === "highlight"
+                      ? "✨"
+                      : currentTutorialData.type === "move"
+                        ? "🎯"
+                        : "📖"
+                }}
+              </span>
+            </div>
+            <h4 class="text-base font-bold text-wood-text dark:text-wood-lighter">{{ currentTutorialData.title }}</h4>
+          </div>
+
+          <!-- 跳过按钮 -->
+          <button
+            (click)="skipTutorial()"
+            appClickSound
+            class="rounded-lg bg-wood-dark px-3 py-1 text-xs text-wood-lighter transition-colors hover:bg-wood-darker dark:bg-dark-wood-darker dark:text-wood-lighter dark:hover:bg-dark-wood"
+          >
+            跳过
+          </button>
+        </div>
+
+        <!-- 描述 -->
+        <p class="mb-3 text-sm text-wood-text dark:text-wood">
+          {{ currentTutorialData.description }}
+        </p>
+
+        <!-- 进度条 -->
+        <div class="mb-3 flex space-x-1">
+          <div
+            *ngFor="let step of tutorialSteps; let i = index"
+            class="h-1 flex-1 rounded-full transition-colors"
+            [ngClass]="{
+              'bg-wood-darker dark:bg-wood-lighter': i === currentTutorialStep,
+              'bg-wood-dark dark:bg-wood': i < currentTutorialStep,
+              'bg-gray-300 dark:bg-gray-600': i > currentTutorialStep,
+            }"
+          ></div>
+        </div>
+
+        <!-- 操作提示或下一步按钮 -->
+        <div
+          *ngIf="currentTutorialData.waitForUser"
+          class="flex items-center justify-center space-x-2"
+        >
+          <div class="flex space-x-1">
+            <div class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"></div>
+            <div
+              class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+              style="animation-delay: 0.1s"
+            ></div>
+            <div
+              class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+              style="animation-delay: 0.2s"
+            ></div>
+          </div>
+          <span class="text-sm text-wood-text dark:text-wood">请按照提示操作棋子</span>
+        </div>
+
+        <button
+          *ngIf="!currentTutorialData.waitForUser"
+          (click)="nextTutorialStep()"
+          appClickSound
+          class="w-full rounded-lg bg-wood-darker py-2 font-medium text-wood-lighter transition-colors hover:bg-wood dark:bg-wood-lighter dark:text-wood-text dark:hover:bg-wood"
+        >
+          {{
+            currentTutorialStep === tutorialSteps.length - 1
+              ? "完成教程"
+              : "下一步"
+          }}
+        </button>
+      </div>
+
+      <!-- 正常状态栏 - 仅非教程模式显示 -->
+      <div
+        style="display: none;"
         class="flex items-center justify-between border-b-2 border-wood-border bg-wood-light px-4 py-2 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-dark-wood-dark"
       >
         <div class="flex w-full flex-col space-y-2 px-2">
@@ -412,141 +561,7 @@
   </div>
 </div>
 
-<!-- 游戏完成Modal -->
-<div
-  *ngIf="finished() && showCompletionModal"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-  (click)="onModalBackdropClick($event)"
->
-  <div
-    class="relative mx-4 w-full max-w-md transform rounded-2xl border-4 border-wood-border bg-wood-light shadow-2xl transition-all duration-300 ease-out dark:border-dark-wood-border dark:bg-dark-wood-lighter"
-    (click)="$event.stopPropagation()"
-  >
-    <!-- Modal Header -->
-    <div class="relative px-6 pt-6 text-center">
-      <!-- 关闭按钮 -->
-      <button
-        (click)="closeCompletionModal()"
-        class="absolute right-2 top-2 transform rounded-full p-2 text-wood-text/60 transition-all duration-200 hover:scale-110 hover:bg-wood/20 hover:text-wood-text dark:text-wood-lighter/60 dark:hover:bg-dark-wood/20 dark:hover:text-wood-lighter"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
 
-      <div class="mb-2 text-3xl">🎉</div>
-      <h2 class="mb-1 text-2xl font-bold text-wood-text dark:text-wood-lighter">
-        恭喜完成关卡！
-      </h2>
-      <div class="mb-4 text-3xl">🎉</div>
-    </div>
-
-    <!-- Modal Content -->
-    <div class="px-6 pb-2">
-      <div class="mb-6 space-y-3">
-        <!-- 关卡信息 -->
-        <div
-          class="flex items-center justify-between rounded-lg border border-wood-border/50 bg-wood/30 p-3 dark:border-dark-wood-border/50 dark:bg-dark-wood/30"
-        >
-          <span
-            class="text-sm font-medium text-wood-text/90 dark:text-wood-lighter/90"
-            >🎯 关卡</span
-          >
-          <span class="font-semibold text-wood-text dark:text-wood-lighter">
-            {{ currentLevel()?.name || "未知关卡" }} ({{
-              currentLevel()?.difficulty || "未知"
-            }})
-          </span>
-        </div>
-
-        <!-- 完成步数 -->
-        <div
-          class="flex items-center justify-between rounded-lg border border-wood-border/50 bg-wood/30 p-3 dark:border-dark-wood-border/50 dark:bg-dark-wood/30"
-        >
-          <span
-            class="text-sm font-medium text-wood-text/90 dark:text-wood-lighter/90"
-            >⭐ 完成步数</span
-          >
-          <span class="font-semibold text-wood-text dark:text-wood-lighter">
-            {{ steps }}步
-          </span>
-        </div>
-
-        <!-- 评价 -->
-        <div
-          class="flex items-center justify-between rounded-lg border border-wood-border/50 bg-wood/30 p-3 dark:border-dark-wood-border/50 dark:bg-dark-wood/30"
-        >
-          <span
-            class="text-sm font-medium text-wood-text/90 dark:text-wood-lighter/90"
-            >🏆 评价</span
-          >
-          <span class="font-semibold text-green-600 dark:text-green-400">
-            {{ getCompletionRating() }}
-          </span>
-        </div>
-      </div>
-
-      <!-- Modal Actions -->
-      <div class="mb-4 flex flex-col space-y-3">
-        <button
-          (click)="goToNextLevel(); closeCompletionModal()"
-          appClickSound
-          [disabled]="!hasNextLevel()"
-          class="flex w-full transform items-center justify-center gap-2 rounded-xl border-2 border-blue-800 bg-blue-600 px-4 py-3 font-medium text-white shadow-lg transition duration-300 hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:border-gray-500 disabled:bg-gray-400"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M13 7l5 5m0 0l-5 5m5-5H6"
-            />
-          </svg>
-          {{ hasNextLevel() ? "下一关 ⭐" : "已是最后一关" }}
-        </button>
-
-        <button
-          (click)="goToLevelSelect(); closeCompletionModal()"
-          appClickSound
-          class="flex w-full transform items-center justify-center gap-2 rounded-xl border-2 border-wood-border bg-wood px-4 py-3 font-medium text-wood-text shadow-lg transition duration-300 hover:bg-wood-hover active:scale-95 dark:border-dark-wood-border dark:bg-dark-wood dark:text-wood-lighter dark:hover:bg-dark-wood-hover"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 10h16M4 14h16M4 18h16"
-            />
-          </svg>
-          返回关卡列表
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
 
 

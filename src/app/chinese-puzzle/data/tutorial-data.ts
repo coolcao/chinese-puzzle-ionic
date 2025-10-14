@@ -44,7 +44,7 @@ export const tutorialSteps: TutorialStep[] = [
     id: 1,
     type: 'explain',
     title: '欢迎来到华容道！',
-    description: '目标很简单：将红色的曹操移动到底部出口。',
+    description: '目标很简单：将方块曹操移动到底部出口。',
     autoPlay: false,
     waitForUser: false
   },
@@ -52,7 +52,7 @@ export const tutorialSteps: TutorialStep[] = [
     id: 2,
     type: 'highlight',
     title: '这是曹操',
-    description: '红色的2x2大块就是曹操。',
+    description: '这个2x2大块就是曹操。',
     targetPieceId: 1,
     autoPlay: false,
     waitForUser: false

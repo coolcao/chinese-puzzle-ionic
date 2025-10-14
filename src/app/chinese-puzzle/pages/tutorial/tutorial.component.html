@@ -151,10 +151,10 @@
                       currentTutorialData.type === "interact"
                         ? "👆"
                         : currentTutorialData.type === "highlight"
-                        ? "✨"
-                        : currentTutorialData.type === "move"
-                        ? "🎯"
-                        : "📖"
+                          ? "✨"
+                          : currentTutorialData.type === "move"
+                            ? "🎯"
+                            : "📖"
                     }}
                   </span>
                   <h4
@@ -164,8 +164,12 @@
                   </h4>
                 </div>
                 <div class="flex items-center space-x-2">
-                  <span class="text-sm font-medium text-wood-text/80 dark:text-wood-lighter/80">
-                    步骤 {{ currentTutorialStep + 1 }}/{{ tutorialSteps.length }}
+                  <span
+                    class="text-sm font-medium text-wood-text/80 dark:text-wood-lighter/80"
+                  >
+                    步骤 {{ currentTutorialStep + 1 }}/{{
+                      tutorialSteps.length
+                    }}
                   </span>
                 </div>
               </div>
@@ -188,20 +192,35 @@
                 *ngFor="let step of tutorialSteps; let i = index"
                 class="h-1.5 flex-1 rounded-full transition-colors"
                 [ngClass]="{
-                  'bg-wood-darker dark:bg-wood-lighter': i === currentTutorialStep,
+                  'bg-wood-darker dark:bg-wood-lighter':
+                    i === currentTutorialStep,
                   'bg-wood-dark/60 dark:bg-wood/60': i < currentTutorialStep,
-                  'bg-wood/30 dark:bg-dark-wood/30': i > currentTutorialStep
+                  'bg-wood/30 dark:bg-dark-wood/30': i > currentTutorialStep,
                 }"
               ></div>
             </div>
 
-            <div *ngIf="currentTutorialData.waitForUser" class="flex items-center justify-center space-x-2 rounded-lg bg-wood/30 py-2 dark:bg-dark-wood/30">
+            <div
+              *ngIf="currentTutorialData.waitForUser"
+              class="flex items-center justify-center space-x-2 rounded-lg bg-wood/30 py-2 dark:bg-dark-wood/30"
+            >
               <div class="flex space-x-1.5">
-                <div class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"></div>
-                <div class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter" style="animation-delay: 0.1s"></div>
-                <div class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter" style="animation-delay: 0.2s"></div>
+                <div
+                  class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+                ></div>
+                <div
+                  class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+                  style="animation-delay: 0.1s"
+                ></div>
+                <div
+                  class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+                  style="animation-delay: 0.2s"
+                ></div>
               </div>
-              <span class="text-sm font-medium text-wood-text dark:text-wood-lighter">请按提示操作</span>
+              <span
+                class="text-sm font-medium text-wood-text dark:text-wood-lighter"
+                >请按提示操作</span
+              >
             </div>
 
             <button
@@ -211,12 +230,12 @@
               class="w-full rounded-lg bg-wood-darker py-2.5 font-semibold text-wood-lighter transition-colors hover:bg-wood-dark dark:bg-wood-lighter dark:text-wood-text dark:hover:bg-wood"
             >
               {{
-                currentTutorialStep === tutorialSteps.length - 1 ? "完成教程" : "下一步"
+                currentTutorialStep === tutorialSteps.length - 1
+                  ? "完成教程"
+                  : "下一步"
               }}
             </button>
           </div>
-
-          
         </div>
       </div>
     </div>
@@ -284,23 +303,11 @@
         <div class="mb-2 flex items-center justify-between">
           <!-- 步骤和标题 -->
           <div class="flex-1">
-            <div class="mb-1 flex items-center space-x-2">
-              <span class="text-sm font-bold text-wood-text dark:text-wood-lighter"
-                >第 {{ currentTutorialStep + 1 }} 步</span
-              >
-              <span class="text-lg">
-                {{
-                  currentTutorialData.type === "interact"
-                    ? "👆"
-                    : currentTutorialData.type === "highlight"
-                      ? "✨"
-                      : currentTutorialData.type === "move"
-                        ? "🎯"
-                        : "📖"
-                }}
-              </span>
-            </div>
-            <h4 class="text-base font-bold text-wood-text dark:text-wood-lighter">{{ currentTutorialData.title }}</h4>
+            <h4
+              class="text-base font-bold text-wood-text dark:text-wood-lighter"
+            >
+              {{ currentTutorialData.title }}
+            </h4>
           </div>
 
           <!-- 跳过按钮 -->
@@ -337,7 +344,9 @@
           class="flex items-center justify-center space-x-2"
         >
           <div class="flex space-x-1">
-            <div class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"></div>
+            <div
+              class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+            ></div>
             <div
               class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
               style="animation-delay: 0.1s"
@@ -347,7 +356,9 @@
               style="animation-delay: 0.2s"
             ></div>
           </div>
-          <span class="text-sm text-wood-text dark:text-wood">请按照提示操作棋子</span>
+          <span class="text-sm text-wood-text dark:text-wood"
+            >请按照提示操作棋子</span
+          >
         </div>
 
         <button
@@ -363,88 +374,10 @@
           }}
         </button>
       </div>
-
-      <!-- 正常状态栏 - 仅非教程模式显示 -->
-      <div
-        style="display: none;"
-        class="flex items-center justify-between border-b-2 border-wood-border bg-wood-light px-4 py-2 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-dark-wood-dark"
-      >
-        <div class="flex w-full flex-col space-y-2 px-2">
-          <!-- 棋局选择区域 -->
-          <div class="flex items-center space-x-2">
-            <span
-              class="whitespace-nowrap text-xs font-semibold text-wood-text dark:text-wood-lighter"
-            >
-              当前关卡：
-            </span>
-            <div
-              class="flex-1 rounded-lg border border-wood-border bg-wood-lighter px-2 py-1 text-xs text-wood-text shadow-inner dark:bg-wood-dark/50 dark:text-wood-lighter"
-            >
-              <div class="flex items-center justify-between">
-                <span class="font-semibold">{{
-                  currentLevel()?.name || "未知关卡"
-                }}</span>
-                <span
-                  class="text-xs text-wood-text/70 dark:text-wood-lighter/70"
-                >
-                  {{ currentLevel()?.difficulty || "未知" }}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 状态显示区域 -->
-          <div class="flex items-center justify-between">
-            <!-- 左侧：步数 -->
-            <div class="flex items-center space-x-1">
-              <span
-                class="text-sm font-medium text-wood-text dark:text-wood-lighter"
-                >👣</span
-              >
-              <span class="text-xs text-wood-text/80 dark:text-wood-lighter/80"
-                >步数:</span
-              >
-              <span
-                class="rounded bg-wood/20 px-1 py-0.5 text-xs font-semibold text-wood-text dark:bg-dark-wood/20 dark:text-wood-lighter"
-                >{{ steps }}</span
-              >
-            </div>
-
-            <!-- 中间：状态 -->
-            <div class="flex items-center space-x-1">
-              <span class="text-sm">
-                {{ finished() ? "✅" : "⏳" }}
-              </span>
-              <span
-                class="rounded px-1 py-0.5 text-xs font-semibold"
-                [class]="
-                  finished()
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                    : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                "
-              >
-                {{ finished() ? "已完成" : "进行中" }}
-              </span>
-            </div>
-
-            <!-- 右侧：计时（占位符） -->
-            <div class="flex items-center space-x-1">
-              <span
-                class="text-sm font-medium text-wood-text dark:text-wood-lighter"
-                >⏱️</span
-              >
-              <span
-                class="rounded bg-wood/20 px-1 py-0.5 text-xs font-semibold text-wood-text dark:bg-dark-wood/20 dark:text-wood-lighter"
-                >00:00</span
-              >
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div
-      class="flex flex-1 flex-col items-center justify-center bg-wood-light/50 px-4 dark:bg-dark-wood-darker/50"
+      class="flex flex-1 flex-col items-center justify-start bg-wood-light/50 px-4 pt-8 dark:bg-dark-wood-darker/50"
     >
       <canvas
         #gameCanvasMobile
@@ -560,10 +493,6 @@
     </div>
   </div>
 </div>
-
-
-
-
 
 <div
   [ngClass]="{ hidden: !resourceLoading }"

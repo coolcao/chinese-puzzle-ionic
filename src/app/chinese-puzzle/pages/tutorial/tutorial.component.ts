@@ -139,7 +139,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     // 延迟开始教程，等待棋盘渲染完成
     setTimeout(() => {
       this.startTutorial();
-    }, 1000);
+    }, 0);
   }
 
   private startTutorial() {

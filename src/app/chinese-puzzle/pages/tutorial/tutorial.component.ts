@@ -1,16 +1,16 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inject, OnInit, computed } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { timer } from 'rxjs';
+import { Router } from '@angular/router';
 
 import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
 import { GameManagementService } from '../../services/game-management.service';
 import { tutorialLevel, tutorialSteps } from '../../data/tutorial-data';
-import { Piece, Direction, TutorialStep, Level } from '../../chinese-puzzle.type';
+import { Piece, Direction, TutorialStep } from '../../chinese-puzzle.type';
 
 import { ImageLoadingService } from '../../services/image-loading.service';
 import { PieceMovementService } from '../../services/piece-movement.service';
 import { AudioService } from '../../services/audio.service';
 import { GameStorageService } from '../../services/game-storage.service';
+import { TutorialService } from '../../services/tutorial.service';
 import { FabricGameService } from '../game-board-fabric/services/fabric-game.service';
 import { FabricDrawingService } from '../game-board-fabric/services/fabric-drawing.service';
 import { FabricInteractionService } from '../game-board-fabric/services/fabric-interaction.service';
@@ -34,7 +34,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   private pieceMovementService = inject(PieceMovementService);
   private audioService = inject(AudioService);
   private gameStorage = inject(GameStorageService);
-  private route = inject(ActivatedRoute);
+  private tutorialService = inject(TutorialService);
   private router = inject(Router);
 
   Direction = Direction;
@@ -56,12 +56,16 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   tutorialSteps: TutorialStep[] = [];
   showTutorialModal = false;
   currentTutorialData: TutorialStep | null = null;
+  boardLocked = false; // 棋盘锁定状态
+  showBoardMask = false; // 显示棋盘蒙版
+  tutorialError = ''; // 教程错误提示
+  showTutorialError = false; // 显示教程错误提示
 
   showSuccess = false;
   showInstructions = false;
   resourceLoading = false;
 
-  currentLevel = this.store.currentLevel;
+  currentLevel = tutorialLevel;
 
   // 监听屏幕大小变化
   private resizeObserver: ResizeObserver | null = null;
@@ -144,6 +148,10 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private startTutorial() {
     if (this.tutorialSteps.length > 0) {
+      // 教程开始时保存初始棋子位置
+      this.tutorialService.saveCurrentPiecePositions(this.pieces());
+      // 教程开始时默认锁定棋盘
+      this.lockTutorialBoard();
       this.showTutorialStep(0);
     }
   }
@@ -163,6 +171,18 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private handleTutorialStep(step: TutorialStep) {
+    // 启用教程服务
+    this.tutorialService.enableTutorial(step);
+
+    // 根据步骤类型控制棋盘锁定状态
+    if (step.type === 'interact') {
+      // 交互步骤：解锁棋盘，允许用户操作
+      this.unlockTutorialBoard();
+    } else {
+      // 其他步骤（explain, highlight, move）：锁定棋盘，只能查看
+      this.lockTutorialBoard();
+    }
+
     switch (step.type) {
       case 'highlight':
         this.highlightElement(step);
@@ -242,15 +262,86 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   private waitForUserInteraction(step: TutorialStep) {
     // 对于交互步骤，同时显示高亮、箭头和目标位置
     this.highlightElement(step);
+    // 教程服务已经在 handleTutorialStep 中启用，无需额外设置
+  }
 
-    // 设置交互监听，等待用户操作指定棋子
-    if (step.targetPieceId) {
-      this.fabricInteractionService.setTutorialMode(
-        true,
-        step.targetPieceId,
-        step.strictMovement ? step.moveDirection : undefined,
-        step.strictMovement ? step.targetPosition : undefined
-      );
+  // 验证教程移动是否符合要求（使用TutorialService）
+  private validateTutorialMove(piece: Piece, direction: Direction): boolean {
+    const result = this.tutorialService.validateTutorialMove(piece, direction);
+
+    if (!result.isValid && result.errorMessage) {
+      this.showTutorialErrorMessage(result.errorMessage);
+    }
+
+    return result.isValid;
+  }
+
+  // 显示教程错误提示
+  private showTutorialErrorMessage(message: string) {
+    this.tutorialError = message;
+    this.showTutorialError = true;
+
+    // 播放错误音效
+    this.audioService.playFailSound();
+
+    // 3秒后自动隐藏错误提示
+    setTimeout(() => {
+      this.hideTutorialError();
+    }, 3000);
+  }
+
+  // 隐藏教程错误提示
+  hideTutorialError() {
+    this.showTutorialError = false;
+    this.tutorialError = '';
+  }
+
+
+  // 强制恢复指定棋子的视觉位置（立即生效）
+  private forceRestorePieceVisualPosition(piece: Piece) {
+    const savedPosition = this.tutorialService.getSavedPosition(piece.id);
+    if (savedPosition) {
+      // 恢复到保存的位置
+      const restoredPiece = { ...piece, x: savedPosition.x, y: savedPosition.y };
+
+      // 立即更新 Fabric 中的棋子视觉位置
+      this.fabricDrawingService.updatePiecePosition(restoredPiece);
+    } else {
+      // 如果没有保存的位置，强制更新棋子位置
+      this.fabricDrawingService.updatePiecePosition(piece);
+    }
+
+    // 确保棋子交互状态正确
+    this.ensurePieceInteractivity(piece.id);
+
+    // 强制渲染
+    this.fabricGameService.renderCanvas();
+  }
+
+  // 确保指定棋子的交互状态正确
+  private ensurePieceInteractivity(pieceId: number) {
+    if (!this.fabricGameService.canvas) return;
+
+    // 获取Fabric中对应的棋子对象
+    const fabricObjects = this.fabricGameService.canvas.getObjects();
+    const targetObject = fabricObjects.find((obj: any) => obj.pieceId === pieceId);
+
+    if (targetObject) {
+      // 强制重置交互状态
+      targetObject.set({
+        selectable: true,
+        evented: true,
+        hasControls: false,
+        hasBorders: false,
+        lockScalingX: true,
+        lockScalingY: true,
+        lockRotation: true
+      });
+
+      // 如果对象当前被选中，取消选中以重置状态
+      if (this.fabricGameService.canvas.getActiveObject() === targetObject) {
+        this.fabricGameService.canvas.discardActiveObject();
+      }
     }
   }
 
@@ -259,12 +350,19 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     const currentStep = this.currentTutorialData;
     if (!currentStep || !currentStep.waitForUser) return;
 
+    // 清除任何错误提示
+    this.hideTutorialError();
+
     // 检查是否移动了目标棋子
     if (currentStep.targetPieceId && movedPiece.id === currentStep.targetPieceId) {
-      // 用户完成了要求的操作，自动进入下一步
-      setTimeout(() => {
-        this.nextTutorialStep();
-      }, 1000); // 延迟1秒让用户看到操作结果
+      // 验证是否到达了目标位置
+      if (this.checkTargetPositionReached(movedPiece, currentStep)) {
+        // 用户完成了要求的操作，自动进入下一步
+        setTimeout(() => {
+          this.nextTutorialStep();
+        }, 1000); // 延迟1秒让用户看到操作结果
+      }
+      // 如果没有到达目标位置，什么都不做，等待用户继续移动
     } else if (!currentStep.targetPieceId) {
       // 没有指定目标棋子，任何移动都算完成
       setTimeout(() => {
@@ -273,9 +371,16 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // 检查棋子是否到达了目标位置（使用TutorialService）
+  private checkTargetPositionReached(piece: Piece, step: TutorialStep): boolean {
+    return this.tutorialService.checkTargetPositionReached(piece);
+  }
+
   nextTutorialStep() {
     this.showTutorialModal = false;
     this.fabricDrawingService.clearHighlights();
+    // 清除教程错误提示
+    this.hideTutorialError();
 
     setTimeout(() => {
       this.showTutorialStep(this.currentTutorialStep + 1);
@@ -285,6 +390,11 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   skipTutorial() {
     this.showTutorialModal = false;
     this.fabricDrawingService.clearHighlights();
+    // 清除教程错误提示
+    this.hideTutorialError();
+    // 解锁棋盘并隐藏蒙版
+    this.unlockTutorialBoard();
+    this.showBoardMask = false;
     this.completeTutorial();
   }
 
@@ -293,7 +403,13 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isTutorialMode = false;
     this.showTutorialModal = false;
     this.fabricDrawingService.clearHighlights();
-    this.fabricInteractionService.setTutorialMode(false);
+
+    // 禁用教程服务
+    this.tutorialService.disableTutorial();
+
+    // 解锁棋盘并隐藏蒙版
+    this.unlockTutorialBoard();
+    this.showBoardMask = false;
 
     // 标记教程已完成
     await this.gameStorage.markTutorialCompleted();
@@ -484,12 +600,38 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     // 绘制完成后，根据游戏状态应用锁定
     if (this.finished()) {
       this.lockBoard();
+    } else if (this.isTutorialMode) {
+      // 教程模式下，根据当前步骤类型应用锁定状态
+      if (this.boardLocked) {
+        this.lockTutorialBoard();
+      } else {
+        this.unlockTutorialBoard();
+      }
     }
   }
 
 
   // 处理棋子移动（支持多步移动）
   private handlePieceMove(piece: Piece, direction: Direction, steps: number) {
+    // 在教程模式下，保存移动前的位置
+    if (this.isTutorialMode) {
+      this.tutorialService.saveCurrentPiecePositions(this.pieces());
+    }
+
+    // 教程模式下的严格验证
+    if (this.tutorialService.isStrictInteractionStep()) {
+      const isValidMove = this.validateTutorialMove(piece, direction);
+      if (!isValidMove) {
+        // 处理验证失败
+        this.tutorialService.handleValidationError();
+
+        // 验证失败，立即强制恢复 Fabric 中的棋子位置
+        this.forceRestorePieceVisualPosition(piece);
+
+        return; // 阻止移动并已显示提示
+      }
+    }
+
     let currentPiece = piece;
     let totalStepsMoved = 0;
 
@@ -528,6 +670,13 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // 通知交互服务移动已完成（用于路径执行）
       this.fabricInteractionService.notifyMoveCompleted(currentPiece);
+
+      // 教程模式下，成功移动后更新保存的位置
+      if (this.isTutorialMode) {
+        this.tutorialService.saveCurrentPiecePositions(this.pieces());
+        // 清除错误处理状态，允许后续操作
+        this.tutorialService.clearErrorState();
+      }
     } else {
       // 播放失败音效
       this.audioService.playFailSound();
@@ -578,6 +727,34 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 解锁棋盘，允许操作
   private unlockBoard() {
+    if (this.fabricGameService.canvas) {
+      this.fabricGameService.canvas.selection = false; // 保持不允许多选
+      this.fabricGameService.canvas.forEachObject((obj) => {
+        obj.selectable = true;
+        obj.evented = true;
+      });
+      this.fabricGameService.canvas.renderAll();
+    }
+  }
+
+  // 教程专用：锁定棋盘
+  private lockTutorialBoard() {
+    this.boardLocked = true;
+    this.showBoardMask = true; // 显示蒙版
+    if (this.fabricGameService.canvas) {
+      this.fabricGameService.canvas.selection = false;
+      this.fabricGameService.canvas.forEachObject((obj) => {
+        obj.selectable = false;
+        obj.evented = false;
+      });
+      this.fabricGameService.canvas.renderAll();
+    }
+  }
+
+  // 教程专用：解锁棋盘
+  private unlockTutorialBoard() {
+    this.boardLocked = false;
+    this.showBoardMask = false; // 隐藏蒙版
     if (this.fabricGameService.canvas) {
       this.fabricGameService.canvas.selection = false; // 保持不允许多选
       this.fabricGameService.canvas.forEachObject((obj) => {

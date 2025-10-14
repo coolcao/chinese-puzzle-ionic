@@ -16,7 +16,7 @@ export class LevelSelectComponent implements OnInit {
 
   selectLevel(levelId: string) {
     this.router.navigate(['fabric'], {
-      queryParams: { level: levelId }
+      queryParams: { levelId: levelId }
     });
   }
 

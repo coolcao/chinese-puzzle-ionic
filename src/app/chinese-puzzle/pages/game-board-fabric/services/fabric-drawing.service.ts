@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Canvas, Rect, Line, Text, Group, Pattern, Gradient, Shadow, Image, Polygon } from 'fabric';
-import { Piece } from '../../chinese-puzzle.type';
+import { Piece } from '../../../chinese-puzzle.type';
 import { FabricGameService } from './fabric-game.service';
-import { ImageLoadingService } from '../../services/image-loading.service';
-import { PieceImageService } from '../../services/piece-image.service';
+import { ImageLoadingService } from '../../../services/image-loading.service';
+import { PieceImageService } from '../../../services/piece-image.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class FabricDrawingService {
     private fabricGameService: FabricGameService,
     private imageLoadingService: ImageLoadingService,
     private pieceImageService: PieceImageService
-  ) {}
+  ) { }
 
   // 绘制棋盘
   drawBoard(isDarkMode: boolean): void {
@@ -274,7 +274,7 @@ export class FabricDrawingService {
 
     // 首先根据棋子的实际尺寸获取正确的图片，而不是依赖piece.img属性
     const correctImage = this.getCorrectPieceImage(piece);
-    
+
     let innerFill: string | Pattern;
 
     if (correctImage && correctImage.complete) {
@@ -283,16 +283,16 @@ export class FabricDrawingService {
       const imgHeight = correctImage.height;
       const targetWidth = width - padding * 2;
       const targetHeight = height - padding * 2;
-      
+
       // 使用较大的缩放比例来填满区域（保持DOM版本的行为）
       const scaleX = targetWidth / imgWidth;
       const scaleY = targetHeight / imgHeight;
       const scale = Math.max(scaleX, scaleY);
-      
+
       // 计算居中偏移
       const offsetX = (targetWidth - imgWidth * scale) / 2;
       const offsetY = (targetHeight - imgHeight * scale) / 2;
-      
+
       // 直接使用正确的图片创建Pattern，但添加适当的缩放变换
       innerFill = new Pattern({
         source: correctImage,
@@ -300,24 +300,24 @@ export class FabricDrawingService {
         patternTransform: [scale, 0, 0, scale, offsetX, offsetY]
       });
     } else {
-        // 如果没有角色图片，回退到使用木质纹理图片
-        const woodImage = isDarkMode ?
-          this.imageLoadingService.getWoodDarkImage() :
-          this.imageLoadingService.getWoodLightImage();
+      // 如果没有角色图片，回退到使用木质纹理图片
+      const woodImage = isDarkMode ?
+        this.imageLoadingService.getWoodDarkImage() :
+        this.imageLoadingService.getWoodLightImage();
 
-        if (woodImage && woodImage.complete) {
-          // 使用木质纹理图片作为内层背景
-          innerFill = new Pattern({
-            source: woodImage,
-            repeat: 'repeat',
-            offsetX: 0,
-            offsetY: 0
-          });
-        } else {
-          // 如果图片未加载，使用颜色作为备用
-          innerFill = isDarkMode ? '#8B4513' : '#D4A76A';
-        }
+      if (woodImage && woodImage.complete) {
+        // 使用木质纹理图片作为内层背景
+        innerFill = new Pattern({
+          source: woodImage,
+          repeat: 'repeat',
+          offsetX: 0,
+          offsetY: 0
+        });
+      } else {
+        // 如果图片未加载，使用颜色作为备用
+        innerFill = isDarkMode ? '#8B4513' : '#D4A76A';
       }
+    }
 
     return new Rect({
       left: padding,
@@ -557,7 +557,7 @@ export class FabricDrawingService {
         return image;
       }
     }
-    
+
     return undefined;
   }
 
@@ -598,7 +598,7 @@ export class FabricDrawingService {
   }
 
   // 高亮指定区域
-  highlightArea(area: {x: number, y: number, width: number, height: number}): void {
+  highlightArea(area: { x: number, y: number, width: number, height: number }): void {
     const canvas = this.fabricGameService.canvas;
     if (!canvas) return;
 
@@ -639,7 +639,7 @@ export class FabricDrawingService {
   }
 
   // 高亮目标位置
-  highlightTargetPosition(targetPos: {x: number, y: number}, width: number = 1, height: number = 1): void {
+  highlightTargetPosition(targetPos: { x: number, y: number }, width: number = 1, height: number = 1): void {
     const canvas = this.fabricGameService.canvas;
     if (!canvas) return;
 
@@ -659,7 +659,7 @@ export class FabricDrawingService {
 
     canvas.add(highlight);
     this.highlightObjects.push(highlight);
-    
+
     // 添加脉动效果
     this.addPulseEffect(highlight);
     canvas.renderAll();
@@ -673,10 +673,10 @@ export class FabricDrawingService {
     const cellSize = this.fabricGameService.cellSizeSignal();
     const centerX = (fromPiece.x + fromPiece.width / 2) * cellSize;
     const centerY = (fromPiece.y + fromPiece.height / 2) * cellSize;
-    
+
     let arrowEndX = centerX;
     let arrowEndY = centerY;
-    
+
     // 根据方向计算箭头终点
     switch (direction) {
       case 'up':
@@ -758,7 +758,7 @@ export class FabricDrawingService {
   private addBlinkEffect(object: any): void {
     let opacity = 0.8;
     let increasing = false;
-    
+
     const animate = () => {
       if (increasing) {
         opacity += 0.05;
@@ -767,13 +767,13 @@ export class FabricDrawingService {
         opacity -= 0.05;
         if (opacity <= 0.3) increasing = true;
       }
-      
+
       object.set('opacity', opacity);
       object.canvas?.renderAll();
-      
+
       setTimeout(animate, 100);
     };
-    
+
     animate();
   }
 
@@ -781,7 +781,7 @@ export class FabricDrawingService {
   private addPulseEffect(object: any): void {
     let scale = 1;
     let increasing = true;
-    
+
     const animate = () => {
       if (increasing) {
         scale += 0.02;
@@ -790,16 +790,16 @@ export class FabricDrawingService {
         scale -= 0.02;
         if (scale <= 0.9) increasing = true;
       }
-      
+
       object.set({
         scaleX: scale,
         scaleY: scale
       });
       object.canvas?.renderAll();
-      
+
       setTimeout(animate, 50);
     };
-    
+
     animate();
   }
 

@@ -1,9 +1,9 @@
 import { Component, OnInit, computed, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { ChinesePuzzleStore } from '../chinese-puzzle.store';
-import { GameManagementService } from '../services/game-management.service';
-import { AudioService } from '../services/audio.service';
-import { GameStorageService } from '../services/game-storage.service';
+import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
+import { GameManagementService } from '../../services/game-management.service';
+import { AudioService } from '../../services/audio.service';
+import { GameStorageService } from '../../services/game-storage.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -43,17 +43,17 @@ export class HomeComponent implements OnInit {
   async startGame() {
     // 播放点击音效
     this.audioService.playClickSound();
-    
+
     // 检查是否已完成教程
     const tutorialCompleted = await this.gameStorage.isTutorialCompleted();
-    
+
     if (!tutorialCompleted) {
       // 第一次玩游戏，跳转到教程关卡
-      this.router.navigate(['/fabric'], { 
-        queryParams: { 
+      this.router.navigate(['/fabric'], {
+        queryParams: {
           levelId: '教程关卡',
           isTutorial: 'true'
-        } 
+        }
       });
     } else {
       // 已完成教程，跳转到关卡选择

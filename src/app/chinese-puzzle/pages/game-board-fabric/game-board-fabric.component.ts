@@ -2,13 +2,13 @@ import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inj
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer } from 'rxjs';
 
-import { ChinesePuzzleStore } from '../chinese-puzzle.store';
-import { GameManagementService } from '../services/game-management.service';
-import { Piece, Direction, TutorialStep } from '../chinese-puzzle.type';
-import { ImageLoadingService } from '../services/image-loading.service';
-import { PieceMovementService } from '../services/piece-movement.service';
-import { AudioService } from '../services/audio.service';
-import { GameStorageService } from '../services/game-storage.service';
+import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
+import { GameManagementService } from '../../services/game-management.service';
+import { Piece, Direction, TutorialStep } from '../../chinese-puzzle.type';
+import { ImageLoadingService } from '../../services/image-loading.service';
+import { PieceMovementService } from '../../services/piece-movement.service';
+import { AudioService } from '../../services/audio.service';
+import { GameStorageService } from '../../services/game-storage.service';
 import { FabricGameService } from './services/fabric-game.service';
 import { FabricDrawingService } from './services/fabric-drawing.service';
 import { FabricInteractionService } from './services/fabric-interaction.service';
@@ -138,7 +138,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
         const decodedLevelId = decodeURIComponent(levelId);
         this.gameManagement.loadSettings().then(() => {
           this.gameManagement.changeLevel(decodedLevelId);
-          
+
           // 如果是教程模式，初始化教程
           if (this.isTutorialMode) {
             this.initTutorial();
@@ -177,7 +177,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     if (currentLevel && currentLevel.isTutorial && currentLevel.tutorialSteps) {
       this.tutorialSteps = currentLevel.tutorialSteps;
       this.currentTutorialStep = 0;
-      
+
       // 延迟开始教程，等待棋盘渲染完成
       setTimeout(() => {
         this.startTutorial();
@@ -230,7 +230,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     // 高亮指定棋子或区域
     if (step.targetPieceId) {
       this.highlightPiece(step.targetPieceId);
-      
+
       // 显示方向箭头
       if (step.showDirectionArrow && step.moveDirection) {
         const pieces = this.pieces();
@@ -268,7 +268,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     }
   }
 
-  private highlightArea(area: {x: number, y: number, width: number, height: number}) {
+  private highlightArea(area: { x: number, y: number, width: number, height: number }) {
     // 在fabric canvas上高亮指定区域
     this.fabricDrawingService.highlightArea(area);
   }
@@ -288,12 +288,12 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   private waitForUserInteraction(step: TutorialStep) {
     // 对于交互步骤，同时显示高亮、箭头和目标位置
     this.highlightElement(step);
-    
+
     // 设置交互监听，等待用户操作指定棋子
     if (step.targetPieceId) {
       this.fabricInteractionService.setTutorialMode(
-        true, 
-        step.targetPieceId, 
+        true,
+        step.targetPieceId,
         step.strictMovement ? step.moveDirection : undefined,
         step.strictMovement ? step.targetPosition : undefined
       );
@@ -322,7 +322,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   nextTutorialStep() {
     this.showTutorialModal = false;
     this.fabricDrawingService.clearHighlights();
-    
+
     setTimeout(() => {
       this.showTutorialStep(this.currentTutorialStep + 1);
     }, 500);
@@ -339,13 +339,13 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.showTutorialModal = false;
     this.fabricDrawingService.clearHighlights();
     this.fabricInteractionService.setTutorialMode(false);
-    
+
     // 标记教程已完成
     await this.gameStorage.markTutorialCompleted();
-    
+
     // 显示完成提示
     this.audioService.playSuccessSound();
-    
+
     // 跳转到关卡选择页面
     setTimeout(() => {
       this.router.navigate(['/levels']);
@@ -549,7 +549,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
           this.steps += 1;
           totalStepsMoved += 1;
           currentPiece = moveResult.updatedPiece;
-          
+
           // 教程模式下检查是否完成了要求的操作
           if (this.isTutorialMode && this.currentTutorialData?.waitForUser) {
             this.checkTutorialProgress(currentPiece);

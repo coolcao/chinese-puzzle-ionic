@@ -3,13 +3,13 @@ import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
 import { timer } from 'rxjs';
 
-import { ChinesePuzzleStore } from '../chinese-puzzle.store';
-import { ToolsService } from '../services/tools.service';
-import { AudioService } from '../services/audio.service';
-import { Direction, Piece } from '../chinese-puzzle.type';
-import { ImagePreloaderService } from '../services/image-preloader.service';
-import { PieceImageService } from '../services/piece-image.service';
-import { levels } from '../data/data-set';
+import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
+import { ToolsService } from '../../services/tools.service';
+import { AudioService } from '../../services/audio.service';
+import { Direction, Piece } from '../../chinese-puzzle.type';
+import { ImagePreloaderService } from '../../services/image-preloader.service';
+import { PieceImageService } from '../../services/piece-image.service';
+import { levels } from '../../data/data-set';
 
 @Component({
   selector: 'app-chinese-puzzle-board',

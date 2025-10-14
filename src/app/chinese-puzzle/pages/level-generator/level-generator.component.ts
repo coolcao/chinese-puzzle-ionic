@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Piece } from '../chinese-puzzle.type';
-import { CanvasDrawingService } from '../services/canvas-drawing.service';
-import { ImageLoadingService } from '../services/image-loading.service';
-import { environment } from '../../../environments/environment';
+import { Piece } from '../../chinese-puzzle.type';
+import { CanvasDrawingService } from '../../services/canvas-drawing.service';
+import { ImageLoadingService } from '../../services/image-loading.service';
+import { environment } from '../../../../environments/environment';
 
 // 扩展 Piece 类型以包含 templateId 和其他编辑器状态
 interface EditorPiece extends Piece {
@@ -38,10 +38,10 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
   pieces: EditorPiece[] = [];
   isAnimating = false;
   solutionPath: EditorPiece[][] | null = null;
-  
+
   // 验证时间统计
   validationTime = 0;
-  
+
   // 动画控制
   animationInterval: any = null;
   animationPaused = false;
@@ -583,7 +583,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
   async validateData(): Promise<boolean> {
     this.invalidateSolution();
     if (this.isAnimating) return false;
-    
+
     if (this.pieces.length === 0) {
       this.showMessage('请至少添加一个棋子', true, 'error');
       return false;
@@ -600,7 +600,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
     const startTime = performance.now();
     const solutionPath = await this.isSolvable();
     const endTime = performance.now();
-    
+
     // 计算验证耗时
     this.validationTime = Math.round(endTime - startTime);
 
@@ -631,7 +631,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
         this.pieces = path[this.currentAnimationStep];
         this.draw();
         this.currentAnimationStep++;
-        
+
         // 更新进度提示
         if (this.currentAnimationStep < path.length) {
           const progress = this.currentAnimationStep;
@@ -802,7 +802,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
       this.showMessage('请输入关卡名称', true, 'error');
       return;
     }
-    
+
     const dataSet = this.generateDataSetString();
     if (dataSet) {
       navigator.clipboard.writeText(dataSet).then(() => {

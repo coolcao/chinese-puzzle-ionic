@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { levels } from '../data/data-set';
+import { levels } from '../../data/data-set';
 
 @Component({
   selector: 'app-level-select',

@@ -1,8 +1,8 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { Group } from 'fabric';
-import { Piece, Direction } from '../../chinese-puzzle.type';
+import { Piece, Direction } from '../../../chinese-puzzle.type';
 import { FabricGameService } from './fabric-game.service';
-import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
+import { ChinesePuzzleStore } from '../../../chinese-puzzle.store';
 
 
 @Injectable({
@@ -21,7 +21,7 @@ export class FabricInteractionService {
   private tutorialTargetPieceId?: number;
   private tutorialCallback?: () => void;
   private tutorialRequiredDirection?: string;
-  private tutorialTargetPosition?: {x: number, y: number};
+  private tutorialTargetPosition?: { x: number, y: number };
 
   // 路径执行状态
   private executingPath = false;
@@ -353,7 +353,7 @@ export class FabricInteractionService {
         // 计算移动后的目标位置
         let targetX = originalX;
         let targetY = originalY;
-        
+
         switch (direction) {
           case Direction.Up:
             targetY -= steps;
@@ -1013,10 +1013,10 @@ export class FabricInteractionService {
 
   // 设置教程模式
   setTutorialMode(
-    enabled: boolean, 
-    targetPieceId?: number, 
+    enabled: boolean,
+    targetPieceId?: number,
     requiredDirection?: string,
-    targetPosition?: {x: number, y: number},
+    targetPosition?: { x: number, y: number },
     callback?: () => void
   ): void {
     this.tutorialMode = enabled;

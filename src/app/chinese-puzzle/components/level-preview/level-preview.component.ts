@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Level } from '../chinese-puzzle.type';
+import { Level } from '../../chinese-puzzle.type';
 
 @Component({
   selector: 'app-level-preview',

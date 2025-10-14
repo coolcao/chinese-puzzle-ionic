@@ -216,7 +216,97 @@
     </header>
 
     <div class="w-full bg-wood-light/70 dark:bg-dark-wood-darker/70">
+      <!-- 教程提示栏 - 替换状态栏位置 -->
       <div
+        *ngIf="isTutorialMode && currentTutorialData"
+        class="border-b-2 border-wood-border bg-wood-light px-4 py-3 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-dark-wood-dark"
+      >
+        <div class="mb-2 flex items-center justify-between">
+          <!-- 步骤和标题 -->
+          <div class="flex-1">
+            <div class="mb-1 flex items-center space-x-2">
+              <span class="text-sm font-bold text-wood-text dark:text-wood-lighter"
+                >第 {{ currentTutorialStep + 1 }} 步</span
+              >
+              <span class="text-lg">
+                {{
+                  currentTutorialData.type === "interact"
+                    ? "👆"
+                    : currentTutorialData.type === "highlight"
+                      ? "✨"
+                      : currentTutorialData.type === "move"
+                        ? "🎯"
+                        : "📖"
+                }}
+              </span>
+            </div>
+            <h4 class="text-base font-bold text-wood-text dark:text-wood-lighter">{{ currentTutorialData.title }}</h4>
+          </div>
+
+          <!-- 跳过按钮 -->
+          <button
+            (click)="skipTutorial()"
+            appClickSound
+            class="rounded-lg bg-wood-dark px-3 py-1 text-xs text-wood-lighter transition-colors hover:bg-wood-darker dark:bg-dark-wood-darker dark:text-wood-lighter dark:hover:bg-dark-wood"
+          >
+            跳过
+          </button>
+        </div>
+
+        <!-- 描述 -->
+        <p class="mb-3 text-sm text-wood-text dark:text-wood">
+          {{ currentTutorialData.description }}
+        </p>
+
+        <!-- 进度条 -->
+        <div class="mb-3 flex space-x-1">
+          <div
+            *ngFor="let step of tutorialSteps; let i = index"
+            class="h-1 flex-1 rounded-full transition-colors"
+            [ngClass]="{
+              'bg-wood-darker dark:bg-wood-lighter': i === currentTutorialStep,
+              'bg-wood-dark dark:bg-wood': i < currentTutorialStep,
+              'bg-gray-300 dark:bg-gray-600': i > currentTutorialStep,
+            }"
+          ></div>
+        </div>
+
+        <!-- 操作提示或下一步按钮 -->
+        <div
+          *ngIf="currentTutorialData.waitForUser"
+          class="flex items-center justify-center space-x-2"
+        >
+          <div class="flex space-x-1">
+            <div class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"></div>
+            <div
+              class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+              style="animation-delay: 0.1s"
+            ></div>
+            <div
+              class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+              style="animation-delay: 0.2s"
+            ></div>
+          </div>
+          <span class="text-sm text-wood-text dark:text-wood">请按照提示操作棋子</span>
+        </div>
+
+        <button
+          *ngIf="!currentTutorialData.waitForUser"
+          (click)="nextTutorialStep()"
+          appClickSound
+          class="w-full rounded-lg bg-wood-darker py-2 font-medium text-wood-lighter transition-colors hover:bg-wood dark:bg-wood-lighter dark:text-wood-text dark:hover:bg-wood"
+        >
+          {{
+            currentTutorialStep === tutorialSteps.length - 1
+              ? "完成教程"
+              : "下一步"
+          }}
+        </button>
+      </div>
+
+      <!-- 正常状态栏 - 仅非教程模式显示 -->
+      <div
+        *ngIf="!isTutorialMode"
         class="flex items-center justify-between border-b-2 border-wood-border bg-wood-light px-4 py-2 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-dark-wood-dark"
       >
         <div class="flex w-full flex-col space-y-2 px-2">
@@ -547,29 +637,29 @@
   </div>
 </div>
 
-<!-- 教程顶部提示条 -->
+<!-- 教程顶部提示条 - 桌面端 -->
 <div
   *ngIf="isTutorialMode && currentTutorialData"
-  class="fixed top-0 left-0 right-0 z-40 transform transition-all duration-500 ease-in-out"
+  class="fixed left-0 right-0 top-0 z-40 hidden transform transition-all duration-500 ease-in-out lg:block"
   [ngClass]="showTutorialModal ? 'translate-y-0' : '-translate-y-full'"
 >
   <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3 shadow-lg">
     <div class="mx-auto flex max-w-7xl items-center justify-between">
       <!-- 左侧：教程内容 -->
-      <div class="flex items-center space-x-4 flex-1">
+      <div class="flex flex-1 items-center space-x-4">
         <!-- 步骤指示器 -->
         <div class="flex items-center space-x-2">
           <span class="text-xs font-medium text-blue-100">
             {{ currentTutorialStep + 1 }}/{{ tutorialSteps.length }}
           </span>
           <div class="flex space-x-1">
-            <div 
+            <div
               *ngFor="let step of tutorialSteps; let i = index"
               class="h-1.5 w-6 rounded-full transition-colors"
               [ngClass]="{
                 'bg-white': i === currentTutorialStep,
                 'bg-blue-300': i < currentTutorialStep,
-                'bg-blue-500': i > currentTutorialStep
+                'bg-blue-500': i > currentTutorialStep,
               }"
             ></div>
           </div>
@@ -580,11 +670,17 @@
           <div class="flex items-center space-x-3">
             <!-- 类型图标 -->
             <span class="text-lg">
-              {{ currentTutorialData.type === 'interact' ? '👆' : 
-                 currentTutorialData.type === 'highlight' ? '✨' : 
-                 currentTutorialData.type === 'move' ? '🎯' : '📖' }}
+              {{
+                currentTutorialData.type === "interact"
+                  ? "👆"
+                  : currentTutorialData.type === "highlight"
+                    ? "✨"
+                    : currentTutorialData.type === "move"
+                      ? "🎯"
+                      : "📖"
+              }}
             </span>
-            
+
             <!-- 标题和描述 -->
             <div>
               <h4 class="text-sm font-bold text-white">
@@ -604,7 +700,7 @@
         <button
           (click)="skipTutorial()"
           appClickSound
-          class="rounded-lg bg-blue-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-400 transition-colors"
+          class="rounded-lg bg-blue-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-400"
         >
           跳过教程
         </button>
@@ -614,21 +710,32 @@
           *ngIf="!currentTutorialData.waitForUser"
           (click)="nextTutorialStep()"
           appClickSound
-          class="rounded-lg bg-green-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-400 transition-colors"
+          class="rounded-lg bg-green-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-green-400"
         >
-          {{ currentTutorialStep === 0 ? '开始' : 
-             currentTutorialStep === tutorialSteps.length - 1 ? '完成' : '下一步' }}
+          {{
+            currentTutorialStep === 0
+              ? "开始"
+              : currentTutorialStep === tutorialSteps.length - 1
+                ? "完成"
+                : "下一步"
+          }}
         </button>
 
         <!-- 交互状态指示 -->
-        <div 
+        <div
           *ngIf="currentTutorialData.waitForUser"
           class="flex items-center space-x-2"
         >
           <div class="flex space-x-1">
-            <div class="h-1 w-1 bg-white rounded-full animate-bounce"></div>
-            <div class="h-1 w-1 bg-white rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-            <div class="h-1 w-1 bg-white rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            <div class="h-1 w-1 animate-bounce rounded-full bg-white"></div>
+            <div
+              class="h-1 w-1 animate-bounce rounded-full bg-white"
+              style="animation-delay: 0.1s"
+            ></div>
+            <div
+              class="h-1 w-1 animate-bounce rounded-full bg-white"
+              style="animation-delay: 0.2s"
+            ></div>
           </div>
           <span class="text-xs text-blue-100">等待操作...</span>
         </div>

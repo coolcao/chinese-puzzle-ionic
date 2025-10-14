@@ -334,6 +334,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.completeTutorial();
   }
 
+
   private async completeTutorial() {
     this.isTutorialMode = false;
     this.showTutorialModal = false;

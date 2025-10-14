@@ -66,11 +66,12 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   constructor() {
     effect(() => {
+      // TODO 这里的finished()在教程关卡完成后，再选择关卡时，还是true，导致刚进来就撒花，得查看一下具体原因解决一下
       if (this.finished()) {
         // 播放成功音效
         this.audioService.playSuccessSound();
 
-        // 保存游戏进度
+        // TODO 这里保存游戏进度，应该传一个关卡id，而不是在方法里面取当前关卡的id
         this.gameManagement.saveGameProgress(this.steps, 0); // 暂时传0作为时间
 
         // 显示完成Modal

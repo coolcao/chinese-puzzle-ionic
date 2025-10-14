@@ -357,17 +357,31 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     if (currentStep.targetPieceId && movedPiece.id === currentStep.targetPieceId) {
       // 验证是否到达了目标位置
       if (this.checkTargetPositionReached(movedPiece, currentStep)) {
+
+        // 检查是否是最后一步教程
+        // 这里为啥是-2，因为最后一步是完成教程提示，需要在前一步播放成功音效
+        const completeTutorialStep = this.currentTutorialStep === (this.tutorialSteps.length - 2);
+
+        if (completeTutorialStep) {
+          // 最后一步完成，立即播放成功音效
+          this.audioService.playSuccessSound();
+        }
+
         // 用户完成了要求的操作，自动进入下一步
-        setTimeout(() => {
-          this.nextTutorialStep();
-        }, 1000); // 延迟1秒让用户看到操作结果
+        this.nextTutorialStep();
       }
       // 如果没有到达目标位置，什么都不做，等待用户继续移动
     } else if (!currentStep.targetPieceId) {
       // 没有指定目标棋子，任何移动都算完成
-      setTimeout(() => {
-        this.nextTutorialStep();
-      }, 1000);
+      // 检查是否是最后一步教程
+      const completeTutorialStep = this.currentTutorialStep === this.tutorialSteps.length - 1;
+
+      if (completeTutorialStep) {
+        // 最后一步完成，立即播放成功音效
+        this.audioService.playSuccessSound();
+      }
+
+      this.nextTutorialStep();
     }
   }
 
@@ -384,7 +398,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
 
     setTimeout(() => {
       this.showTutorialStep(this.currentTutorialStep + 1);
-    }, 500);
+    }, 100);
   }
 
   skipTutorial() {
@@ -414,13 +428,12 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     // 标记教程已完成
     await this.gameStorage.markTutorialCompleted();
 
-    // 显示完成提示
-    this.audioService.playSuccessSound();
-
     // 跳转到关卡选择页面
     setTimeout(() => {
-      this.router.navigate(['/levels']);
-    }, 2000);
+      console.log('跳转到关卡选择页面');
+
+      this.router.navigate(['levels']);
+    }, 100);
   }
 
   // 初始化Canvas

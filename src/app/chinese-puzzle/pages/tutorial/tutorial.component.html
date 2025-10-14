@@ -66,18 +66,20 @@
     <div class="mx-auto flex max-w-6xl flex-1">
       <!-- 左侧棋盘 -->
       <div class="flex flex-1 items-center justify-center p-6">
-        <div class="relative flex max-w-2xl items-center justify-center">
-          <canvas
-            #gameCanvasPC
-            (touchmove)="onTouchMove($event)"
-            class="rounded-md border-4 border-b-0 border-solid border-wood-darker"
-          ></canvas>
+        <div class="flex max-w-2xl items-center justify-center">
+          <div class="relative">
+            <canvas
+              #gameCanvasPC
+              (touchmove)="onTouchMove($event)"
+              class="rounded-md border-4 border-b-0 border-solid border-wood-darker"
+            ></canvas>
 
-          <!-- PC端棋盘蒙版 -->
-          <div
-            *ngIf="showBoardMask"
-            class="pointer-events-none absolute inset-0 rounded-md bg-black/10 transition-opacity duration-300 ease-in-out"
-          ></div>
+            <!-- PC端棋盘蒙版 - 精确覆盖canvas -->
+            <div
+              *ngIf="showBoardMask"
+              class="pointer-events-none absolute inset-0 rounded-md bg-black/30 transition-opacity duration-300 ease-in-out"
+            ></div>
+          </div>
         </div>
       </div>
 
@@ -294,9 +296,9 @@
   </div>
 
   <!-- 移动端上下布局 -->
-  <div class="flex h-full flex-col lg:hidden">
+  <div class="tutorial-mobile-layout flex h-full flex-col lg:hidden">
     <header
-      class="flex-shrink-0 border-b-4 border-wood-border bg-wood-light px-4 py-6 text-center dark:border-dark-wood-border dark:bg-dark-wood-dark"
+      class="tutorial-header-mobile flex-shrink-0 border-b-4 border-wood-border bg-wood-light px-4 py-3 text-center dark:border-dark-wood-border dark:bg-dark-wood-dark"
     >
       <div class="flex items-center justify-between">
         <button
@@ -346,11 +348,11 @@
       </div>
     </header>
 
-    <div class="w-full bg-wood-light/70 dark:bg-dark-wood-darker/70">
+    <div class="tutorial-content-mobile min-h-32 w-full bg-wood-light/70 dark:bg-dark-wood-darker/70 sm:min-h-40 md:min-h-48 lg:min-h-52">
       <!-- 教程提示栏 - 替换状态栏位置 -->
       <div
         *ngIf="currentTutorialData"
-        class="border-b-2 border-wood-border bg-wood-light px-4 py-3 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-dark-wood-dark"
+        class="border-b-2 border-wood-border bg-wood-light px-4 py-2 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-dark-wood-dark"
       >
         <div class="mb-2 flex items-center justify-between">
           <!-- 步骤和标题 -->
@@ -373,12 +375,12 @@
         </div>
 
         <!-- 描述 -->
-        <p class="mb-3 text-sm text-wood-text dark:text-wood">
+        <p class="mb-2 text-sm text-wood-text dark:text-wood">
           {{ currentTutorialData.description }}
         </p>
 
         <!-- 进度条 -->
-        <div class="mb-3 flex space-x-1">
+        <div class="mb-2 flex space-x-1">
           <div
             *ngFor="let step of tutorialSteps; let i = index"
             class="h-1 flex-1 rounded-full transition-colors"
@@ -476,20 +478,22 @@
     </div>
 
     <div
-      class="flex flex-1 flex-col items-center justify-start bg-wood-light/50 px-4 pt-8 dark:bg-dark-wood-darker/50"
+      class="tutorial-board-container flex flex-1 flex-col items-center justify-center bg-wood-light/50 dark:bg-dark-wood-darker/50"
     >
-      <div class="relative w-full max-w-md">
-        <canvas
-          #gameCanvasMobile
-          (touchmove)="onTouchMove($event)"
-          class="h-auto w-full rounded-md border-4 border-b-0 border-solid border-wood-darker"
-        ></canvas>
+      <div class="relative w-full flex justify-center">
+        <div class="relative">
+          <canvas
+            #gameCanvasMobile
+            (touchmove)="onTouchMove($event)"
+            class="h-auto rounded-md border-4 border-b-0 border-solid border-wood-darker"
+          ></canvas>
 
-        <!-- 移动端棋盘蒙版 -->
-        <div
-          *ngIf="showBoardMask"
-          class="pointer-events-none absolute inset-0 rounded-md bg-black/30 transition-opacity duration-300 ease-in-out"
-        ></div>
+          <!-- 移动端棋盘蒙版 - 精确覆盖canvas -->
+          <div
+            *ngIf="showBoardMask"
+            class="pointer-events-none absolute inset-0 rounded-md bg-black/30 transition-opacity duration-300 ease-in-out"
+          ></div>
+        </div>
       </div>
     </div>
   </div>

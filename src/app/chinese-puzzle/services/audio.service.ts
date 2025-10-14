@@ -12,10 +12,10 @@ export interface SoundEffect {
 })
 export class AudioService {
   private store = inject(ChinesePuzzleStore);
-  
+
   // 音效对象存储
   private soundEffects: Map<string, Howl> = new Map();
-  
+
   // 音效文件配置
   private readonly soundConfig = {
     clicked: 'assets/audios/clicked.mp3',
@@ -42,7 +42,7 @@ export class AudioService {
           console.warn(`音效加载失败: ${key}`, error);
         }
       });
-      
+
       this.soundEffects.set(key, howl);
     });
   }

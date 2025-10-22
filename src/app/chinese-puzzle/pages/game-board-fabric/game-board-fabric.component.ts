@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
 import { GameManagementService } from '../../services/game-management.service';
-import { Piece, Direction } from '../../chinese-puzzle.type';
+import { Piece, Direction, GameStep, Position } from '../../chinese-puzzle.type';
 import { ImageLoadingService } from '../../services/image-loading.service';
 import { PieceMovementService } from '../../services/piece-movement.service';
 import { AudioService } from '../../services/audio.service';
@@ -66,6 +66,11 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   private gameStartTime: number | null = null;
   private timerSubscription: Subscription | null = null;
   private isGameStarted = false;
+
+  // 操作步骤记录
+  private gameSteps: GameStep[] = [];
+  private currentStepNumber = 0;
+  private initialBoardState: Piece[] = [];
 
   currentLevel = this.store.currentLevel;
 
@@ -145,6 +150,8 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.isLevelJustLoaded = true;
     // 重置计时器
     this.resetTimer();
+    // 重置操作步骤记录
+    this.resetGameSteps();
     
     // 从查询参数中获取关卡ID
     this.route.queryParams.subscribe(params => {
@@ -370,6 +377,9 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   // 处理棋子移动（支持多步移动）
   private handlePieceMove(piece: Piece, direction: Direction, steps: number) {
+    const operationStartTime = Date.now();
+    const originalPosition: Position = { x: piece.x, y: piece.y };
+    
     let currentPiece = piece;
     let totalStepsMoved = 0;
 
@@ -398,8 +408,13 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       }
     }
 
-    // 如果至少移动了一步，更新 Fabric 中的棋子位置
+    // 如果至少移动了一步，更新 Fabric 中的棋子位置并记录操作步骤
     if (totalStepsMoved > 0) {
+      const finalPosition: Position = { x: currentPiece.x, y: currentPiece.y };
+      
+      // 记录操作步骤
+      this.recordGameStep(piece, originalPosition, finalPosition, direction, operationStartTime);
+      
       // 播放移动音效
       this.audioService.playWoodSound();
 
@@ -429,6 +444,8 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.isLevelJustLoaded = true;
     // 重置计时器
     this.resetTimer();
+    // 重置操作步骤记录
+    this.resetGameSteps();
     // 直接重新绘制棋盘即可
     Promise.resolve().then(() => {
       this.drawBoard();
@@ -518,6 +535,8 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       this.steps = 0;
       this.isLevelJustLoaded = true;
       this.resetTimer();
+      // 重置操作步骤记录
+      this.resetGameSteps();
       
       // 重新加载当前关卡
       this.gameManagement.changeLevel(currentLevel.id);
@@ -568,6 +587,9 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.gameStartTime = Date.now();
     this.gameTime = 0;
     
+    // 记录初始棋盘状态
+    this.recordInitialBoardState();
+    
     // 每秒更新一次游戏时间
     this.timerSubscription = interval(1000).subscribe(() => {
       if (this.gameStartTime) {
@@ -592,6 +614,53 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.gameStartTime = null;
     this.isGameStarted = false;
   }
+
+  // 重置操作步骤记录
+  private resetGameSteps() {
+    this.gameSteps = [];
+    this.currentStepNumber = 0;
+    this.initialBoardState = [];
+  }
+
+  // 记录初始棋盘状态
+  private recordInitialBoardState() {
+    this.initialBoardState = JSON.parse(JSON.stringify(this.pieces()));
+  }
+
+  // 记录操作步骤
+  private recordGameStep(piece: Piece, fromPosition: Position, toPosition: Position, direction: Direction, operationStartTime: number) {
+    if (!this.gameStartTime) return;
+
+    const now = Date.now();
+    const step: GameStep = {
+      stepNumber: ++this.currentStepNumber,
+      timestamp: now - this.gameStartTime,
+      pieceId: piece.id,
+      pieceName: piece.name,
+      fromPosition: { ...fromPosition },
+      toPosition: { ...toPosition },
+      direction,
+      distance: this.calculateDistance(fromPosition, toPosition, direction),
+      duration: now - operationStartTime
+    };
+
+    this.gameSteps.push(step);
+    console.log('记录操作步骤:', step);
+  }
+
+  // 计算移动距离
+  private calculateDistance(from: Position, to: Position, direction: Direction): number {
+    switch (direction) {
+      case Direction.Up:
+      case Direction.Down:
+        return Math.abs(to.y - from.y);
+      case Direction.Left:
+      case Direction.Right:
+        return Math.abs(to.x - from.x);
+      default:
+        return 0;
+    }
+  }
   
   // 格式化时间显示 (MM:SS)
   getFormattedTime(): string {
@@ -609,13 +678,16 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       }
       
       const historyRecord = {
+        id: `${currentLevel.id}_${Date.now()}`, // 唯一ID
         levelId: currentLevel.id,
         levelName: currentLevel.name,
         difficulty: currentLevel.difficulty,
         steps: this.steps,
         time: this.gameTime,
         completedAt: new Date().toISOString(),
-        rating: this.getCompletionRating()
+        rating: this.getCompletionRating(),
+        gameSteps: [...this.gameSteps], // 详细操作步骤
+        initialBoardState: [...this.initialBoardState] // 初始棋盘状态
       };
       
       // 获取现有历史记录
@@ -632,7 +704,10 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       // 保存到存储
       await this.gameStorage.set('game_history', existingHistory);
       
-      console.log('Game history saved:', historyRecord);
+      console.log('Game history saved with steps:', {
+        ...historyRecord,
+        gameStepsCount: historyRecord.gameSteps.length
+      });
     } catch (error) {
       console.error('Failed to save game history:', error);
     }
@@ -674,10 +749,46 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     return this.translate.instant(ratingKey);
   }
 
+  // 获取当前游戏的操作步骤（用于外部访问）
+  getGameSteps(): GameStep[] {
+    return [...this.gameSteps];
+  }
+
+  // 获取初始棋盘状态（用于外部访问）
+  getInitialBoardState(): Piece[] {
+    return [...this.initialBoardState];
+  }
+
+  // 演示：打印详细的操作步骤（开发调试用）
+  printGameSteps() {
+    console.log('=== 游戏操作步骤详情 ===');
+    console.log('初始棋盘状态:', this.initialBoardState);
+    console.log('总步数:', this.gameSteps.length);
+    console.log('总时间:', this.gameTime, '秒');
+    
+    this.gameSteps.forEach((step, index) => {
+      console.log(`步骤 ${step.stepNumber}:`, {
+        棋子: step.pieceName,
+        从: `(${step.fromPosition.x}, ${step.fromPosition.y})`,
+        到: `(${step.toPosition.x}, ${step.toPosition.y})`,
+        方向: step.direction,
+        距离: step.distance,
+        耗时: step.duration + 'ms',
+        时间戳: step.timestamp + 'ms'
+      });
+    });
+  }
+
   // 监听键盘事件
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Escape' && this.showCompletionModal) {
       this.closeCompletionModal();
+    }
+    
+    // 开发调试：按F12打印操作步骤
+    if (event.key === 'F12' && this.gameSteps.length > 0) {
+      event.preventDefault();
+      this.printGameSteps();
     }
   }
 }

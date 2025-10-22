@@ -69,16 +69,31 @@ export interface GameProgress {
   stars: number; // 1-3星评价
 }
 
+// 游戏操作步骤记录
+export interface GameStep {
+  stepNumber: number;         // 步骤序号
+  timestamp: number;          // 操作时间戳（相对于游戏开始）
+  pieceId: number;            // 移动的棋子ID
+  pieceName: string;          // 棋子名称
+  fromPosition: Position;     // 起始位置
+  toPosition: Position;       // 结束位置
+  direction: Direction;       // 移动方向
+  distance: number;           // 移动距离（格数）
+  duration: number;           // 操作持续时间（毫秒）
+}
+
 // 游戏历史记录数据结构
 export interface GameHistoryRecord {
   id: string;                 // 唯一记录ID
   levelId: string;            // 关卡ID
+  levelName: string;          // 关卡名称
+  difficulty: string;         // 关卡难度
   steps: number;              // 完成步数
   time: number;               // 完成时间（秒）
   completedAt: string;        // 完成时间戳
-  stars: number;              // 获得星星数 (1-3)
-  isCompleted: boolean;       // 是否完成
-  isPerfect: boolean;         // 是否完美完成（3星）
+  rating: string;             // 评分
+  gameSteps: GameStep[];      // 详细操作步骤
+  initialBoardState?: Piece[]; // 初始棋盘状态（可选，用于完整回放）
 }
 
 // 游戏统计数据结构

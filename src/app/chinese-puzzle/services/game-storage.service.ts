@@ -129,18 +129,19 @@ export class GameStorageService {
   // ========== 游戏历史记录管理 ==========
 
   async saveGameHistory(levelId: string, steps: number, time: number): Promise<void> {
-    const stars = this.calculateStars(levelId, steps);
     const timestamp = Date.now();
     const id = `${levelId}_${timestamp}`; // 使用关卡ID+时间戳生成唯一ID
     const historyRecord: GameHistoryRecord = {
       id,
       levelId,
+      levelName: levelId, // 暂时使用levelId作为名称
+      difficulty: 'medium', // 默认难度，实际使用时会被覆盖
       steps,
       time,
       completedAt: new Date().toISOString(),
-      stars,
-      isCompleted: true,
-      isPerfect: stars === 3
+      rating: this.calculateRating(steps), // 计算评分
+      gameSteps: [], // 空的操作步骤，实际调用时会传入
+      initialBoardState: [] // 空的初始状态，实际调用时会传入
     };
 
     // 保存历史记录
@@ -197,7 +198,7 @@ export class GameStorageService {
     const totalSteps = historyRecords.reduce((sum, record) => sum + record.steps, 0);
     const totalGames = historyRecords.length;
     const levelsCompleted = new Set(historyRecords.map(record => record.levelId)).size;
-    const perfectCompletions = historyRecords.filter(record => record.isPerfect).length;
+    const perfectCompletions = historyRecords.filter(record => record.rating.includes('完美') || record.rating.includes('Perfect')).length;
 
     // 计算连续完成天数
     const streakInfo = this.calculateStreakInfo(historyRecords);
@@ -316,6 +317,19 @@ export class GameStorageService {
   }
 
   // ========== 工具方法 ==========
+
+  private calculateRating(steps: number): string {
+    // 简单的评分计算，实际使用时会被game-board-fabric组件的更准确评分覆盖
+    if (steps <= 80) {
+      return '完美通关！🏆';
+    } else if (steps <= 120) {
+      return '表现优秀！⭐';
+    } else if (steps <= 160) {
+      return '还不错！👍';
+    } else {
+      return '继续努力！💪';
+    }
+  }
 
   private calculateStars(levelId: string, steps: number): number {
     // 根据关卡难度和步数计算星级

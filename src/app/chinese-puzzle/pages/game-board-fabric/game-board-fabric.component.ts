@@ -401,6 +401,11 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.router.navigate(['levels'], { replaceUrl: true });
   }
 
+  // 切换说明显示状态
+  toggleInstructions() {
+    this.showInstructions = !this.showInstructions;
+  }
+
   onDataSetChange(dataSetName: string) {
     this.changeDataSet(dataSetName);
   }

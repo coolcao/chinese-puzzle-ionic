@@ -720,6 +720,11 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['levels'], { replaceUrl: true });
   }
 
+  // 切换说明显示状态
+  toggleInstructions() {
+    this.showInstructions = !this.showInstructions;
+  }
+
   private preLoadImage() {
     // 设置加载状态
     this.resourceLoading = true;

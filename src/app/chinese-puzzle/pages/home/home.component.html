@@ -8,9 +8,11 @@
       <h1
         class="mb-3 text-4xl font-extrabold text-wood-text dark:text-wood-lighter"
       >
-        {{ 'home.title' | translate }}
+        {{ "home.title" | translate }}
       </h1>
-      <p class="text-lg text-wood-text dark:text-wood-lighter">{{ 'home.subtitle' | translate }}</p>
+      <p class="text-lg text-wood-text dark:text-wood-lighter">
+        {{ "home.subtitle" | translate }}
+      </p>
     </div>
 
     <!-- 开始游戏按钮 -->
@@ -20,7 +22,7 @@
         appClickSound
         class="w-full transform rounded-2xl border-2 border-wood-border bg-wood py-4 text-xl font-bold text-wood-text shadow-lg transition duration-300 hover:bg-wood-hover active:scale-95 dark:border-dark-wood-border dark:bg-dark-wood dark:text-wood-lighter dark:hover:bg-dark-wood-hover"
       >
-        {{ 'home.startTutorial' | translate }}
+        {{ "home.startTutorial" | translate }}
       </button>
     </div>
   </main>
@@ -52,13 +54,17 @@
             />
           </svg>
         </div>
-        <span class="mt-2 text-sm text-wood-text dark:text-wood-lighter"
-          >{{ 'gameInstructions.title' | translate }}</span
-        >
+        <span class="mt-2 text-sm text-wood-text dark:text-wood-lighter">{{
+          "gameInstructions.title" | translate
+        }}</span>
       </button>
 
       <!-- 设置按钮 -->
-      <button (click)="openSettings()" appClickSound class="flex flex-col items-center">
+      <button
+        (click)="openSettings()"
+        appClickSound
+        class="flex flex-col items-center"
+      >
         <div
           class="flex h-16 w-16 items-center justify-center rounded-full border-2 border-wood-border bg-wood-light shadow-lg dark:border-dark-wood-border dark:bg-dark-wood-light"
         >
@@ -83,13 +89,17 @@
             />
           </svg>
         </div>
-        <span class="mt-2 text-sm text-wood-text dark:text-wood-lighter"
-          >{{ 'settings.title' | translate }}</span
-        >
+        <span class="mt-2 text-sm text-wood-text dark:text-wood-lighter">{{
+          "settings.title" | translate
+        }}</span>
       </button>
 
       <!-- 我的按钮 -->
-      <button (click)="openMyProfile()" appClickSound class="flex flex-col items-center">
+      <button
+        (click)="openMyProfile()"
+        appClickSound
+        class="flex flex-col items-center"
+      >
         <div
           class="flex h-16 w-16 items-center justify-center rounded-full border-2 border-wood-border bg-wood-light shadow-lg dark:border-dark-wood-border dark:bg-dark-wood-light"
         >
@@ -108,9 +118,9 @@
             />
           </svg>
         </div>
-        <span class="mt-2 text-sm text-wood-text dark:text-wood-lighter"
-          >{{ 'myProfile.title' | translate }}</span
-        >
+        <span class="mt-2 text-sm text-wood-text dark:text-wood-lighter">{{
+          "myProfile.title" | translate
+        }}</span>
       </button>
 
       <!-- 开发者按钮 (仅开发模式显示) -->
@@ -138,9 +148,9 @@
             />
           </svg>
         </div>
-        <span class="mt-2 text-sm text-wood-text dark:text-wood-lighter"
-          >{{ 'levelGeneratorPage.title' | translate }}</span
-        >
+        <span class="mt-2 text-sm text-wood-text dark:text-wood-lighter">{{
+          "levelGeneratorPage.title" | translate
+        }}</span>
       </button>
     </div>
   </footer>
@@ -157,7 +167,7 @@
     >
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-xl font-bold text-wood-text dark:text-wood-lighter">
-          {{ 'gameInstructions.title' | translate }}
+          {{ "gameInstructions.title" | translate }}
         </h3>
         <button
           (click)="closeInstructions()"
@@ -182,16 +192,38 @@
       </div>
       <div class="space-y-3 text-wood-text dark:text-wood-lighter">
         <p>
-          🎯 <span class="font-bold">{{ 'gameInstructions.goal' | translate }}</span>{{ 'gameInstructions.moveToExit' | translate }}
+          🎯
+          <span class="font-bold">{{
+            "gameInstructions.goal" | translate
+          }}</span
+          >{{ "gameInstructions.moveToExit" | translate }}
         </p>
-        <p>🎮 <span class="font-bold">{{ 'gameInstructions.operation' | translate }}</span>{{ 'gameInstructions.instructions' | translate }}</p>
-        <p>⭐ <span class="font-bold">{{ 'gameInstructions.tips' | translate }}</span>{{ 'gameInstructions.clearPath' | translate }}</p>
-        <p>🏆 <span class="font-bold">{{ 'gameInstructions.challenge' | translate }}</span>{{ 'gameInstructions.minimumSteps' | translate }}</p>
+        <p>
+          🎮
+          <span class="font-bold">{{
+            "gameInstructions.operation" | translate
+          }}</span
+          >{{ "gameInstructions.instructions" | translate }}
+        </p>
+        <p>
+          ⭐
+          <span class="font-bold">{{
+            "gameInstructions.tips" | translate
+          }}</span
+          >{{ "gameInstructions.clearPath" | translate }}
+        </p>
+        <p>
+          🏆
+          <span class="font-bold">{{
+            "gameInstructions.challenge" | translate
+          }}</span
+          >{{ "gameInstructions.minimumSteps" | translate }}
+        </p>
         <div
           class="mt-4 border-t border-wood-border pt-4 dark:border-dark-wood-border"
         >
           <p class="text-sm">
-            {{ 'gameInstructions.description' | translate }}
+            {{ "gameInstructions.description" | translate }}
           </p>
         </div>
       </div>
@@ -210,7 +242,7 @@
     >
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-xl font-bold text-wood-text dark:text-wood-lighter">
-          {{ 'settings.title' | translate }}
+          {{ "settings.title" | translate }}
         </h3>
         <button
           (click)="closeSettings()"
@@ -235,7 +267,9 @@
       </div>
       <div class="space-y-4">
         <div class="flex items-center justify-between">
-          <span class="text-wood-text dark:text-wood-lighter">{{ 'settings.darkMode' | translate }}</span>
+          <span class="text-wood-text dark:text-wood-lighter">{{
+            "settings.darkMode" | translate
+          }}</span>
           <button
             (click)="toggleDarkMode()"
             appClickSound
@@ -258,13 +292,19 @@
                   'text-wood-light dark:text-dark-wood': isDarkMode(),
                   'text-wood-lighter dark:text-wood-lighter': !isDarkMode(),
                 }"
-                >{{ isDarkMode() ? "开" : "关" }}</span
+                >{{
+                  isDarkMode()
+                    ? ("settings.on" | translate)
+                    : ("settings.off" | translate)
+                }}</span
               >
             </span>
           </button>
         </div>
         <div class="flex items-center justify-between">
-          <span class="text-wood-text dark:text-wood-lighter">{{ 'settings.soundEffects' | translate }}</span>
+          <span class="text-wood-text dark:text-wood-lighter">{{
+            "settings.soundEffects" | translate
+          }}</span>
           <button
             (click)="toggleSoundEffects()"
             appClickSound
@@ -293,14 +333,20 @@
                   'text-wood-lighter dark:text-wood-lighter':
                     !settings().soundEffectsEnabled,
                 }"
-                >{{ settings().soundEffectsEnabled ? "开" : "关" }}</span
+                >{{
+                  settings().soundEffectsEnabled
+                    ? ("settings.on" | translate)
+                    : ("settings.off" | translate)
+                }}</span
               >
             </span>
           </button>
         </div>
         <!-- 语言设置 -->
         <div class="flex items-center justify-between">
-          <span class="text-wood-text dark:text-wood-lighter">语言 / Language</span>
+          <span class="text-wood-text dark:text-wood-lighter"
+            >语言/Language</span
+          >
           <button
             (click)="toggleLanguage()"
             appClickSound
@@ -341,13 +387,15 @@
                   'text-wood-lighter dark:text-wood-lighter':
                     !settings().backgroundMusicEnabled,
                 }"
-                >{{ settings().backgroundMusicEnabled ? "开" : "关" }}</span
+                >{{ settings().backgroundMusicEnabled ? ('settings.on' | translate) : ('settings.off' | translate) }}</span
               >
             </span>
           </button>
         </div> -->
         <div class="flex items-center justify-between">
-          <span class="text-wood-text dark:text-wood-lighter">{{ 'settings.vibrationFeedback' | translate }}</span>
+          <span class="text-wood-text dark:text-wood-lighter">{{
+            "settings.vibrationFeedback" | translate
+          }}</span>
           <button
             (click)="toggleVibration()"
             appClickSound
@@ -375,14 +423,20 @@
                   'text-wood-lighter dark:text-wood-lighter':
                     !settings().vibrationEnabled,
                 }"
-                >{{ settings().vibrationEnabled ? "开" : "关" }}</span
+                >{{
+                  settings().vibrationEnabled
+                    ? ("settings.on" | translate)
+                    : ("settings.off" | translate)
+                }}</span
               >
             </span>
           </button>
         </div>
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-2">
-            <span class="text-wood-text dark:text-wood-lighter">{{ 'settings.smoothDrag' | translate }}</span>
+            <span class="text-wood-text dark:text-wood-lighter">{{
+              "settings.smoothDrag" | translate
+            }}</span>
             <!-- 问号图标 -->
             <div class="group relative inline-block">
               <button
@@ -395,14 +449,14 @@
               <div
                 class="pointer-events-none absolute -top-16 left-10 z-10 mt-2 hidden w-64 -translate-x-1/2 -translate-y-1/2 transform rounded-lg border border-wood-border bg-wood-lighter p-3 text-sm text-wood-text opacity-0 shadow-lg transition-opacity duration-300 group-hover:block group-hover:opacity-100 dark:border-dark-wood-border dark:bg-dark-wood-lighter dark:text-wood-lighter"
               >
-                <div class="mb-1 font-medium">拖拽模式说明</div>
+                <div class="mb-1 font-medium">
+                  {{ "settings.dragModeExplanation" | translate }}
+                </div>
                 <div class="mb-1 text-xs">
-                  <span class="font-bold">{{ 'settings.enableSmoothDrag' | translate }}</span>
-                  棋子平滑跟随鼠标，通过透明度提示移动有效性，拖拽更丝滑
+                  {{ "settings.enableSmoothDrag" | translate }}
                 </div>
                 <div class="text-xs">
-                  <span class="font-bold">{{ 'settings.disableSmoothDrag' | translate }}</span>
-                  棋子只能移动到有效位置，提供即时约束反馈，更符合物理拖拽体验
+                  {{ "settings.disableSmoothDrag" | translate }}
                 </div>
               </div>
             </div>
@@ -435,7 +489,11 @@
                     !settings().smoothDragMode,
                 }"
               >
-                {{ settings().smoothDragMode ? "开" : "关" }}
+                {{
+                  settings().smoothDragMode
+                    ? ("settings.on" | translate)
+                    : ("settings.off" | translate)
+                }}
               </span>
             </span>
           </button>
@@ -456,7 +514,7 @@
     >
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-xl font-bold text-wood-text dark:text-wood-lighter">
-          {{ 'myProfile.title' | translate }}
+          {{ "myProfile.title" | translate }}
         </h3>
         <button
           (click)="closeProfile()"
@@ -482,7 +540,7 @@
       <div class="space-y-4">
         <div class="rounded-xl bg-wood-light p-4 dark:bg-dark-wood">
           <h4 class="mb-2 font-bold text-wood-text dark:text-wood-lighter">
-            {{ 'myProfile.gameStatistics' | translate }}
+            {{ "myProfile.gameStatistics" | translate }}
           </h4>
           <div class="grid grid-cols-2 gap-4">
             <div class="text-center">
@@ -492,7 +550,7 @@
                 {{ 123 }}
               </p>
               <p class="text-sm text-wood-text dark:text-wood-lighter">
-                {{ 'myProfile.completedLevels' | translate }}
+                {{ "myProfile.completedLevels" | translate }}
               </p>
             </div>
             <div class="text-center">
@@ -502,16 +560,18 @@
                 {{ 123 }}
               </p>
               <p class="text-sm text-wood-text dark:text-wood-lighter">
-                {{ 'myProfile.bestScore' | translate }}
+                {{ "myProfile.bestScore" | translate }}
               </p>
             </div>
           </div>
         </div>
         <div class="rounded-xl bg-wood-light p-4 dark:bg-dark-wood">
           <h4 class="mb-2 font-bold text-wood-text dark:text-wood-lighter">
-            {{ 'myProfile.achievements' | translate }}
+            {{ "myProfile.achievements" | translate }}
           </h4>
-          <p class="text-sm text-wood-text dark:text-wood-lighter">{{ 'myProfile.noAchievements' | translate }}</p>
+          <p class="text-sm text-wood-text dark:text-wood-lighter">
+            {{ "myProfile.noAchievements" | translate }}
+          </p>
         </div>
       </div>
     </div>

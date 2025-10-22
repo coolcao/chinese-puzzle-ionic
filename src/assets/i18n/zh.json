@@ -39,7 +39,7 @@
     "currentSteps": "步数：",
     "gameStatus": "状态：",
     "completed": "✅ 已完成",
-    "inProgress": "⏳ 进行中",
+    "inProgress": "进行中",
     "unknownLevel": "未知关卡",
     "unknownDifficulty": "未知",
     "step": "步骤",
@@ -50,7 +50,7 @@
     "followInstructions": "按提示移动棋子",
     "instructions": {
       "title": "🎮 游戏玩法",
-      "step1": "拖拽棋子或点击边缘箭头⬆️⬇️⬅️➡️移动",
+      "step1": "拖拽棋子️进行移动",
       "step2": "⭐ 技巧：优先移动关羽等大棋子开路",
       "step3": "目标：将曹操移动到底部出口",
       "step4": "用最少步数完成挑战！",
@@ -94,7 +94,7 @@
     "currentSteps": "步数：",
     "gameStatus": "状态：",
     "completed": "✅ 已完成",
-    "inProgress": "⏳ 进行中",
+    "inProgress": "进行中",
     "unknownLevel": "未知关卡",
     "unknownDifficulty": "未知",
     "restartGame": "重新开始",
@@ -108,10 +108,8 @@
     "playAgain": "重玩",
     "returnToLevelList": "关卡",
     "exit": "出口",
-    "gameControl": "游戏控制",
     "instructions": "游戏说明",
-    "rating": "评分",
-    "unknownLevel": "未知关卡"
+    "rating": "评分"
   },
   "levelGenerator": {
     "title": "关卡编辑器",
@@ -194,7 +192,7 @@
     "unknownLevel": "未知关卡",
     "unknownDifficulty": "未知",
     "completed": "✅ 已完成",
-    "inProgress": "⏳ 进行中"
+    "inProgress": "进行中"
   },
   "tutorialPage": {
     "skip": "跳过",

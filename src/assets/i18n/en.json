@@ -39,7 +39,7 @@
     "currentSteps": "Moves:",
     "gameStatus": "Status:",
     "completed": "✅ Done",
-    "inProgress": "⏳ In Progress",
+    "inProgress": "In Progress",
     "unknownLevel": "Unknown Level",
     "unknownDifficulty": "Unknown",
     "step": "Step",
@@ -50,7 +50,7 @@
     "followInstructions": "Move pieces as instructed",
     "instructions": {
       "title": "🎮 Guide",
-      "step1": "Drag blocks or tap arrows ⬆️⬇️⬅️➡️ to move pieces",
+      "step1": "Drag blocks to move pieces",
       "step2": "⭐ Tip: Move large pieces like Guan Yu first",
       "step3": "Goal: Move Cao Cao to the bottom exit",
       "step4": "Complete in as few moves as possible!",
@@ -94,7 +94,7 @@
     "currentSteps": "Moves:",
     "gameStatus": "Status:",
     "completed": "✅ Done",
-    "inProgress": "⏳ In Progress",
+    "inProgress": "In Progress",
     "unknownLevel": "Unknown Level",
     "unknownDifficulty": "Unknown",
     "restartGame": "Restart",
@@ -108,10 +108,8 @@
     "playAgain": "Again",
     "returnToLevelList": "Levels",
     "exit": "Exit",
-    "gameControl": "Game Control",
     "instructions": "Instructions",
-    "rating": "Rating",
-    "unknownLevel": "Unknown Level"
+    "rating": "Rating"
   },
   "levelGenerator": {
     "title": "Level Editor",
@@ -159,7 +157,7 @@
     "clearPath": "Move large pieces to clear the path",
     "moveToExit": "Move Cao Cao to the bottom exit",
     "minimumSteps": "Complete in as few moves as possible",
-    "description": "Huarong Dao is a traditional Chinese puzzle game, famous for its countless variations and endless fun."
+    "description": "Huarong Road is a traditional Chinese puzzle game, famous for its countless variations and endless fun."
   },
   "settings": {
     "title": "Settings",
@@ -175,7 +173,7 @@
     "disableSmoothDrag": "Snap Drag: Pieces move directly to valid positions for immediate feedback"
   },
   "myProfile": {
-    "title": "My Profile",
+    "title": "Profile",
     "gameStatistics": "Stats",
     "completedLevels": "Levels Completed",
     "bestScore": "Best Score",
@@ -194,7 +192,7 @@
     "unknownLevel": "Unknown Level",
     "unknownDifficulty": "Unknown",
     "completed": "✅ Done",
-    "inProgress": "⏳ In Progress"
+    "inProgress": "In Progress"
   },
   "tutorialPage": {
     "skip": "Skip",

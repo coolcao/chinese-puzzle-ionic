@@ -1,0 +1,98 @@
+<header
+  class="flex-shrink-0 border-b-4 border-wood-border bg-wood-light px-4 py-3 text-center dark:border-dark-wood-border dark:bg-dark-wood-dark"
+>
+  <div class="mx-auto flex items-center" [ngClass]="maxWidth">
+    <!-- 左侧区域 - 固定宽度 -->
+    <div class="flex w-12 items-center justify-start space-x-2">
+      <!-- 返回按钮 -->
+      <button
+        *ngIf="showBackButton"
+        (click)="onBackClick()"
+        appClickSound
+        class="rounded-full p-2 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            [attr.d]="getIconPath(backButtonIcon)"
+          />
+        </svg>
+      </button>
+
+      <!-- 左侧自定义按钮 -->
+      <button
+        *ngFor="let button of getLeftButtons(); let i = index"
+        (click)="onCustomButtonClick(button, i)"
+        appClickSound
+        [ngClass]="
+          button.classes ||
+          'rounded-full p-2 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood'
+        "
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            [attr.d]="getIconPath(button.icon)"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- 中间标题 - 弹性增长并居中 -->
+    <div class="flex flex-1 justify-center">
+      <h1 class="text-xl font-extrabold text-wood-text dark:text-wood-lighter">
+        <ng-container *ngIf="titleTranslationKey; else staticTitle">
+          {{ titleTranslationKey | translate }}
+        </ng-container>
+        <ng-template #staticTitle>
+          {{ title }}
+        </ng-template>
+      </h1>
+    </div>
+
+    <!-- 右侧区域 - 固定宽度 -->
+    <div class="flex w-12 items-center justify-end space-x-2">
+      <!-- 右侧自定义按钮 -->
+      <button
+        *ngFor="let button of getRightButtons(); let i = index"
+        (click)="onCustomButtonClick(button, i)"
+        appClickSound
+        [ngClass]="
+          button.classes ||
+          'rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light'
+        "
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            [attr.d]="getIconPath(button.icon)"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>

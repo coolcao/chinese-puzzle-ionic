@@ -397,6 +397,11 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
     window.history.back();
   }
 
+  // 切换说明显示状态
+  toggleInstructions() {
+    this.showInstructions = !this.showInstructions;
+  }
+
   // 获取当前关卡信息
   getCurrentLevel() {
     const currentDataSetName = this.dataSetName();

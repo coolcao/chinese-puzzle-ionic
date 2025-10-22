@@ -32,7 +32,7 @@ export class LevelGeneratorComponent implements OnInit, AfterViewInit, OnDestroy
 
   // 状态
   levelName = '';
-  levelDifficulty = '初级';
+  levelDifficulty = 'beginner';
   message = '';
   messageType: 'info' | 'success' | 'error' = 'info'; // 提示类型
   pieces: EditorPiece[] = [];

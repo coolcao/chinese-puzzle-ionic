@@ -2,36 +2,12 @@
   class="flex h-screen flex-col bg-wood-lighter transition-colors duration-300 dark:bg-dark-wood-lighter"
 >
   <!-- 头部 -->
-  <header
-    class="flex-shrink-0 border-b-4 border-wood-border bg-wood-light px-4 py-6 text-center dark:border-dark-wood-border dark:bg-dark-wood-dark"
-  >
-    <div class="mx-auto flex max-w-6xl items-center justify-between">
-      <button
-        (click)="goHome()"
-        appClickSound
-        class="rounded-full p-2 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-      </button>
-      <h1 class="text-2xl font-extrabold text-wood-text dark:text-wood-lighter">
-        {{ 'levelGeneratorPage.title' | translate }}
-      </h1>
-      <div class="w-10"></div>
-    </div>
-  </header>
+  <app-game-header
+    titleTranslationKey="levelGeneratorPage.title"
+    [showBackButton]="true"
+    maxWidth="max-w-6xl"
+    (backClick)="goHome()"
+  ></app-game-header>
 
   <!-- 主要内容 -->
   <main
@@ -70,9 +46,9 @@
                 [(ngModel)]="levelDifficulty"
                 class="w-full rounded-lg border border-wood-border bg-wood-lighter px-4 py-2 text-wood-text shadow-inner dark:bg-dark-wood-lighter dark:text-wood-lighter"
               >
-                <option value="初级">{{ 'levelGeneratorPage.beginner' | translate }}</option>
-                <option value="中级">{{ 'levelGeneratorPage.intermediate' | translate }}</option>
-                <option value="高级">{{ 'levelGeneratorPage.advanced' | translate }}</option>
+                <option value="beginner">{{ 'levelGeneratorPage.beginner' | translate }}</option>
+                <option value="intermediate">{{ 'levelGeneratorPage.intermediate' | translate }}</option>
+                <option value="advanced">{{ 'levelGeneratorPage.advanced' | translate }}</option>
               </select>
             </div>
           </div>
@@ -106,7 +82,7 @@
                   }"
                 >
                   <div
-                    *ngIf="stockItem.template.name === '卒'"
+                    *ngIf="stockItem.template.name === 'zu'"
                     class="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs text-white shadow-md"
                   >
                     {{ stockItem.count }}

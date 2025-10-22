@@ -9,58 +9,17 @@
     class="hidden h-full w-full flex-col bg-wood-light/50 dark:bg-dark-wood-dark/20 lg:flex"
   >
     <!-- 顶部header -->
-    <header
-      class="flex-shrink-0 border-b-4 border-wood-border bg-wood-light px-4 py-6 text-center dark:border-dark-wood-border dark:bg-dark-wood-dark"
-    >
-      <div class="relative mx-auto flex max-w-7xl items-center justify-between">
-        <button
-          (click)="goToLevelSelect()"
-          appClickSound
-          class="rounded-full p-2 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-        <h1
-          class="text-2xl font-extrabold text-wood-text dark:text-wood-lighter"
-        >
-          {{ 'tutorial.title' | translate }}
-        </h1>
-        <div class="w-10"></div>
-        <button
-          (click)="showInstructions = !showInstructions"
-          appClickSound
-          class="absolute right-0 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        </button>
-      </div>
-    </header>
+    <app-game-header
+      titleTranslationKey="tutorial.title"
+      [showBackButton]="true"
+      [customButtons]="[{
+        icon: 'help',
+        position: 'right',
+        classes: 'absolute right-0 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light',
+        onClick: toggleInstructions.bind(this)
+      }]"
+      (backClick)="goToLevelSelect()"
+    ></app-game-header>
 
     <!-- 下面部分左右布局 -->
     <div class="mx-auto flex max-w-6xl flex-1">
@@ -108,7 +67,7 @@
                 <div
                   class="mt-1 text-xs text-wood-text/70 dark:text-wood-lighter/70"
                 >
-                  {{ 'common.difficulty' | translate }}：{{ currentLevel.difficulty || ('common.unknown' | translate) }}
+                  {{ 'common.difficulty' | translate }}：{{ currentLevel.difficulty ? (('levels.difficulty.' + currentLevel.difficulty) | translate) : ('common.unknown' | translate) }}
                 </div>
               </div>
             </div>
@@ -291,56 +250,17 @@
 
   <!-- 移动端上下布局 -->
   <div class="tutorial-mobile-layout flex h-full flex-col lg:hidden">
-    <header
-      class="tutorial-header-mobile flex-shrink-0 border-b-4 border-wood-border bg-wood-light px-4 py-3 text-center dark:border-dark-wood-border dark:bg-dark-wood-dark"
-    >
-      <div class="flex items-center justify-between">
-        <button
-          (click)="goToLevelSelect()"
-          class="rounded-full p-2 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-        <h1
-          class="text-lg font-extrabold text-wood-text dark:text-dark-wood-text"
-        >
-          {{ 'tutorial.title' | translate }}
-        </h1>
-        <div class="w-10"></div>
-        <button
-          (click)="showInstructions = !showInstructions"
-          class="absolute right-2 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood dark:bg-dark-wood-lighter dark:text-dark-wood-text dark:hover:bg-dark-wood"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        </button>
-      </div>
-    </header>
+    <app-game-header
+      titleTranslationKey="tutorial.title"
+      [showBackButton]="true"
+      [customButtons]="[{
+        icon: 'help',
+        position: 'right',
+        classes: 'absolute right-2 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood dark:bg-dark-wood-lighter dark:text-dark-wood-text dark:hover:bg-dark-wood',
+        onClick: toggleInstructions.bind(this)
+      }]"
+      (backClick)="goToLevelSelect()"
+    ></app-game-header>
 
     <div
       class="tutorial-content-mobile min-h-32 w-full bg-wood-light/70 dark:bg-dark-wood-darker/70 sm:min-h-40 md:min-h-48 lg:min-h-52"

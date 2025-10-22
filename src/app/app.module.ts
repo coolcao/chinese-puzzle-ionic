@@ -16,9 +16,19 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { GameStorageService } from './chinese-puzzle/services/game-storage.service';
+import { LanguageService } from './chinese-puzzle/services/language.service';
 
 export function initializeStorage(storageService: GameStorageService) {
   return () => storageService.init();
+}
+
+export function initializeLanguage(languageService: LanguageService, storageService: GameStorageService) {
+  return async () => {
+    // 确保存储已初始化，然后初始化语言设置
+    await storageService.init();
+    // 语言服务会在构造函数中自动初始化，这里只是确保执行顺序
+    return Promise.resolve();
+  };
 }
 
 @NgModule({
@@ -48,6 +58,12 @@ export function initializeStorage(storageService: GameStorageService) {
       provide: APP_INITIALIZER,
       useFactory: initializeStorage,
       deps: [GameStorageService],
+      multi: true
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeLanguage,
+      deps: [LanguageService, GameStorageService],
       multi: true
     }
   ],

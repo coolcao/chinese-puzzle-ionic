@@ -65,6 +65,9 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   showSuccess = false;
   showInstructions = false;
   resourceLoading = false;
+  
+  // 防止关卡刚加载时就触发完成效果
+  private isLevelJustLoaded = true;
 
   currentLevel = tutorialLevel;
 
@@ -86,7 +89,8 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // 监听游戏完成状态，锁定棋盘
     effect(() => {
-      if (this.finished()) {
+      // 只有在关卡加载完成且用户确实进行了移动后才触发完成效果
+      if (this.finished() && !this.isLevelJustLoaded && this.steps > 0) {
         this.lockBoard();
       } else {
         this.unlockBoard();
@@ -111,6 +115,10 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    // 重置步数和关卡加载标志
+    this.steps = 0;
+    this.isLevelJustLoaded = true;
+    
     // 教程页面始终加载教程关卡
     this.gameManagement.loadLevel(tutorialLevel);
     this.initTutorial();
@@ -670,6 +678,11 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
           this.steps += 1;
           totalStepsMoved += 1;
           currentPiece = moveResult.updatedPiece;
+
+          // 第一次移动时标记关卡已开始游戏
+          if (this.isLevelJustLoaded) {
+            this.isLevelJustLoaded = false;
+          }
 
           // 教程模式下检查是否完成了要求的操作
           if (this.isTutorialMode && this.currentTutorialData?.waitForUser) {

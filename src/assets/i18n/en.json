@@ -38,7 +38,7 @@
     "currentLevel": "Level",
     "currentSteps": "Moves:",
     "gameStatus": "Status:",
-    "completed": "✅ Done",
+    "completed": "Done",
     "inProgress": "In Progress",
     "unknownLevel": "Unknown Level",
     "unknownDifficulty": "Unknown",
@@ -92,8 +92,9 @@
     "gameControl": "Controls",
     "currentLevel": "Level",
     "currentSteps": "Moves:",
+    "gameTime": "Time:",
     "gameStatus": "Status:",
-    "completed": "✅ Done",
+    "completed": "Done",
     "inProgress": "In Progress",
     "unknownLevel": "Unknown Level",
     "unknownDifficulty": "Unknown",
@@ -101,7 +102,7 @@
     "backToLevels": "Levels",
     "success": "Success!",
     "congratulations": "Level complete!",
-    "totalSteps": "Completed in {{steps}} moves",
+    "totalSteps": "Completed in {steps} moves",
     "perfectScore": "Perfect! Minimum moves achieved!",
     "goodJob": "Good job!",
     "nextLevel": "Next",
@@ -147,6 +148,12 @@
       "expert": "Expert"
     }
   },
+  "rating": {
+    "perfect": "Perfect! 🏆",
+    "excellent": "Excellent! ⭐",
+    "good": "Good job! 👍",
+    "needImprovement": "Keep trying! 💪"
+  },
   "gameInstructions": {
     "title": "Guide",
     "goal": "Goal: ",
@@ -191,7 +198,7 @@
     "gameStatus": "Status: ",
     "unknownLevel": "Unknown Level",
     "unknownDifficulty": "Unknown",
-    "completed": "✅ Done",
+    "completed": "Done",
     "inProgress": "In Progress"
   },
   "tutorialPage": {

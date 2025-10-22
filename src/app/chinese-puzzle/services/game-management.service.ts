@@ -128,9 +128,8 @@ export class GameManagementService {
 
   // ========== 游戏进度管理 ==========
 
-  async saveGameProgress(steps: number, time: number) {
+  async saveGameProgress(levelId: string, steps: number, time: number) {
     try {
-      const levelId = this.store.dataSetName();
       // 保存游戏历史记录（替代直接更新统计）
       await this.storage.saveGameHistory(levelId, steps, time);
       console.log(`关卡 ${levelId} 历史记录已保存: ${steps}步, ${time}秒`);

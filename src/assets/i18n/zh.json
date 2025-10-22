@@ -38,7 +38,7 @@
     "currentLevel": "关卡",
     "currentSteps": "步数：",
     "gameStatus": "状态：",
-    "completed": "✅ 已完成",
+    "completed": "已完成",
     "inProgress": "进行中",
     "unknownLevel": "未知关卡",
     "unknownDifficulty": "未知",
@@ -92,8 +92,9 @@
     "gameControl": "控制",
     "currentLevel": "关卡",
     "currentSteps": "步数：",
+    "gameTime": "时间：",
     "gameStatus": "状态：",
-    "completed": "✅ 已完成",
+    "completed": "已完成",
     "inProgress": "进行中",
     "unknownLevel": "未知关卡",
     "unknownDifficulty": "未知",
@@ -147,6 +148,12 @@
       "expert": "专家"
     }
   },
+  "rating": {
+    "perfect": "完美通关！🏆",
+    "excellent": "表现优秀！⭐",
+    "good": "还不错！👍",
+    "needImprovement": "继续努力！💪"
+  },
   "gameInstructions": {
     "title": "游戏指南",
     "goal": "目标：",
@@ -191,7 +198,7 @@
     "gameStatus": "状态：",
     "unknownLevel": "未知关卡",
     "unknownDifficulty": "未知",
-    "completed": "✅ 已完成",
+    "completed": "已完成",
     "inProgress": "进行中"
   },
   "tutorialPage": {

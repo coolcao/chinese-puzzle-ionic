@@ -32,22 +32,38 @@ export class LanguageService {
   private async initializeLanguage() {
     this.translate.addLangs(['zh', 'en']);
 
-    // 从存储服务获取语言设置，默认为中文
-    const savedLanguage = await this.gameStorage.get<string>('user_language') as SupportedLanguage;
+    try {
+      // 从存储服务获取语言设置
+      const savedLanguage = await this.gameStorage.get<string>('user_language') as SupportedLanguage;
 
-    if (savedLanguage) {
-      this.setLanguage(savedLanguage);
-      return;
-    }
+      if (savedLanguage && (savedLanguage === 'zh' || savedLanguage === 'en')) {
+        // 有有效的存储语言设置，立即应用它
+        this.translate.use(savedLanguage);
+        this.currentLanguageSubject.next(savedLanguage);
+        return;
+      }
 
-    // 移动端默认英文
-    if (Capacitor.isNativePlatform()) {
-      this.setLanguage('en');
-      return;
+      // 没有存储的语言设置，使用默认逻辑
+      let defaultLanguage: SupportedLanguage;
+
+      if (Capacitor.isNativePlatform()) {
+        // 移动端默认英文
+        defaultLanguage = 'en';
+      } else {
+        // web端根据浏览器语言设置
+        defaultLanguage = this.getBrowserLanguage();
+      }
+
+      // 应用默认语言并保存到存储
+      this.translate.use(defaultLanguage);
+      this.currentLanguageSubject.next(defaultLanguage);
+      await this.gameStorage.set('user_language', defaultLanguage);
+    } catch (error) {
+      console.error('Failed to initialize language:', error);
+      // 发生错误时使用英文作为默认语言
+      this.translate.use('en');
+      this.currentLanguageSubject.next('en');
     }
-    // web端根据浏览器语言设置
-    const browserLanguage = this.getBrowserLanguage();
-    this.setLanguage(browserLanguage);
   }
 
   async setLanguage(language: SupportedLanguage) {

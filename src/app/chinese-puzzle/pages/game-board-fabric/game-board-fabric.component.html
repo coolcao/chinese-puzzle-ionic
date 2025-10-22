@@ -1,5 +1,5 @@
+<!-- 主游戏界面 -->
 <div
-  [ngClass]="{ hidden: resourceLoading }"
   class="h-screen w-screen select-none overflow-hidden bg-wood-lighter transition-colors duration-300 dark:bg-dark-wood-lighter"
   (keydown)="onKeyDown($event)"
   tabindex="0"
@@ -12,12 +12,15 @@
     <app-game-header
       titleTranslationKey="gameBoard.title"
       [showBackButton]="true"
-      [customButtons]="[{
-        icon: 'help',
-        position: 'right',
-        classes: 'absolute right-0 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light',
-        onClick: toggleInstructions.bind(this)
-      }]"
+      [customButtons]="[
+        {
+          icon: 'help',
+          position: 'right',
+          classes:
+            'absolute right-0 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light',
+          onClick: toggleInstructions.bind(this),
+        },
+      ]"
       (backClick)="goToLevelSelect()"
     ></app-game-header>
 
@@ -46,7 +49,7 @@
             <h2
               class="mb-4 text-xl font-bold text-wood-text dark:text-wood-lighter"
             >
-              {{ 'gameBoard.gameControl' | translate }}
+              {{ "gameBoard.gameControl" | translate }}
             </h2>
 
             <!-- 当前关卡信息 -->
@@ -54,18 +57,26 @@
               <label
                 class="mb-2 block text-sm font-medium text-wood-text dark:text-wood-lighter"
               >
-                {{ 'gameBoard.currentLevel' | translate }}
+                {{ "gameBoard.currentLevel" | translate }}
               </label>
               <div
                 class="w-full rounded-lg border border-wood-border bg-wood/50 px-4 py-2 text-wood-text shadow-inner dark:bg-wood-dark/50 dark:text-wood-lighter"
               >
                 <div class="font-semibold">
-                  {{ currentLevel()?.name || ('gameBoard.unknownLevel' | translate) }}
+                  {{
+                    currentLevel()?.name ||
+                      ("gameBoard.unknownLevel" | translate)
+                  }}
                 </div>
                 <div
                   class="mt-1 text-xs text-wood-text/70 dark:text-wood-lighter/70"
                 >
-                  {{ 'common.difficulty' | translate }}：{{ currentLevel()?.difficulty ? (('levels.difficulty.' + currentLevel()?.difficulty) | translate) : ('common.unknown' | translate) }}
+                  {{ "common.difficulty" | translate }}：{{
+                    currentLevel()?.difficulty
+                      ? ("levels.difficulty." + currentLevel()?.difficulty
+                        | translate)
+                      : ("common.unknown" | translate)
+                  }}
                 </div>
               </div>
             </div>
@@ -73,28 +84,40 @@
             <!-- 游戏状态 -->
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <span class="text-wood-text dark:text-wood-lighter"
-                  >{{ 'gameBoard.currentSteps' | translate }}</span
-                >
+                <span class="text-wood-text dark:text-wood-lighter">{{
+                  "gameBoard.currentSteps" | translate
+                }}</span>
                 <div
                   class="rounded-lg bg-wood/50 px-4 py-2 text-wood-text dark:text-wood-lighter"
                 >
                   {{ steps }}
                 </div>
               </div>
+
               <div class="flex items-center justify-between">
-                <span class="text-wood-text dark:text-wood-lighter"
-                  >{{ 'gameBoard.gameStatus' | translate }}</span
+                <span class="text-wood-text dark:text-wood-lighter">{{
+                  "gameBoard.gameTime" | translate
+                }}</span>
+                <div
+                  class="rounded-lg bg-wood/50 px-4 py-2 font-mono text-wood-text dark:text-wood-lighter"
                 >
+                  {{ getFormattedTime() }}
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-wood-text dark:text-wood-lighter">{{
+                  "gameBoard.gameStatus" | translate
+                }}</span>
                 <div class="rounded-lg bg-wood/50 px-4 py-2">
                   @if (finished()) {
-                    <span class="text-green-600 dark:text-green-300"
-                      >{{ 'gameBoard.completed' | translate }}</span
-                    >
+                    <span class="text-green-600 dark:text-green-300">{{
+                      "gameBoard.completed" | translate
+                    }}</span>
                   } @else {
-                    <span class="text-wood-text dark:text-wood-lighter"
-                      >{{ 'gameBoard.inProgress' | translate }}</span
-                    >
+                    <span class="text-wood-text dark:text-wood-lighter">{{
+                      "gameBoard.inProgress" | translate
+                    }}</span>
                   }
                 </div>
               </div>
@@ -105,15 +128,15 @@
             <h3
               class="mb-4 text-lg font-semibold text-wood-text dark:text-wood-lighter"
             >
-              {{ 'gameBoard.instructions' | translate }}
+              {{ "gameBoard.instructions" | translate }}
             </h3>
             <div
               class="space-y-3 text-sm text-wood-text dark:text-wood-lighter"
             >
-              <p>{{ 'tutorial.instructions.step1' | translate }}</p>
-              <p>{{ 'tutorial.instructions.step2' | translate }}</p>
-              <p>{{ 'tutorial.instructions.step3' | translate }}</p>
-              <p>{{ 'tutorial.instructions.step4' | translate }}</p>
+              <p>{{ "tutorial.instructions.step1" | translate }}</p>
+              <p>{{ "tutorial.instructions.step2" | translate }}</p>
+              <p>{{ "tutorial.instructions.step3" | translate }}</p>
+              <p>{{ "tutorial.instructions.step4" | translate }}</p>
             </div>
           </div>
         </div>
@@ -126,12 +149,15 @@
     <app-game-header
       titleTranslationKey="gameBoard.title"
       [showBackButton]="true"
-      [customButtons]="[{
-        icon: 'help',
-        position: 'right',
-        classes: 'absolute right-2 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood dark:bg-dark-wood-lighter dark:text-dark-wood-text dark:hover:bg-dark-wood',
-        onClick: toggleInstructions.bind(this)
-      }]"
+      [customButtons]="[
+        {
+          icon: 'help',
+          position: 'right',
+          classes:
+            'absolute right-2 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood dark:bg-dark-wood-lighter dark:text-dark-wood-text dark:hover:bg-dark-wood',
+          onClick: toggleInstructions.bind(this),
+        },
+      ]"
       (backClick)="goToLevelSelect()"
     ></app-game-header>
 
@@ -146,19 +172,24 @@
             <span
               class="whitespace-nowrap text-xs font-semibold text-wood-text dark:text-wood-lighter"
             >
-              {{ 'gameBoard.currentLevel' | translate }}：
+              {{ "gameBoard.currentLevel" | translate }}：
             </span>
             <div
               class="flex-1 rounded-lg border border-wood-border bg-wood-lighter px-2 py-1 text-xs text-wood-text shadow-inner dark:bg-wood-dark/50 dark:text-wood-lighter"
             >
               <div class="flex items-center justify-between">
                 <span class="font-semibold">{{
-                  currentLevel()?.name || ('gameBoard.unknownLevel' | translate)
+                  currentLevel()?.name || ("gameBoard.unknownLevel" | translate)
                 }}</span>
                 <span
                   class="text-xs text-wood-text/70 dark:text-wood-lighter/70"
                 >
-                  {{ currentLevel()?.difficulty ? (('levels.difficulty.' + currentLevel()?.difficulty) | translate) : ('common.unknown' | translate) }}
+                  {{
+                    currentLevel()?.difficulty
+                      ? ("levels.difficulty." + currentLevel()?.difficulty
+                        | translate)
+                      : ("common.unknown" | translate)
+                  }}
                 </span>
               </div>
             </div>
@@ -173,7 +204,7 @@
                 >👣</span
               >
               <span class="text-xs text-wood-text/80 dark:text-wood-lighter/80"
-                >{{ 'common.steps' | translate }}:</span
+                >{{ "common.steps" | translate }}:</span
               >
               <span
                 class="rounded bg-wood/20 px-1 py-0.5 text-xs font-semibold text-wood-text dark:bg-dark-wood/20 dark:text-wood-lighter"
@@ -194,19 +225,23 @@
                     : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
                 "
               >
-                {{ finished() ? ('gameBoard.completed' | translate) : ('gameBoard.inProgress' | translate) }}
+                {{
+                  finished()
+                    ? ("gameBoard.completed" | translate)
+                    : ("gameBoard.inProgress" | translate)
+                }}
               </span>
             </div>
 
-            <!-- 右侧：计时（占位符） -->
+            <!-- 右侧：计时器 -->
             <div class="flex items-center space-x-1">
               <span
                 class="text-sm font-medium text-wood-text dark:text-wood-lighter"
                 >⏱️</span
               >
               <span
-                class="rounded bg-wood/20 px-1 py-0.5 text-xs font-semibold text-wood-text dark:bg-dark-wood/20 dark:text-wood-lighter"
-                >00:00</span
+                class="rounded bg-wood/20 px-1 py-0.5 font-mono text-xs font-semibold text-wood-text dark:bg-dark-wood/20 dark:text-wood-lighter"
+                >{{ getFormattedTime() }}</span
               >
             </div>
           </div>
@@ -225,10 +260,14 @@
     </div>
   </div>
 
-  <div>
-    @if (showSuccess) {
+  <!-- 撒花效果 - 最高层级 -->
+  @if (showSuccess) {
+    <div class="fixed inset-0 z-[100] pointer-events-none">
       <app-scatter-flowers></app-scatter-flowers>
-    }
+    </div>
+  }
+
+  <div>
     @if (showInstructions) {
       <div
         class="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
@@ -242,7 +281,7 @@
     >
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-2xl font-bold text-wood-text dark:text-wood-lighter">
-          {{ 'tutorial.instructions.title' | translate }}
+          {{ "tutorial.instructions.title" | translate }}
         </h3>
         <button
           (click)="showInstructions = false"
@@ -273,7 +312,7 @@
             1
           </div>
           <p>
-            {{ 'tutorial.instructions.step1' | translate }}
+            {{ "tutorial.instructions.step1" | translate }}
           </p>
         </div>
 
@@ -284,7 +323,7 @@
             2
           </div>
           <p>
-            {{ 'tutorial.instructions.step2' | translate }}
+            {{ "tutorial.instructions.step2" | translate }}
           </p>
         </div>
 
@@ -295,7 +334,7 @@
             3
           </div>
           <p>
-            {{ 'tutorial.instructions.step3' | translate }}
+            {{ "tutorial.instructions.step3" | translate }}
           </p>
         </div>
 
@@ -306,7 +345,7 @@
             4
           </div>
           <p>
-            {{ 'tutorial.instructions.step4' | translate }}
+            {{ "tutorial.instructions.step4" | translate }}
           </p>
         </div>
       </div>
@@ -315,7 +354,7 @@
         (click)="showInstructions = false"
         class="mt-6 w-full rounded-lg bg-wood-dark py-3 font-medium text-wood-text transition-colors hover:bg-wood/60 dark:bg-wood/30 dark:text-wood-light"
       >
-        {{ 'tutorial.instructions.startGame' | translate }}
+        {{ "tutorial.instructions.startGame" | translate }}
       </button>
     </div>
   </div>
@@ -332,7 +371,9 @@
     (click)="$event.stopPropagation()"
   >
     <!-- Modal Header -->
-    <div class="relative px-6 pt-6 text-center">
+    <div
+      class="flex flex-row items-center justify-center px-6 py-5 pt-6 text-center"
+    >
       <!-- 关闭按钮 -->
       <button
         (click)="closeCompletionModal()"
@@ -355,8 +396,10 @@
       </button>
 
       <div class="mb-2 text-3xl">🎉</div>
-      <h2 class="mb-1 text-2xl font-bold text-wood-text dark:text-wood-lighter">
-        {{ 'gameBoard.success' | translate }}
+      <h2
+        class="mx-1 mb-1 text-2xl font-bold text-wood-text dark:text-wood-lighter"
+      >
+        {{ "gameBoard.success" | translate }}
       </h2>
       <div class="mb-4 text-3xl">🎉</div>
     </div>
@@ -370,11 +413,15 @@
         >
           <span
             class="text-sm font-medium text-wood-text/90 dark:text-wood-lighter/90"
-            >{{ 'gameBoard.currentLevel' | translate }}</span
+            >{{ "gameBoard.currentLevel" | translate }}</span
           >
           <span class="font-semibold text-wood-text dark:text-wood-lighter">
-            {{ currentLevel()?.name || ('gameBoard.unknownLevel' | translate) }} ({{
-              currentLevel()?.difficulty ? (('levels.difficulty.' + currentLevel()?.difficulty) | translate) : ('common.unknown' | translate)
+            {{ currentLevel()?.name || ("gameBoard.unknownLevel" | translate) }}
+            ({{
+              currentLevel()?.difficulty
+                ? ("levels.difficulty." + currentLevel()?.difficulty
+                  | translate)
+                : ("common.unknown" | translate)
             }})
           </span>
         </div>
@@ -385,10 +432,10 @@
         >
           <span
             class="text-sm font-medium text-wood-text/90 dark:text-wood-lighter/90"
-            >{{ 'gameBoard.totalSteps' | translate }}</span
+            >{{ "gameBoard.currentSteps" | translate }}</span
           >
           <span class="font-semibold text-wood-text dark:text-wood-lighter">
-            {{ steps }} {{ 'common.steps' | translate }}
+            {{ steps }}
           </span>
         </div>
 
@@ -398,7 +445,7 @@
         >
           <span
             class="text-sm font-medium text-wood-text/90 dark:text-wood-lighter/90"
-            >{{ 'gameBoard.rating' | translate }}</span
+            >{{ "gameBoard.rating" | translate }}</span
           >
           <span class="font-semibold text-green-600 dark:text-green-400">
             {{ getCompletionRating() }}
@@ -408,11 +455,12 @@
 
       <!-- Modal Actions -->
       <div class="mb-4 flex flex-col space-y-3">
+        <!-- 下一关按钮 -->
         <button
+          *ngIf="hasNextLevel()"
           (click)="goToNextLevel(); closeCompletionModal()"
           appClickSound
-          [disabled]="!hasNextLevel()"
-          class="flex w-full transform items-center justify-center gap-2 rounded-xl border-2 border-blue-800 bg-blue-600 px-4 py-3 font-medium text-white shadow-lg transition duration-300 hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:border-gray-500 disabled:bg-gray-400"
+          class="flex w-full transform items-center justify-center gap-2 rounded-xl border-2 border-blue-800 bg-blue-600 px-4 py-3 font-medium text-white shadow-lg transition duration-300 hover:bg-blue-700 active:scale-95"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -428,7 +476,30 @@
               d="M13 7l5 5m0 0l-5 5m5-5H6"
             />
           </svg>
-          {{ hasNextLevel() ? ('gameBoard.nextLevel' | translate) : ('gameBoard.playAgain' | translate) }}
+          {{ "gameBoard.nextLevel" | translate }}
+        </button>
+
+        <!-- 重玩按钮 -->
+        <button
+          (click)="restartGame(); closeCompletionModal()"
+          appClickSound
+          class="flex w-full transform items-center justify-center gap-2 rounded-xl border-2 border-green-800 bg-green-600 px-4 py-3 font-medium text-white shadow-lg transition duration-300 hover:bg-green-700 active:scale-95"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+          {{ "gameBoard.playAgain" | translate }}
         </button>
 
         <button
@@ -450,14 +521,12 @@
               d="M4 6h16M4 10h16M4 14h16M4 18h16"
             />
           </svg>
-          {{ 'gameBoard.returnToLevelList' | translate }}
+          {{ "gameBoard.returnToLevelList" | translate }}
         </button>
       </div>
     </div>
   </div>
 </div>
-
-
 
 <div
   [ngClass]="{ hidden: !resourceLoading }"

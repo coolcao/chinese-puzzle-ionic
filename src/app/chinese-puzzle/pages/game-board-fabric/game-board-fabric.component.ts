@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inject, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { timer } from 'rxjs';
+import { timer, interval, Subscription } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
 import { GameManagementService } from '../../services/game-management.service';
@@ -34,6 +35,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   private gameStorage = inject(GameStorageService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private translate = inject(TranslateService);
 
   Direction = Direction;
 
@@ -55,6 +57,15 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   showInstructions = false;
   resourceLoading = false;
   showCompletionModal = false;
+  
+  // 防止关卡刚加载时就触发完成效果
+  private isLevelJustLoaded = true;
+  
+  // 计时器相关
+  gameTime = 0; // 游戏时间（秒）
+  private gameStartTime: number | null = null;
+  private timerSubscription: Subscription | null = null;
+  private isGameStarted = false;
 
   currentLevel = this.store.currentLevel;
 
@@ -66,13 +77,22 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   constructor() {
     effect(() => {
-      // TODO 这里的finished()在教程关卡完成后，再选择关卡时，还是true，导致刚进来就撒花，得查看一下具体原因解决一下
-      if (this.finished()) {
+      // 只有在关卡加载完成且用户确实进行了移动后才触发完成效果
+      if (this.finished() && !this.isLevelJustLoaded && this.steps > 0) {
+        // 停止计时器
+        this.stopTimer();
+        
         // 播放成功音效
         this.audioService.playSuccessSound();
 
-        // TODO 这里保存游戏进度，应该传一个关卡id，而不是在方法里面取当前关卡的id
-        this.gameManagement.saveGameProgress(this.steps, 0); // 暂时传0作为时间
+        // 保存游戏进度，包含步数和时间
+        const currentLevel = this.currentLevel();
+        if (currentLevel) {
+          this.gameManagement.saveGameProgress(currentLevel.id, this.steps, this.gameTime);
+        }
+        
+        // 保存到历史记录
+        this.saveGameHistory();
 
         // 显示完成Modal
         this.showCompletionModal = true;
@@ -120,6 +140,12 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnInit() {
+    // 重置步数和关卡加载标志
+    this.steps = 0;
+    this.isLevelJustLoaded = true;
+    // 重置计时器
+    this.resetTimer();
+    
     // 从查询参数中获取关卡ID
     this.route.queryParams.subscribe(params => {
       const levelId = params['levelId'];
@@ -154,7 +180,9 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   ngOnDestroy(): void {
     this.destroyResizeObserver();
     this.fabricGameService.dispose();
+    this.stopTimer();
   }
+
 
   // 初始化Canvas
   private initCanvas() {
@@ -166,6 +194,9 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       // 立即更新单元格尺寸并绘制
       this.updateCellSize();
       this.drawBoard();
+      
+      // 游戏初始化完成，启动计时器
+      this.startTimer();
     } else {
       // 如果还是没有找到canvas元素，稍后再尝试
       setTimeout(() => this.initCanvas(), 100);
@@ -354,6 +385,11 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
           totalStepsMoved += 1;
           currentPiece = moveResult.updatedPiece;
 
+          // 第一次移动时标记关卡已开始游戏
+          if (this.isLevelJustLoaded) {
+            this.isLevelJustLoaded = false;
+          }
+
         } else {
           break;
         }
@@ -389,9 +425,15 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.audioService.playClickSound();
     this.gameManagement.changeLevel(dataSetName);
     this.steps = 0;
+    // 重置关卡加载标志
+    this.isLevelJustLoaded = true;
+    // 重置计时器
+    this.resetTimer();
     // 直接重新绘制棋盘即可
     Promise.resolve().then(() => {
       this.drawBoard();
+      // 重新启动计时器
+      this.startTimer();
     });
   }
 
@@ -467,6 +509,27 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     }
   }
 
+  // 重新开始当前关卡
+  restartGame() {
+    this.audioService.playClickSound();
+    const currentLevel = this.currentLevel();
+    if (currentLevel) {
+      // 重置游戏状态
+      this.steps = 0;
+      this.isLevelJustLoaded = true;
+      this.resetTimer();
+      
+      // 重新加载当前关卡
+      this.gameManagement.changeLevel(currentLevel.id);
+      
+      // 重新绘制棋盘并启动计时器
+      Promise.resolve().then(() => {
+        this.drawBoard();
+        this.startTimer();
+      });
+    }
+  }
+
   // 检查是否有下一关
   hasNextLevel(): boolean {
     const currentNames = this.dataSetNames();
@@ -495,42 +558,120 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.closeCompletionModal();
   }
 
+  // 开始计时器
+  private startTimer() {
+    if (this.isGameStarted) {
+      return; // 避免重复启动
+    }
+    
+    this.isGameStarted = true;
+    this.gameStartTime = Date.now();
+    this.gameTime = 0;
+    
+    // 每秒更新一次游戏时间
+    this.timerSubscription = interval(1000).subscribe(() => {
+      if (this.gameStartTime) {
+        this.gameTime = Math.floor((Date.now() - this.gameStartTime) / 1000);
+      }
+    });
+  }
+  
+  // 停止计时器
+  private stopTimer() {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = null;
+    }
+    this.isGameStarted = false;
+  }
+  
+  // 重置计时器
+  private resetTimer() {
+    this.stopTimer();
+    this.gameTime = 0;
+    this.gameStartTime = null;
+    this.isGameStarted = false;
+  }
+  
+  // 格式化时间显示 (MM:SS)
+  getFormattedTime(): string {
+    const minutes = Math.floor(this.gameTime / 60);
+    const seconds = this.gameTime % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+  
+  // 保存游戏历史记录
+  private async saveGameHistory() {
+    try {
+      const currentLevel = this.currentLevel();
+      if (!currentLevel) {
+        return;
+      }
+      
+      const historyRecord = {
+        levelId: currentLevel.id,
+        levelName: currentLevel.name,
+        difficulty: currentLevel.difficulty,
+        steps: this.steps,
+        time: this.gameTime,
+        completedAt: new Date().toISOString(),
+        rating: this.getCompletionRating()
+      };
+      
+      // 获取现有历史记录
+      const existingHistory = await this.gameStorage.get<any[]>('game_history') || [];
+      
+      // 添加新记录到历史记录开头
+      existingHistory.unshift(historyRecord);
+      
+      // 限制历史记录数量（保留最近100条）
+      if (existingHistory.length > 100) {
+        existingHistory.splice(100);
+      }
+      
+      // 保存到存储
+      await this.gameStorage.set('game_history', existingHistory);
+      
+      console.log('Game history saved:', historyRecord);
+    } catch (error) {
+      console.error('Failed to save game history:', error);
+    }
+  }
+
   // 获取完成评价
   getCompletionRating(): string {
     const steps = this.steps;
-    const difficulty = this.currentLevel()?.difficulty || '中级';
+    const difficulty = this.currentLevel()?.difficulty || 'medium';
 
     // 根据步数和难度给出评价
     let threshold: number;
     switch (difficulty) {
-      case '初级':
+      case 'easy':
         threshold = 100;
         break;
-      case '中级':
+      case 'medium':
         threshold = 150;
         break;
-      case '高级':
+      case 'hard':
         threshold = 200;
-        break;
-      case '专家':
-        threshold = 250;
-        break;
-      case '大师':
-        threshold = 300;
         break;
       default:
         threshold = 150;
     }
 
+    let ratingKey: string;
     if (steps <= threshold * 0.7) {
-      return '完美通关！🏆';
+      ratingKey = 'rating.perfect';
     } else if (steps <= threshold) {
-      return '表现优秀！⭐';
+      ratingKey = 'rating.excellent';
     } else if (steps <= threshold * 1.3) {
-      return '还不错！👍';
+      ratingKey = 'rating.good';
     } else {
-      return '继续努力！💪';
+      ratingKey = 'rating.needImprovement';
     }
+    
+    // 直接返回翻译后的文本
+    return this.translate.instant(ratingKey);
   }
 
   // 监听键盘事件

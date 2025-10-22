@@ -55,13 +55,17 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
 
   resourceLoading = false;
   showSuccess = false;
+  
+  // 防止关卡刚加载时就触发完成效果
+  private isLevelJustLoaded = true;
 
   // 当前关卡信息
   currentLevel = this.getCurrentLevel();
 
   constructor() {
     effect(() => {
-      if (this.finished()) {
+      // 只有在关卡加载完成且用户确实进行了移动后才触发完成效果
+      if (this.finished() && !this.isLevelJustLoaded && this.steps > 0) {
         this.showSuccess = true;
         // 播放成功音效
         this.audioService.playSuccessSound();
@@ -140,6 +144,10 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // 重置步数和关卡加载标志
+    this.steps = 0;
+    this.isLevelJustLoaded = true;
+    
     // 从 query 参数中获取关卡 ID
     const levelId = this.route.snapshot.queryParams['level'];
     if (levelId) {
@@ -220,6 +228,11 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
       this.store.updateBoard(boardState);
 
       this.steps += 1;
+
+      // 第一次移动时标记关卡已开始游戏
+      if (this.isLevelJustLoaded) {
+        this.isLevelJustLoaded = false;
+      }
 
       // 播放移动音效
       this.audioService.playWoodSound();

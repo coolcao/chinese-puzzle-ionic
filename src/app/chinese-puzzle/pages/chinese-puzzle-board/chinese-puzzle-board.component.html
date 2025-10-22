@@ -34,7 +34,7 @@
         <h1
           class="text-2xl font-extrabold text-wood-text dark:text-wood-lighter"
         >
-          🎮 三国华容道 🎮
+          三国华容道
         </h1>
         <div class="w-10"></div>
         <button
@@ -127,7 +127,7 @@
           <h2
             class="mb-4 text-xl font-bold text-wood-text dark:text-wood-lighter"
           >
-            游戏控制
+            {{ 'gameBoard.gameControl' | translate }}
           </h2>
 
           <!-- 当前关卡信息 -->
@@ -141,12 +141,12 @@
               class="w-full rounded-lg border border-wood-border bg-wood/50 px-4 py-2 text-wood-text shadow-inner dark:bg-wood-dark/50 dark:text-wood-lighter"
             >
               <div class="font-semibold">
-                {{ currentLevel?.name || "未知关卡" }}
+                {{ currentLevel?.name || ('gameBoard.unknownLevel' | translate) }}
               </div>
               <div
                 class="mt-1 text-xs text-wood-text/70 dark:text-wood-lighter/70"
               >
-                难度：{{ currentLevel?.difficulty || "未知" }}
+                {{ 'common.difficulty' | translate }}：{{ currentLevel?.difficulty || ('common.unknown' | translate) }}
               </div>
             </div>
           </div>
@@ -155,7 +155,7 @@
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <span class="text-wood-text dark:text-wood-lighter"
-                >当前步数：</span
+                >{{ 'gameBoard.currentSteps' | translate }}</span
               >
               <div
                 class="rounded-lg bg-wood/50 px-4 py-2 text-wood-text dark:text-wood-lighter"
@@ -165,12 +165,12 @@
             </div>
             <div class="flex items-center justify-between">
               <span class="text-wood-text dark:text-wood-lighter"
-                >游戏状态：</span
+                >{{ 'gameBoard.gameStatus' | translate }}</span
               >
               <div class="rounded-lg bg-wood/50 px-4 py-2">
                 @if (finished()) {
                   <span class="text-green-600 dark:text-green-300"
-                    >✅ 已完成</span
+                    >{{ 'gameBoard.completed' | translate }}</span
                   >
                 } @else {
                   <span class="text-wood-text dark:text-wood-lighter"
@@ -186,13 +186,13 @@
           <h3
             class="mb-4 text-lg font-semibold text-wood-text dark:text-wood-lighter"
           >
-            游戏说明
+            {{ 'gameBoard.instructions' | translate }}
           </h3>
           <div class="space-y-3 text-sm text-wood-text dark:text-wood-lighter">
-            <p>🎮 通过拖拽方块移动棋子</p>
-            <p>⭐ 优先移动大块棋子开路</p>
-            <p>🎯 将曹操移动到底部出口</p>
-            <p>🏆 挑战最少步数完成</p>
+            <p>{{ 'tutorial.instructions.step1' | translate }}</p>
+            <p>{{ 'tutorial.instructions.step2' | translate }}</p>
+            <p>{{ 'tutorial.instructions.step3' | translate }}</p>
+            <p>{{ 'tutorial.instructions.step4' | translate }}</p>
           </div>
         </div>
       </div>
@@ -227,7 +227,7 @@
         <h1
           class="text-lg font-extrabold text-wood-text dark:text-wood-lighter"
         >
-          🎮 三国华容道 🎮
+          三国华容道
         </h1>
         <div class="w-10"></div>
         <button
@@ -262,19 +262,19 @@
             <span
               class="whitespace-nowrap text-xs font-semibold text-wood-text dark:text-wood-lighter"
             >
-              当前关卡：
+              {{ 'gameBoard.currentLevel' | translate }}：
             </span>
             <div
               class="flex-1 rounded-lg border border-wood-border bg-wood-lighter px-2 py-1 text-xs text-wood-text shadow-inner dark:bg-wood-dark/50 dark:text-wood-lighter"
             >
               <div class="flex items-center justify-between">
                 <span class="font-semibold">{{
-                  currentLevel?.name || "未知关卡"
+                  currentLevel?.name || ('gameBoard.unknownLevel' | translate)
                 }}</span>
                 <span
                   class="text-xs text-wood-text/70 dark:text-wood-lighter/70"
                 >
-                  {{ currentLevel?.difficulty || "未知" }}
+                  {{ currentLevel?.difficulty || ('common.unknown' | translate) }}
                 </span>
               </div>
             </div>
@@ -285,7 +285,7 @@
             <div
               class="rounded-lg bg-wood/50 px-2 py-1 text-xs text-wood-text shadow-inner transition-colors duration-300 dark:text-wood-lighter"
             >
-              步数: {{ steps }}
+              {{ 'common.steps' | translate }}: {{ steps }}
             </div>
             <div class="rounded-lg bg-wood/50 px-2 py-1 text-xs shadow-inner">
               @if (finished()) {
@@ -389,7 +389,7 @@
 >
   <div class="mb-4 flex items-center justify-between">
     <h3 class="text-2xl font-bold text-wood-text dark:text-wood-lighter">
-      🎮 游戏指南
+      {{ 'tutorial.instructions.title' | translate }}
     </h3>
     <button
       (click)="showInstructions = false"
@@ -422,7 +422,7 @@
       <p>
         通过<span class="font-medium text-wood-text dark:text-wood-lighter"
           >拖拽方块</span
-        >或点击边缘<span class="text-xl">⬆️⬇️⬅️➡️</span>箭头移动棋子
+        >{{ 'tutorial.instructions.step1' | translate }}
       </p>
     </div>
 
@@ -433,10 +433,7 @@
         2
       </div>
       <p>
-        ⭐ 技巧：优先移动关羽等<span
-          class="font-bold text-wood-text dark:text-wood-lighter"
-          >大块</span
-        >开路
+        {{ 'tutorial.instructions.step2' | translate }}
       </p>
     </div>
 
@@ -447,9 +444,7 @@
         3
       </div>
       <p>
-        目标是将<span class="font-medium text-wood-text dark:text-wood-lighter"
-          >曹操方块</span
-        >移动到底部中央出口
+        {{ 'tutorial.instructions.step3' | translate }}
       </p>
     </div>
 
@@ -460,9 +455,7 @@
         4
       </div>
       <p>
-        尽量用<span class="font-medium text-wood-text dark:text-wood-lighter"
-          >最少步数</span
-        >完成，挑战最佳记录！
+        {{ 'tutorial.instructions.step4' | translate }}
       </p>
     </div>
   </div>
@@ -471,6 +464,6 @@
     (click)="showInstructions = false"
     class="mt-6 w-full rounded-lg bg-wood-dark py-3 font-medium text-wood-text transition-colors hover:bg-wood/60 dark:bg-wood/30 dark:text-wood-light"
   >
-    开始游戏
+    {{ 'tutorial.instructions.startGame' | translate }}
   </button>
 </div>

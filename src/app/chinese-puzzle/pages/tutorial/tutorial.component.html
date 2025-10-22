@@ -36,7 +36,7 @@
         <h1
           class="text-2xl font-extrabold text-wood-text dark:text-wood-lighter"
         >
-          🎮 三国华容道 🎮
+          {{ 'tutorial.title' | translate }}
         </h1>
         <div class="w-10"></div>
         <button
@@ -73,12 +73,6 @@
               (touchmove)="onTouchMove($event)"
               class="rounded-md border-4 border-b-0 border-solid border-wood-darker"
             ></canvas>
-
-            <!-- PC端棋盘蒙版 - 精确覆盖canvas -->
-            <div
-              *ngIf="showBoardMask"
-              class="pointer-events-none absolute inset-0 rounded-md bg-black/30 transition-opacity duration-300 ease-in-out"
-            ></div>
           </div>
         </div>
       </div>
@@ -95,7 +89,7 @@
             <h2
               class="mb-4 text-xl font-bold text-wood-text dark:text-wood-lighter"
             >
-              游戏控制
+              {{ 'tutorial.gameControl' | translate }}
             </h2>
 
             <!-- 当前关卡信息 -->
@@ -103,18 +97,18 @@
               <label
                 class="mb-2 block text-sm font-medium text-wood-text dark:text-wood-lighter"
               >
-                当前关卡
+                {{ 'tutorial.currentLevel' | translate }}
               </label>
               <div
                 class="w-full rounded-lg border border-wood-border bg-wood/50 px-4 py-2 text-wood-text shadow-inner dark:bg-wood-dark/50 dark:text-wood-lighter"
               >
                 <div class="font-semibold">
-                  {{ currentLevel.name || "未知关卡" }}
+                  {{ currentLevel.name || ('tutorial.unknownLevel' | translate) }}
                 </div>
                 <div
                   class="mt-1 text-xs text-wood-text/70 dark:text-wood-lighter/70"
                 >
-                  难度：{{ currentLevel.difficulty || "未知" }}
+                  {{ 'common.difficulty' | translate }}：{{ currentLevel.difficulty || ('common.unknown' | translate) }}
                 </div>
               </div>
             </div>
@@ -123,7 +117,7 @@
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <span class="text-wood-text dark:text-wood-lighter"
-                  >当前步数：</span
+                  >{{ 'tutorial.currentSteps' | translate }}</span
                 >
                 <div
                   class="rounded-lg bg-wood/50 px-4 py-2 text-wood-text dark:text-wood-lighter"
@@ -133,16 +127,16 @@
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-wood-text dark:text-wood-lighter"
-                  >游戏状态：</span
+                  >{{ 'tutorial.gameStatus' | translate }}</span
                 >
                 <div class="rounded-lg bg-wood/50 px-4 py-2">
                   @if (finished()) {
                     <span class="text-green-600 dark:text-green-300"
-                      >✅ 已完成</span
+                      >{{ 'tutorial.completed' | translate }}</span
                     >
                   } @else {
                     <span class="text-wood-text dark:text-wood-lighter"
-                      >⏳ 进行中</span
+                      >{{ 'tutorial.inProgress' | translate }}</span
                     >
                   }
                 </div>
@@ -175,7 +169,7 @@
                   <span
                     class="text-sm font-medium text-wood-text/80 dark:text-wood-lighter/80"
                   >
-                    步骤 {{ currentTutorialStep + 1 }}/{{
+                    {{ 'tutorial.step' | translate }} {{ currentTutorialStep + 1 }}/{{
                       tutorialSteps.length
                     }}
                   </span>
@@ -187,7 +181,7 @@
                 appClickSound
                 class="rounded-lg bg-wood-dark px-3 py-1.5 text-xs font-medium text-wood-lighter transition-colors hover:bg-wood-darker dark:bg-dark-wood-darker dark:hover:bg-dark-wood"
               >
-                跳过
+                {{ 'tutorial.skip' | translate }}
               </button>
             </div>
 
@@ -227,7 +221,7 @@
               </div>
               <span
                 class="text-sm font-medium text-wood-text dark:text-wood-lighter"
-                >请按提示操作</span
+                >{{ 'tutorial.followInstructions' | translate }}</span
               >
             </div>
 
@@ -235,12 +229,12 @@
               *ngIf="!currentTutorialData.waitForUser"
               (click)="nextTutorialStep()"
               appClickSound
-              class="w-full rounded-lg bg-wood-darker py-2.5 font-semibold text-wood-lighter transition-colors hover:bg-wood-dark dark:bg-wood-lighter dark:text-wood-text dark:hover:bg-wood"
+              class="w-full rounded-lg bg-wood-darker py-2.5 font-semibold text-wood-lighter transition-colors hover:bg-wood-dark dark:bg-wood-dark dark:text-wood-text dark:hover:bg-wood"
             >
               {{
                 currentTutorialStep === tutorialSteps.length - 1
-                  ? "完成教程"
-                  : "下一步"
+                  ? ('tutorial.completeNext' | translate)
+                  : ('tutorial.nextStep' | translate)
               }}
             </button>
             <!-- PC端教程错误提示 - 放在教程模态框下方 -->
@@ -323,7 +317,7 @@
         <h1
           class="text-lg font-extrabold text-wood-text dark:text-dark-wood-text"
         >
-          🎮 三国华容道 🎮
+          {{ 'tutorial.title' | translate }}
         </h1>
         <div class="w-10"></div>
         <button
@@ -348,7 +342,9 @@
       </div>
     </header>
 
-    <div class="tutorial-content-mobile min-h-32 w-full bg-wood-light/70 dark:bg-dark-wood-darker/70 sm:min-h-40 md:min-h-48 lg:min-h-52">
+    <div
+      class="tutorial-content-mobile min-h-32 w-full bg-wood-light/70 dark:bg-dark-wood-darker/70 sm:min-h-40 md:min-h-48 lg:min-h-52"
+    >
       <!-- 教程提示栏 - 替换状态栏位置 -->
       <div
         *ngIf="currentTutorialData"
@@ -370,7 +366,7 @@
             appClickSound
             class="rounded-lg bg-wood-dark px-3 py-1 text-xs text-wood-lighter transition-colors hover:bg-wood-darker dark:bg-dark-wood-darker dark:text-wood-lighter dark:hover:bg-dark-wood"
           >
-            跳过
+            {{ 'tutorial.skip' | translate }}
           </button>
         </div>
 
@@ -392,7 +388,7 @@
           ></div>
         </div>
 
-        <!-- 操作提示或下一步按钮 -->
+        <!-- 操作提示或{{ 'tutorialPage.nextStep' | translate }}按钮 -->
         <div
           *ngIf="currentTutorialData.waitForUser"
           class="flex items-center justify-center space-x-2"
@@ -411,7 +407,7 @@
             ></div>
           </div>
           <span class="text-sm text-wood-text dark:text-wood"
-            >请按照提示操作棋子</span
+            >{{ 'tutorial.followInstructions' | translate }}</span
           >
         </div>
 
@@ -419,12 +415,12 @@
           *ngIf="!currentTutorialData.waitForUser"
           (click)="nextTutorialStep()"
           appClickSound
-          class="w-full rounded-lg bg-wood-darker py-2 font-medium text-wood-lighter transition-colors hover:bg-wood dark:bg-wood-lighter dark:text-wood-text dark:hover:bg-wood"
+          class="w-full rounded-lg bg-wood-darker py-2 font-medium text-wood-lighter transition-colors hover:bg-wood dark:bg-wood-dark dark:text-wood-text dark:hover:bg-wood"
         >
           {{
             currentTutorialStep === tutorialSteps.length - 1
-              ? "完成教程"
-              : "下一步"
+              ? ('tutorial.completeNext' | translate)
+              : ('tutorial.nextStep' | translate)
           }}
         </button>
 
@@ -480,19 +476,13 @@
     <div
       class="tutorial-board-container flex flex-1 flex-col items-center justify-center bg-wood-light/50 dark:bg-dark-wood-darker/50"
     >
-      <div class="relative w-full flex justify-center">
+      <div class="relative flex w-full justify-center">
         <div class="relative">
           <canvas
             #gameCanvasMobile
             (touchmove)="onTouchMove($event)"
             class="h-auto rounded-md border-4 border-b-0 border-solid border-wood-darker"
           ></canvas>
-
-          <!-- 移动端棋盘蒙版 - 精确覆盖canvas -->
-          <div
-            *ngIf="showBoardMask"
-            class="pointer-events-none absolute inset-0 rounded-md bg-black/30 transition-opacity duration-300 ease-in-out"
-          ></div>
         </div>
       </div>
     </div>
@@ -515,7 +505,7 @@
     >
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-2xl font-bold text-wood-text dark:text-wood-lighter">
-          🎮 游戏指南
+          {{ 'tutorial.instructions.title' | translate }}
         </h3>
         <button
           (click)="showInstructions = false"
@@ -546,9 +536,7 @@
             1
           </div>
           <p>
-            通过<span class="font-medium text-wood-text dark:text-wood-lighter"
-              >拖拽方块</span
-            >或点击边缘<span class="text-xl">⬆️⬇️⬅️➡️</span>箭头移动棋子
+            {{ 'tutorial.instructions.step1' | translate }}
           </p>
         </div>
 
@@ -559,10 +547,7 @@
             2
           </div>
           <p>
-            ⭐ 技巧：优先移动关羽等<span
-              class="font-bold text-wood-text dark:text-wood-lighter"
-              >大块</span
-            >开路
+            {{ 'tutorial.instructions.step2' | translate }}
           </p>
         </div>
 
@@ -573,10 +558,7 @@
             3
           </div>
           <p>
-            目标是将<span
-              class="font-medium text-wood-text dark:text-wood-lighter"
-              >曹操方块</span
-            >移动到底部中央出口
+            {{ 'tutorial.instructions.step3' | translate }}
           </p>
         </div>
 
@@ -587,10 +569,7 @@
             4
           </div>
           <p>
-            尽量用<span
-              class="font-medium text-wood-text dark:text-wood-lighter"
-              >最少步数</span
-            >完成，挑战最佳记录！
+            {{ 'tutorial.instructions.step4' | translate }}
           </p>
         </div>
       </div>
@@ -599,7 +578,7 @@
         (click)="showInstructions = false"
         class="mt-6 w-full rounded-lg bg-wood-dark py-3 font-medium text-wood-text transition-colors hover:bg-wood/60 dark:bg-wood/30 dark:text-wood-light"
       >
-        开始游戏
+        {{ 'tutorial.instructions.startGame' | translate }}
       </button>
     </div>
   </div>
@@ -609,7 +588,7 @@
   [ngClass]="{ hidden: !resourceLoading }"
   class="flex h-full min-h-screen w-full flex-col items-center justify-center bg-wood-lighter dark:bg-dark-wood-bg"
 >
-  <div class="text-2xl text-wood-text">
+  <div class="text-2xl text-wood-text dark:text-wood-lighter">
     <div class="loader"></div>
   </div>
 </div>

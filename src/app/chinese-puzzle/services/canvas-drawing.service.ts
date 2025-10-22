@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Piece } from '../chinese-puzzle.type';
 import { CanvasResizeService } from './canvas-resize.service';
 
@@ -12,6 +13,7 @@ export class CanvasDrawingService {
   private woodLightImage: HTMLImageElement | null = null;
 
   private canvasResizeService = inject(CanvasResizeService);
+  private translateService = inject(TranslateService);
 
   constructor() { }
 
@@ -104,7 +106,7 @@ export class CanvasDrawingService {
     ctx.fillStyle = this.isDarkMode() ? '#B4A490' : '#3D2F1F'; // 黑暗模式浅色，白天模式深色
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('出口', (this.canvasResizeService.boardWidth * this.canvasResizeService.cellSize + this.canvasResizeService.cellOffset) / 2, this.canvasResizeService.boardHeight * this.canvasResizeService.cellSize + this.canvasResizeService.cellOffset / 2 - 20);
+    ctx.fillText(this.translateService.instant('gameBoard.exit'), (this.canvasResizeService.boardWidth * this.canvasResizeService.cellSize + this.canvasResizeService.cellOffset) / 2, this.canvasResizeService.boardHeight * this.canvasResizeService.cellSize + this.canvasResizeService.cellOffset / 2 - 20);
 
     // 绘制棋子
     pieces.forEach(piece => {

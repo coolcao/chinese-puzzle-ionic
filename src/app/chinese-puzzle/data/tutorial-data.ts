@@ -43,16 +43,16 @@ export const tutorialSteps: TutorialStep[] = [
   {
     id: 1,
     type: 'explain',
-    title: '欢迎来到华容道！',
-    description: '目标很简单：将方块曹操移动到底部出口。',
+    title: 'tutorial.tutorialSteps.welcome.title',
+    description: 'tutorial.tutorialSteps.welcome.description',
     autoPlay: false,
     waitForUser: false
   },
   {
     id: 2,
     type: 'highlight',
-    title: '这是曹操',
-    description: '这个2x2大块就是曹操。',
+    title: 'tutorial.tutorialSteps.caocao.title',
+    description: 'tutorial.tutorialSteps.caocao.description',
     targetPieceId: 1,
     autoPlay: false,
     waitForUser: false
@@ -60,8 +60,8 @@ export const tutorialSteps: TutorialStep[] = [
   {
     id: 3,
     type: 'highlight',
-    title: '这是出口',
-    description: '底部这个2x2区域就是出口，我们要把曹操移动到这里。',
+    title: 'tutorial.tutorialSteps.exit.title',
+    description: 'tutorial.tutorialSteps.exit.description',
     highlightArea: { x: 1, y: 3, width: 2, height: 2 },
     autoPlay: false,
     waitForUser: false
@@ -69,8 +69,8 @@ export const tutorialSteps: TutorialStep[] = [
   {
     id: 4,
     type: 'interact',
-    title: '第一步：移走左边小兵',
-    description: '小兵挡住了曹操的路，先把左边小兵向左移动。',
+    title: 'tutorial.tutorialSteps.moveLeft.title',
+    description: 'tutorial.tutorialSteps.moveLeft.description',
     targetPieceId: 7,
     targetPosition: { x: 0, y: 2 },
     moveDirection: Direction.Left,
@@ -82,8 +82,8 @@ export const tutorialSteps: TutorialStep[] = [
   {
     id: 5,
     type: 'interact',
-    title: '第二步：移走右边小兵',
-    description: '现在把右边小兵向右移动。',
+    title: 'tutorial.tutorialSteps.moveRight.title',
+    description: 'tutorial.tutorialSteps.moveRight.description',
     targetPieceId: 8,
     targetPosition: { x: 3, y: 2 },
     moveDirection: Direction.Right,
@@ -95,8 +95,8 @@ export const tutorialSteps: TutorialStep[] = [
   {
     id: 6,
     type: 'interact',
-    title: '第三步：曹操移动到出口',
-    description: '太好了！现在拖拽曹操向下移动到出口。',
+    title: 'tutorial.tutorialSteps.moveCaocao.title',
+    description: 'tutorial.tutorialSteps.moveCaocao.description',
     targetPieceId: 1,
     targetPosition: { x: 1, y: 3 },
     moveDirection: Direction.Down,
@@ -108,8 +108,8 @@ export const tutorialSteps: TutorialStep[] = [
   {
     id: 7,
     type: 'explain',
-    title: '完成！',
-    description: '恭喜！你学会了华容道的基本玩法：移开阻挡的棋子，为目标开路！',
+    title: 'tutorial.tutorialSteps.congratulations.title',
+    description: 'tutorial.tutorialSteps.congratulations.description',
     autoPlay: false,
     waitForUser: false
   }
@@ -117,9 +117,9 @@ export const tutorialSteps: TutorialStep[] = [
 
 // 教程关卡完整定义
 export const tutorialLevel: Level = {
-  id: '教程关卡',
-  name: '教程关卡',
-  difficulty: '教程',
+  id: 'tutorial-level',
+  name: 'Tutorial Level',
+  difficulty: 'tutorial',
   minSteps: 3,
   pieces: tutorialPieces,
   isTutorial: true,
@@ -128,5 +128,5 @@ export const tutorialLevel: Level = {
 
 // 教程关卡的数据集条目（用于 dataSet 对象）
 export const tutorialDataSetEntry = {
-  '教程关卡': tutorialPieces
+  'tutorial-level': tutorialPieces
 };

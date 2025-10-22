@@ -27,7 +27,7 @@
         </svg>
       </button>
       <h1 class="text-2xl font-extrabold text-wood-text dark:text-wood-lighter">
-        关卡数据生成器
+        {{ 'levelGeneratorPage.title' | translate }}
       </h1>
       <div class="w-10"></div>
     </div>
@@ -46,33 +46,33 @@
           <h2
             class="mb-4 text-xl font-bold text-wood-text dark:text-wood-lighter"
           >
-            关卡信息
+            {{ 'levelGeneratorPage.levelInformation' | translate }}
           </h2>
           <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
               <label
                 class="mb-2 block text-sm font-medium text-wood-text dark:text-wood-lighter"
-                >关卡名称</label
+                >{{ 'levelGeneratorPage.levelName' | translate }}</label
               >
               <input
                 [(ngModel)]="levelName"
                 type="text"
                 class="w-full rounded-lg border border-wood-border bg-wood-lighter px-4 py-2 text-wood-text shadow-inner dark:bg-dark-wood-lighter dark:text-wood-lighter"
-                placeholder="请输入关卡名称"
+                placeholder="{{ 'levelGeneratorPage.enterLevelName' | translate }}"
               />
             </div>
             <div>
               <label
                 class="mb-2 block text-sm font-medium text-wood-text dark:text-wood-lighter"
-                >关卡难度</label
+                >{{ 'levelGeneratorPage.levelDifficulty' | translate }}</label
               >
               <select
                 [(ngModel)]="levelDifficulty"
                 class="w-full rounded-lg border border-wood-border bg-wood-lighter px-4 py-2 text-wood-text shadow-inner dark:bg-dark-wood-lighter dark:text-wood-lighter"
               >
-                <option value="初级">初级</option>
-                <option value="中级">中级</option>
-                <option value="高级">高级</option>
+                <option value="初级">{{ 'levelGeneratorPage.beginner' | translate }}</option>
+                <option value="中级">{{ 'levelGeneratorPage.intermediate' | translate }}</option>
+                <option value="高级">{{ 'levelGeneratorPage.advanced' | translate }}</option>
               </select>
             </div>
           </div>
@@ -87,7 +87,7 @@
               <h2
                 class="mb-4 text-xl font-bold text-wood-text dark:text-wood-lighter"
               >
-                棋子模板
+                {{ 'levelGeneratorPage.pieceTemplates' | translate }}
               </h2>
               <div class="grid grid-cols-2 gap-4">
                 <div
@@ -148,7 +148,7 @@
               <h2
                 class="mb-4 text-xl font-bold text-wood-text dark:text-wood-lighter"
               >
-                棋盘
+                {{ 'levelGeneratorPage.gameBoard' | translate }}
               </h2>
               <div class="flex flex-col items-center">
                 <!-- Canvas 棋盘 -->
@@ -187,7 +187,7 @@
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    验证数据
+                    {{ 'levelGeneratorPage.validateData' | translate }}
                   </button>
                   <button
                     *ngIf="solutionPath && !isAnimating"
@@ -209,7 +209,7 @@
                         d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    演示解法
+                    {{ 'levelGeneratorPage.demonstrateSolution' | translate }}
                   </button>
                   <button
                     (click)="generateAndCopy()"
@@ -231,7 +231,7 @@
                         d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                       />
                     </svg>
-                    生成并复制
+                    {{ 'levelGeneratorPage.generateAndCopy' | translate }}
                   </button>
                   <button
                     (click)="resetBoard()"
@@ -253,7 +253,7 @@
                         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                       />
                     </svg>
-                    重置棋盘
+                    {{ 'levelGeneratorPage.resetBoard' | translate }}
                   </button>
                 </div>
 
@@ -310,7 +310,7 @@
                         d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    {{ animationPaused ? "恢复" : "暂停" }}
+                    {{ animationPaused ? "{{ 'levelGeneratorPage.resume' | translate }}" : "{{ 'levelGeneratorPage.pause' | translate }}" }}
                   </button>
                   <button
                     (click)="stopAnimation()"
@@ -337,7 +337,7 @@
                         d="M9 10h6v4H9z"
                       />
                     </svg>
-                    停止
+                    {{ 'levelGeneratorPage.stop' | translate }}
                   </button>
                 </div>
               </div>

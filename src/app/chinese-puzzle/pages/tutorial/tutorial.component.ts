@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inject, OnInit, computed } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
 import { GameManagementService } from '../../services/game-management.service';
@@ -35,6 +36,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   private audioService = inject(AudioService);
   private gameStorage = inject(GameStorageService);
   private tutorialService = inject(TutorialService);
+  private translateService = inject(TranslateService);
   private router = inject(Router);
 
   Direction = Direction;
@@ -57,7 +59,6 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   showTutorialModal = false;
   currentTutorialData: TutorialStep | null = null;
   boardLocked = false; // 棋盘锁定状态
-  showBoardMask = false; // 显示棋盘蒙版
   tutorialError = ''; // 教程错误提示
   showTutorialError = false; // 显示教程错误提示
 
@@ -156,14 +157,26 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private showTutorialStep(stepIndex: number) {
+  private async showTutorialStep(stepIndex: number) {
     if (stepIndex >= this.tutorialSteps.length) {
       this.completeTutorial();
       return;
     }
 
     this.currentTutorialStep = stepIndex;
-    this.currentTutorialData = this.tutorialSteps[stepIndex];
+    let step = this.tutorialSteps[stepIndex];
+
+    // Translate title and description if they are translation keys
+    const translatedTitle = this.translateService.instant(step.title);
+    const translatedDescription = this.translateService.instant(step.description);
+
+    // Create a new step object with translated content
+    this.currentTutorialData = {
+      ...step,
+      title: translatedTitle,
+      description: translatedDescription
+    };
+
     this.showTutorialModal = true;
 
     // 根据步骤类型执行不同操作
@@ -408,7 +421,6 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hideTutorialError();
     // 解锁棋盘并隐藏蒙版
     this.unlockTutorialBoard();
-    this.showBoardMask = false;
     this.completeTutorial();
   }
 
@@ -423,7 +435,6 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // 解锁棋盘并隐藏蒙版
     this.unlockTutorialBoard();
-    this.showBoardMask = false;
 
     // 标记教程已完成
     await this.gameStorage.markTutorialCompleted();
@@ -753,7 +764,6 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   // 教程专用：锁定棋盘
   private lockTutorialBoard() {
     this.boardLocked = true;
-    this.showBoardMask = true; // 显示蒙版
     if (this.fabricGameService.canvas) {
       this.fabricGameService.canvas.selection = false;
       this.fabricGameService.canvas.forEachObject((obj) => {
@@ -767,7 +777,6 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   // 教程专用：解锁棋盘
   private unlockTutorialBoard() {
     this.boardLocked = false;
-    this.showBoardMask = false; // 隐藏蒙版
     if (this.fabricGameService.canvas) {
       this.fabricGameService.canvas.selection = false; // 保持不允许多选
       this.fabricGameService.canvas.forEachObject((obj) => {

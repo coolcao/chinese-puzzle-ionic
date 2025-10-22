@@ -1,0 +1,241 @@
+{
+  "common": {
+    "back": "返回",
+    "skip": "跳过",
+    "next": "继续",
+    "complete": "完成",
+    "start": "开始",
+    "cancel": "取消",
+    "confirm": "确认",
+    "close": "关闭",
+    "loading": "加载中...",
+    "difficulty": "难度",
+    "pieces": "棋子",
+    "steps": "步数",
+    "completed": "完成",
+    "inProgress": "进行中",
+    "unknown": "未知"
+  },
+  "home": {
+    "title": "三国华容道",
+    "subtitle": "经典智力游戏",
+    "startTutorial": "开始游戏",
+    "selectLevel": "游戏",
+    "generateLevel": "创作",
+    "tutorialDescription": "学习玩法",
+    "levelSelectDescription": "挑战关卡",
+    "generatorDescription": "设计关卡"
+  },
+  "levelSelect": {
+    "title": "选择关卡",
+    "selectHint": "选择关卡开始游戏",
+    "difficulty": "难度",
+    "pieces": "棋子"
+  },
+  "tutorial": {
+    "title": "三国华容道",
+    "gameControl": "控制",
+    "currentLevel": "关卡",
+    "currentSteps": "步数：",
+    "gameStatus": "状态：",
+    "completed": "✅ 已完成",
+    "inProgress": "⏳ 进行中",
+    "unknownLevel": "未知关卡",
+    "unknownDifficulty": "未知",
+    "step": "步骤",
+    "skip": "跳过",
+    "waitingForAction": "按提示操作",
+    "completeNext": "完成",
+    "nextStep": "继续",
+    "followInstructions": "按提示移动棋子",
+    "instructions": {
+      "title": "🎮 游戏玩法",
+      "step1": "拖拽棋子或点击边缘箭头⬆️⬇️⬅️➡️移动",
+      "step2": "⭐ 技巧：优先移动关羽等大棋子开路",
+      "step3": "目标：将曹操移动到底部出口",
+      "step4": "用最少步数完成挑战！",
+      "startGame": "开始游戏"
+    },
+    "tutorialSteps": {
+      "welcome": {
+        "title": "欢迎！",
+        "description": "将曹操移动到底部出口。"
+      },
+      "caocao": {
+        "title": "曹操",
+        "description": "这是2x2的曹操棋子。"
+      },
+      "exit": {
+        "title": "出口",
+        "description": "将曹操移动到这里获胜。"
+      },
+      "moveLeft": {
+        "title": "第1步：向左移动",
+        "description": "将左边士兵移开。"
+      },
+      "moveRight": {
+        "title": "第2步：向右移动",
+        "description": "将右边士兵向右移动。"
+      },
+      "moveCaocao": {
+        "title": "第3步：移动曹操",
+        "description": "将曹操向下移动到出口。"
+      },
+      "congratulations": {
+        "title": "完成！",
+        "description": "太棒了！移动阻挡棋子来开路。"
+      }
+    }
+  },
+  "gameBoard": {
+    "title": "三国华容道",
+    "gameControl": "控制",
+    "currentLevel": "关卡",
+    "currentSteps": "步数：",
+    "gameStatus": "状态：",
+    "completed": "✅ 已完成",
+    "inProgress": "⏳ 进行中",
+    "unknownLevel": "未知关卡",
+    "unknownDifficulty": "未知",
+    "restartGame": "重新开始",
+    "backToLevels": "关卡",
+    "success": "恭喜！",
+    "congratulations": "恭喜通关！",
+    "totalSteps": "总共 {{steps}} 步",
+    "perfectScore": "完美！达成最少步数！",
+    "goodJob": "不错！",
+    "nextLevel": "下一关",
+    "playAgain": "重玩",
+    "returnToLevelList": "关卡",
+    "exit": "出口",
+    "gameControl": "游戏控制",
+    "instructions": "游戏说明",
+    "rating": "评分",
+    "unknownLevel": "未知关卡"
+  },
+  "levelGenerator": {
+    "title": "关卡编辑器",
+    "createCustomLevel": "创建关卡",
+    "boardSize": "棋盘大小",
+    "width": "宽度",
+    "height": "高度",
+    "pieces": "棋子",
+    "addPiece": "添加",
+    "removePiece": "移除",
+    "pieceSize": "大小",
+    "position": "位置",
+    "testLevel": "测试",
+    "saveLevel": "保存",
+    "clearBoard": "清空",
+    "exportLevel": "导出",
+    "importLevel": "导入"
+  },
+  "pieces": {
+    "caocao": "曹操",
+    "guanyu": "关羽",
+    "zhangfei": "张飞",
+    "zhaoyun": "赵云",
+    "machao": "马超",
+    "huangzhong": "黄忠",
+    "zu": "卒"
+  },
+  "levels": {
+    "tutorialLevel": "教程关卡",
+    "difficulty": {
+      "tutorial": "教程",
+      "easy": "简单",
+      "medium": "中等",
+      "hard": "困难",
+      "expert": "专家"
+    }
+  },
+  "gameInstructions": {
+    "title": "游戏指南",
+    "goal": "目标：",
+    "operation": "操作：",
+    "tips": "技巧：",
+    "challenge": "挑战：",
+    "instructions": "拖拽方块移动棋子",
+    "clearPath": "优先移动大块棋子开路",
+    "moveToExit": "将曹操移动到底部出口",
+    "minimumSteps": "挑战最少步数完成",
+    "description": "华容道是中国民间传统智力游戏，以其变化多端、百玩不厌的特点而闻名。"
+  },
+  "settings": {
+    "title": "设置",
+    "darkMode": "深色模式",
+    "on": "开",
+    "off": "关",
+    "soundEffects": "音效",
+    "backgroundMusic": "音乐",
+    "vibrationFeedback": "触感反馈",
+    "smoothDrag": "平滑拖拽",
+    "dragModeExplanation": "拖拽模式",
+    "enableSmoothDrag": "平滑拖拽：棋子平滑跟随手指，透明度提示有效移动",
+    "disableSmoothDrag": "精准拖拽：棋子直接移动到有效位置，提供即时反馈"
+  },
+  "myProfile": {
+    "title": "我的",
+    "gameStatistics": "数据",
+    "completedLevels": "已通关",
+    "bestScore": "最佳成绩",
+    "achievements": "成就",
+    "noAchievements": "暂无成就"
+  },
+  "levelSelectPage": {
+    "title": "选择关卡",
+    "selectHint": "选择关卡开始游戏"
+  },
+  "gameControl": {
+    "title": "控制",
+    "currentLevel": "关卡",
+    "currentSteps": "步数：",
+    "gameStatus": "状态：",
+    "unknownLevel": "未知关卡",
+    "unknownDifficulty": "未知",
+    "completed": "✅ 已完成",
+    "inProgress": "⏳ 进行中"
+  },
+  "tutorialPage": {
+    "skip": "跳过",
+    "followInstructions": "按提示操作",
+    "completeTutorial": "完成",
+    "nextStep": "继续",
+    "followInstructionPieces": "按提示移动棋子",
+    "gameGuide": "🎮 游戏玩法",
+    "dragBlocks": "拖拽方块",
+    "largeBlocks": "大棋子",
+    "caoCaoBlock": "曹操",
+    "minimumStepsGuide": "最少步数",
+    "startGame": "开始游戏"
+  },
+  "completionModal": {
+    "title": "恭喜通关！",
+    "level": "🎯 关卡",
+    "completedSteps": "⭐ 步数",
+    "rating": "🏆 评价",
+    "steps": "步",
+    "nextLevel": "下一关 ⭐",
+    "lastLevel": "最后一关"
+  },
+  "levelGeneratorPage": {
+    "title": "关卡编辑器",
+    "levelInformation": "关卡信息",
+    "levelName": "关卡名称",
+    "enterLevelName": "输入关卡名称",
+    "levelDifficulty": "难度",
+    "beginner": "初级",
+    "intermediate": "中级",
+    "advanced": "高级",
+    "pieceTemplates": "棋子",
+    "soldier": "卒",
+    "gameBoard": "棋盘",
+    "validateData": "验证",
+    "demonstrateSolution": "显示解法",
+    "generateAndCopy": "导出",
+    "resetBoard": "清空",
+    "resume": "继续",
+    "pause": "暂停",
+    "stop": "停止"
+  }
+}

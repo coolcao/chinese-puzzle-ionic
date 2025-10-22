@@ -1,9 +1,11 @@
 import { Component, OnInit, computed, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
 import { GameManagementService } from '../../services/game-management.service';
 import { AudioService } from '../../services/audio.service';
 import { GameStorageService } from '../../services/game-storage.service';
+import { LanguageService } from '../../services/language.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -22,11 +24,12 @@ export class HomeComponent implements OnInit {
   private gameManagement = inject(GameManagementService);
   private audioService = inject(AudioService);
   private gameStorage = inject(GameStorageService);
+  private languageService = inject(LanguageService);
 
   settings = this.store.settings;
   isDarkMode = computed(() => this.settings().isDarkMode);
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private translate: TranslateService) {
   }
 
   async ngOnInit() {
@@ -128,5 +131,20 @@ export class HomeComponent implements OnInit {
   private async saveSettings() {
     const currentSettings = this.settings();
     await this.gameManagement.saveSettings(currentSettings);
+  }
+
+  // 语言切换方法
+  async toggleLanguage() {
+    this.audioService.playClickSound();
+    await this.languageService.toggleLanguage();
+  }
+
+  getCurrentLanguage(): string {
+    return this.languageService.getCurrentLanguage();
+  }
+
+  getLanguageDisplayName(): string {
+    const currentLang = this.getCurrentLanguage();
+    return currentLang === 'zh' ? '中文' : 'English';
   }
 }

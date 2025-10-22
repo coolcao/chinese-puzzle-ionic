@@ -6,7 +6,7 @@
 }
 
 .loader:before {
-  content: "资源加载中，请稍等...";
+  content: "Loading...";
 }
 
 @keyframes l1 {

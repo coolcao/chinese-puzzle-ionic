@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Canvas, Rect, Line, Text, Group, Pattern, Gradient, Shadow, Image, Polygon } from 'fabric';
+import { TranslateService } from '@ngx-translate/core';
 import { Piece } from '../../../chinese-puzzle.type';
 import { FabricGameService } from './fabric-game.service';
 import { ImageLoadingService } from '../../../services/image-loading.service';
@@ -14,7 +15,8 @@ export class FabricDrawingService {
   constructor(
     private fabricGameService: FabricGameService,
     private imageLoadingService: ImageLoadingService,
-    private pieceImageService: PieceImageService
+    private pieceImageService: PieceImageService,
+    private translateService: TranslateService
   ) { }
 
   // 绘制棋盘
@@ -119,7 +121,7 @@ export class FabricDrawingService {
     });
 
     // 出口文字
-    const exitText = new Text('出口', {
+    const exitText = new Text(this.translateService.instant('gameBoard.exit'), {
       left: (boardWidth * cellSize) / 2,
       top: boardBottom + cellOffset / 2 - 20,
       fontSize: 20,

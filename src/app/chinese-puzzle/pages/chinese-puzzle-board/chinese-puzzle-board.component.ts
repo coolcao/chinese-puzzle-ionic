@@ -1,6 +1,7 @@
 import { Component, computed, effect, inject, OnDestroy, OnInit } from '@angular/core';
 import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { timer } from 'rxjs';
 
 import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
@@ -25,6 +26,7 @@ export class ChinesePuzzleBoardComponent implements OnInit, OnDestroy {
   private imagePreLoader = inject(ImagePreloaderService);
   private pieceImageService = inject(PieceImageService);
   private route = inject(ActivatedRoute);
+  private translateService = inject(TranslateService);
   // 响应式单元格尺寸
   cellSize = 150;
   // 边框偏移量

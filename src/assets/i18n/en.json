@@ -1,0 +1,241 @@
+{
+  "common": {
+    "back": "Back",
+    "skip": "Skip",
+    "next": "Next",
+    "complete": "Done",
+    "start": "Start",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "loading": "Loading...",
+    "difficulty": "Difficulty",
+    "pieces": "Pieces",
+    "steps": "Moves",
+    "completed": "Done",
+    "inProgress": "In Progress",
+    "unknown": "Unknown"
+  },
+  "home": {
+    "title": "Three Kingdoms Puzzle",
+    "subtitle": "Classic Brain Game",
+    "startTutorial": "Start Game",
+    "selectLevel": "Play",
+    "generateLevel": "Create",
+    "tutorialDescription": "Learn how to play",
+    "levelSelectDescription": "Play levels",
+    "generatorDescription": "Design levels"
+  },
+  "levelSelect": {
+    "title": "Select Level",
+    "selectHint": "Choose a level to play",
+    "difficulty": "Difficulty",
+    "pieces": "Pieces"
+  },
+  "tutorial": {
+    "title": "Three Kingdoms Puzzle",
+    "gameControl": "Controls",
+    "currentLevel": "Level",
+    "currentSteps": "Moves:",
+    "gameStatus": "Status:",
+    "completed": "✅ Done",
+    "inProgress": "⏳ In Progress",
+    "unknownLevel": "Unknown Level",
+    "unknownDifficulty": "Unknown",
+    "step": "Step",
+    "skip": "Skip",
+    "waitingForAction": "Follow instructions",
+    "completeNext": "Complete",
+    "nextStep": "Next",
+    "followInstructions": "Move pieces as instructed",
+    "instructions": {
+      "title": "🎮 Guide",
+      "step1": "Drag blocks or tap arrows ⬆️⬇️⬅️➡️ to move pieces",
+      "step2": "⭐ Tip: Move large pieces like Guan Yu first",
+      "step3": "Goal: Move Cao Cao to the bottom exit",
+      "step4": "Complete in as few moves as possible!",
+      "startGame": "Start Game"
+    },
+    "tutorialSteps": {
+      "welcome": {
+        "title": "Welcome!",
+        "description": "Move Cao Cao to the bottom exit."
+      },
+      "caocao": {
+        "title": "Cao Cao",
+        "description": "This is the 2x2 Cao Cao block."
+      },
+      "exit": {
+        "title": "The Exit",
+        "description": "Move Cao Cao here to win."
+      },
+      "moveLeft": {
+        "title": "Step 1: Move Left",
+        "description": "Move the left soldier out of the way."
+      },
+      "moveRight": {
+        "title": "Step 2: Move Right",
+        "description": "Move the right soldier to the right."
+      },
+      "moveCaocao": {
+        "title": "Step 3: Move Cao Cao",
+        "description": "Drag Cao Cao down to the exit."
+      },
+      "congratulations": {
+        "title": "Complete!",
+        "description": "Great! Move blocking pieces to clear the path."
+      }
+    }
+  },
+  "gameBoard": {
+    "title": "Three Kingdoms Puzzle",
+    "gameControl": "Controls",
+    "currentLevel": "Level",
+    "currentSteps": "Moves:",
+    "gameStatus": "Status:",
+    "completed": "✅ Done",
+    "inProgress": "⏳ In Progress",
+    "unknownLevel": "Unknown Level",
+    "unknownDifficulty": "Unknown",
+    "restartGame": "Restart",
+    "backToLevels": "Levels",
+    "success": "Success!",
+    "congratulations": "Level complete!",
+    "totalSteps": "Completed in {{steps}} moves",
+    "perfectScore": "Perfect! Minimum moves achieved!",
+    "goodJob": "Good job!",
+    "nextLevel": "Next",
+    "playAgain": "Again",
+    "returnToLevelList": "Levels",
+    "exit": "Exit",
+    "gameControl": "Game Control",
+    "instructions": "Instructions",
+    "rating": "Rating",
+    "unknownLevel": "Unknown Level"
+  },
+  "levelGenerator": {
+    "title": "Level Editor",
+    "createCustomLevel": "Create Level",
+    "boardSize": "Board Size",
+    "width": "Width",
+    "height": "Height",
+    "pieces": "Pieces",
+    "addPiece": "Add",
+    "removePiece": "Remove",
+    "pieceSize": "Size",
+    "position": "Position",
+    "testLevel": "Test",
+    "saveLevel": "Save",
+    "clearBoard": "Clear",
+    "exportLevel": "Export",
+    "importLevel": "Import"
+  },
+  "pieces": {
+    "caocao": "Cao Cao",
+    "guanyu": "Guan Yu",
+    "zhangfei": "Zhang Fei",
+    "zhaoyun": "Zhao Yun",
+    "machao": "Ma Chao",
+    "huangzhong": "Huang Zhong",
+    "zu": "Soldier"
+  },
+  "levels": {
+    "tutorialLevel": "Tutorial Level",
+    "difficulty": {
+      "tutorial": "Tutorial",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "expert": "Expert"
+    }
+  },
+  "gameInstructions": {
+    "title": "Guide",
+    "goal": "Goal: ",
+    "operation": "Move: ",
+    "tips": "Tip: ",
+    "challenge": "Goal: ",
+    "instructions": "Drag to move pieces",
+    "clearPath": "Move large pieces to clear the path",
+    "moveToExit": "Move Cao Cao to the bottom exit",
+    "minimumSteps": "Complete in as few moves as possible",
+    "description": "Huarong Dao is a traditional Chinese puzzle game, famous for its countless variations and endless fun."
+  },
+  "settings": {
+    "title": "Settings",
+    "darkMode": "Dark Mode",
+    "on": "On",
+    "off": "Off",
+    "soundEffects": "Sound Effects",
+    "backgroundMusic": "Music",
+    "vibrationFeedback": "Haptic Feedback",
+    "smoothDrag": "Smooth Drag",
+    "dragModeExplanation": "Drag Mode",
+    "enableSmoothDrag": "Smooth Drag: Pieces follow the mouse smoothly with opacity showing valid moves",
+    "disableSmoothDrag": "Snap Drag: Pieces move directly to valid positions for immediate feedback"
+  },
+  "myProfile": {
+    "title": "My Profile",
+    "gameStatistics": "Stats",
+    "completedLevels": "Levels Completed",
+    "bestScore": "Best Score",
+    "achievements": "Achievements",
+    "noAchievements": "No Achievements Yet"
+  },
+  "levelSelectPage": {
+    "title": "Select Level",
+    "selectHint": "Choose a level to play"
+  },
+  "gameControl": {
+    "title": "Controls",
+    "currentLevel": "Level",
+    "currentSteps": "Moves: ",
+    "gameStatus": "Status: ",
+    "unknownLevel": "Unknown Level",
+    "unknownDifficulty": "Unknown",
+    "completed": "✅ Done",
+    "inProgress": "⏳ In Progress"
+  },
+  "tutorialPage": {
+    "skip": "Skip",
+    "followInstructions": "Follow instructions",
+    "completeTutorial": "Complete",
+    "nextStep": "Next",
+    "followInstructionPieces": "Move pieces as instructed",
+    "gameGuide": "🎮 How to Play",
+    "dragBlocks": "Drag blocks",
+    "largeBlocks": "Large pieces",
+    "caoCaoBlock": "Cao Cao",
+    "minimumStepsGuide": "Fewest moves",
+    "startGame": "Start Game"
+  },
+  "completionModal": {
+    "title": "Level Complete!",
+    "level": "🎯 Level",
+    "completedSteps": "⭐ Moves",
+    "rating": "🏆 Rating",
+    "steps": " moves",
+    "nextLevel": "Next ⭐",
+    "lastLevel": "Last Level"
+  },
+  "levelGeneratorPage": {
+    "title": "Level Editor",
+    "levelInformation": "Level Info",
+    "levelName": "Level Name",
+    "enterLevelName": "Enter level name",
+    "levelDifficulty": "Difficulty",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "pieceTemplates": "Pieces",
+    "soldier": "Soldier",
+    "gameBoard": "Board",
+    "validateData": "Validate",
+    "demonstrateSolution": "Show Solution",
+    "generateAndCopy": "Export",
+    "resetBoard": "Clear",
+    "resume": "Resume",
+    "pause": "Pause",
+    "stop": "Stop"
+  }
+}

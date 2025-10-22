@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { ChinesePuzzleRoutingModule } from './chinese-puzzle-routing.module';
 import { ChinesePuzzleBoardComponent } from './pages/chinese-puzzle-board/chinese-puzzle-board.component';
@@ -31,6 +32,7 @@ import { TutorialComponent } from './pages/tutorial/tutorial.component';
     ChinesePuzzleRoutingModule,
     DragDropModule,
     FormsModule,
+    TranslateModule,
   ],
   providers: [],
 })

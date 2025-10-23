@@ -262,7 +262,7 @@
 
   <!-- 撒花效果 - 最高层级 -->
   @if (showSuccess) {
-    <div class="fixed inset-0 z-[100] pointer-events-none">
+    <div class="pointer-events-none fixed inset-0 z-[100]">
       <app-scatter-flowers></app-scatter-flowers>
     </div>
   }
@@ -530,7 +530,7 @@
 
 <div
   [ngClass]="{ hidden: !resourceLoading }"
-  class="flex h-full min-h-screen w-full flex-col items-center justify-center bg-wood-lighter dark:bg-dark-wood-bg"
+  class="fixed inset-0 flex h-full min-h-screen w-full flex-col items-center justify-center bg-wood-lighter dark:bg-dark-wood-bg"
 >
   <div class="text-2xl text-wood-text dark:text-wood-lighter">
     <div class="loader"></div>

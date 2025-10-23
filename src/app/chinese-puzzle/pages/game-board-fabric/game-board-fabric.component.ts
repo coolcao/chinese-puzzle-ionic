@@ -57,10 +57,10 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   showInstructions = false;
   resourceLoading = false;
   showCompletionModal = false;
-  
+
   // 防止关卡刚加载时就触发完成效果
   private isLevelJustLoaded = true;
-  
+
   // 计时器相关
   gameTime = 0; // 游戏时间（秒）
   private gameStartTime: number | null = null;
@@ -86,7 +86,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       if (this.finished() && !this.isLevelJustLoaded && this.steps > 0) {
         // 停止计时器
         this.stopTimer();
-        
+
         // 播放成功音效
         this.audioService.playSuccessSound();
 
@@ -95,7 +95,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
         if (currentLevel) {
           this.gameManagement.saveGameProgress(currentLevel.id, this.steps, this.gameTime);
         }
-        
+
         // 保存到历史记录
         this.saveGameHistory();
 
@@ -152,7 +152,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.resetTimer();
     // 重置操作步骤记录
     this.resetGameSteps();
-    
+
     // 从查询参数中获取关卡ID
     this.route.queryParams.subscribe(params => {
       const levelId = params['levelId'];
@@ -169,7 +169,15 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       }
 
       // 在数据集更改后重新加载图片
-      this.preLoadImage();
+      this.preLoadImage().then(() => {
+        console.log("Image loading completed");
+        // 等待一帧后重新绘制，确保状态更新
+        requestAnimationFrame(() => {
+          this.drawBoard();
+          // 图片加载完成后重新绘制棋盘
+          this.resourceLoading = false;
+        });
+      });
     });
   }
 
@@ -201,7 +209,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       // 立即更新单元格尺寸并绘制
       this.updateCellSize();
       this.drawBoard();
-      
+
       // 游戏初始化完成，启动计时器
       this.startTimer();
     } else {
@@ -379,7 +387,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   private handlePieceMove(piece: Piece, direction: Direction, steps: number) {
     const operationStartTime = Date.now();
     const originalPosition: Position = { x: piece.x, y: piece.y };
-    
+
     let currentPiece = piece;
     let totalStepsMoved = 0;
 
@@ -411,10 +419,10 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     // 如果至少移动了一步，更新 Fabric 中的棋子位置并记录操作步骤
     if (totalStepsMoved > 0) {
       const finalPosition: Position = { x: currentPiece.x, y: currentPiece.y };
-      
+
       // 记录操作步骤
       this.recordGameStep(piece, originalPosition, finalPosition, direction, operationStartTime);
-      
+
       // 播放移动音效
       this.audioService.playWoodSound();
 
@@ -469,21 +477,12 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.changeDataSet(dataSetName);
   }
 
-  private preLoadImage() {
+  private async preLoadImage() {
     // 设置加载状态
     this.resourceLoading = true;
-
     // 获取当前最新的棋子数据
     const currentPieces = this.pieces();
-
-    this.imageLoadingService.preLoadImage(currentPieces).then(result => {
-      // 图片加载完成后重新绘制棋盘
-      this.resourceLoading = false;
-      // 等待一帧后重新绘制，确保状态更新
-      requestAnimationFrame(() => {
-        this.drawBoard();
-      });
-    });
+    await this.imageLoadingService.preLoadImage(currentPieces);
   }
 
   // 锁定棋盘，禁止操作
@@ -537,10 +536,10 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       this.resetTimer();
       // 重置操作步骤记录
       this.resetGameSteps();
-      
+
       // 重新加载当前关卡
       this.gameManagement.changeLevel(currentLevel.id);
-      
+
       // 重新绘制棋盘并启动计时器
       Promise.resolve().then(() => {
         this.drawBoard();
@@ -582,14 +581,14 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     if (this.isGameStarted) {
       return; // 避免重复启动
     }
-    
+
     this.isGameStarted = true;
     this.gameStartTime = Date.now();
     this.gameTime = 0;
-    
+
     // 记录初始棋盘状态
     this.recordInitialBoardState();
-    
+
     // 每秒更新一次游戏时间
     this.timerSubscription = interval(1000).subscribe(() => {
       if (this.gameStartTime) {
@@ -597,7 +596,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       }
     });
   }
-  
+
   // 停止计时器
   private stopTimer() {
     if (this.timerSubscription) {
@@ -606,7 +605,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     }
     this.isGameStarted = false;
   }
-  
+
   // 重置计时器
   private resetTimer() {
     this.stopTimer();
@@ -661,14 +660,14 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
         return 0;
     }
   }
-  
+
   // 格式化时间显示 (MM:SS)
   getFormattedTime(): string {
     const minutes = Math.floor(this.gameTime / 60);
     const seconds = this.gameTime % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
-  
+
   // 保存游戏历史记录
   private async saveGameHistory() {
     try {
@@ -676,7 +675,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       if (!currentLevel) {
         return;
       }
-      
+
       const historyRecord = {
         id: `${currentLevel.id}_${Date.now()}`, // 唯一ID
         levelId: currentLevel.id,
@@ -689,21 +688,21 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
         gameSteps: [...this.gameSteps], // 详细操作步骤
         initialBoardState: [...this.initialBoardState] // 初始棋盘状态
       };
-      
+
       // 获取现有历史记录
       const existingHistory = await this.gameStorage.get<any[]>('game_history') || [];
-      
+
       // 添加新记录到历史记录开头
       existingHistory.unshift(historyRecord);
-      
+
       // 限制历史记录数量（保留最近100条）
       if (existingHistory.length > 100) {
         existingHistory.splice(100);
       }
-      
+
       // 保存到存储
       await this.gameStorage.set('game_history', existingHistory);
-      
+
       console.log('Game history saved with steps:', {
         ...historyRecord,
         gameStepsCount: historyRecord.gameSteps.length
@@ -744,7 +743,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     } else {
       ratingKey = 'rating.needImprovement';
     }
-    
+
     // 直接返回翻译后的文本
     return this.translate.instant(ratingKey);
   }
@@ -765,7 +764,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     console.log('初始棋盘状态:', this.initialBoardState);
     console.log('总步数:', this.gameSteps.length);
     console.log('总时间:', this.gameTime, '秒');
-    
+
     this.gameSteps.forEach((step, index) => {
       console.log(`步骤 ${step.stepNumber}:`, {
         棋子: step.pieceName,
@@ -784,7 +783,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     if (event.key === 'Escape' && this.showCompletionModal) {
       this.closeCompletionModal();
     }
-    
+
     // 开发调试：按F12打印操作步骤
     if (event.key === 'F12' && this.gameSteps.length > 0) {
       event.preventDefault();

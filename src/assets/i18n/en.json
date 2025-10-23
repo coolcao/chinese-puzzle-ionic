@@ -149,10 +149,10 @@
     }
   },
   "rating": {
-    "perfect": "Perfect! 🏆",
-    "excellent": "Excellent! ⭐",
-    "good": "Good job! 👍",
-    "needImprovement": "Keep trying! 💪"
+    "perfect": "⭐⭐⭐⭐⭐",
+    "excellent": "⭐⭐⭐⭐",
+    "good": "⭐⭐⭐",
+    "needImprovement": "⭐⭐"
   },
   "gameInstructions": {
     "title": "Guide",

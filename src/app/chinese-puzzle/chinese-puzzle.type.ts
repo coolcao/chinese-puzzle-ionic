@@ -24,7 +24,7 @@ export interface Level {
   id: string;
   name: string;
   difficulty: string;
-  minSteps?: number;
+  minSteps: number;
   pieces: Piece[];
   isTutorial?: boolean;  // 是否为教程关卡
   tutorialSteps?: TutorialStep[];  // 教程步骤
@@ -39,7 +39,7 @@ export interface TutorialStep {
   targetPieceId?: number;  // 目标棋子ID
   targetPosition?: Position;  // 目标位置
   moveDirection?: Direction;  // 移动方向
-  highlightArea?: {x: number, y: number, width: number, height: number};  // 高亮区域
+  highlightArea?: { x: number, y: number, width: number, height: number };  // 高亮区域
   autoPlay?: boolean;  // 是否自动播放
   waitForUser?: boolean;  // 是否等待用户操作
   nextStepDelay?: number;  // 下一步延迟（毫秒）

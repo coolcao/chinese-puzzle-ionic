@@ -715,37 +715,54 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   // 获取完成评价
   getCompletionRating(): string {
     const steps = this.steps;
-    const difficulty = this.currentLevel()?.difficulty || 'medium';
+    const currentLevel = this.currentLevel();
 
-    // 根据步数和难度给出评价
-    let threshold: number;
-    switch (difficulty) {
-      case 'easy':
-        threshold = 100;
-        break;
-      case 'medium':
-        threshold = 150;
-        break;
-      case 'hard':
-        threshold = 200;
-        break;
-      default:
-        threshold = 150;
-    }
+    // 获取关卡的实际最优步数，如果没有则使用基于难度的默认值
+    const optimalSteps = currentLevel?.minSteps || this.getDefaultThresholdByDifficulty(currentLevel?.difficulty);
+
+    // 计算步数与最优步数的比率
+    const efficiency = steps / optimalSteps;
 
     let ratingKey: string;
-    if (steps <= threshold * 0.7) {
+    if (efficiency <= 1.05) {
       ratingKey = 'rating.perfect';
-    } else if (steps <= threshold) {
+    } else if (efficiency <= 1.4) {
       ratingKey = 'rating.excellent';
-    } else if (steps <= threshold * 1.3) {
+    } else if (efficiency <= 1.6) {
       ratingKey = 'rating.good';
     } else {
       ratingKey = 'rating.needImprovement';
     }
 
-    // 直接返回翻译后的文本
+    // 打印评分详情（用于调试）
+    const rating = this.translate.instant(ratingKey);
+    console.log('🏆 评分详情:', {
+      实际步数: steps,
+      最优步数: optimalSteps,
+      效率比: (efficiency * 100).toFixed(1) + '%',
+      星级评价: rating,
+      关卡信息: {
+        id: currentLevel?.id,
+        difficulty: currentLevel?.difficulty,
+        configuredMinSteps: currentLevel?.minSteps
+      }
+    });
+
     return this.translate.instant(ratingKey);
+  }
+
+  // 根据难度获取默认阈值（当关卡没有minSteps时使用）
+  private getDefaultThresholdByDifficulty(difficulty?: string): number {
+    switch (difficulty) {
+      case 'easy':
+        return 80;
+      case 'medium':
+        return 120;
+      case 'hard':
+        return 180;
+      default:
+        return 120;
+    }
   }
 
   // 获取当前游戏的操作步骤（用于外部访问）

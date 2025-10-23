@@ -240,7 +240,7 @@ export const levels: Level[] = [
   { id: '屯兵东路', name: '屯兵东路', difficulty: 'easy', minSteps: 100, pieces: dataSet['屯兵东路'] },
   { id: '凹凸有致', name: '凹凸有致', difficulty: 'easy', minSteps: 102, pieces: dataSet['凹凸有致'] },
   { id: '比翼横空', name: '比翼横空', difficulty: 'easy', minSteps: 39, pieces: dataSet['比翼横空'] },
-  { id: '简易', name: '简易', difficulty: 'easy', pieces: dataSet['简易'] },
+  { id: '简易', name: '简易', difficulty: 'easy', minSteps: 1, pieces: dataSet['简易'] },
 ];
 
 

@@ -210,7 +210,19 @@
     "daysAgo": " days ago",
     "difficultyEasy": "Easy",
     "difficultyMedium": "Medium",
-    "difficultyHard": "Hard"
+    "difficultyHard": "Hard",
+    "replay": "Replay"
+  },
+  "replay": {
+    "title": "Replay",
+    "play": "Play",
+    "pause": "Pause",
+    "restart": "Restart",
+    "speed": "Speed",
+    "steps": "Steps",
+    "time": "Time",
+    "rating": "Rating",
+    "step": "Step"
   },
   "levelSelectPage": {
     "title": "Select Level",

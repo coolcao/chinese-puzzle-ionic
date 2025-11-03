@@ -23,6 +23,7 @@ export enum Direction {
 export interface Level {
   id: string;
   name: string;
+  nameEn?: string; // 英文名称
   difficulty: string;
   minSteps: number;
   pieces: Piece[];
@@ -86,14 +87,14 @@ export interface GameStep {
 export interface GameHistoryRecord {
   id: string;                 // 唯一记录ID
   levelId: string;            // 关卡ID
-  levelName: string;          // 关卡名称
+  levelName: string;          // 关卡名称（中文）
+  levelNameEn?: string;       // 关卡名称（英文）
   difficulty: string;         // 关卡难度
   steps: number;              // 完成步数
   time: number;               // 完成时间（秒）
   completedAt: string;        // 完成时间戳
   rating: string;             // 评分
   gameSteps: GameStep[];      // 详细操作步骤
-  initialBoardState?: Piece[]; // 初始棋盘状态（可选，用于完整回放）
 }
 
 // 游戏统计数据结构

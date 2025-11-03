@@ -210,7 +210,19 @@
     "daysAgo": "天前",
     "difficultyEasy": "简单",
     "difficultyMedium": "中等",
-    "difficultyHard": "困难"
+    "difficultyHard": "困难",
+    "replay": "回放"
+  },
+  "replay": {
+    "title": "游戏回放",
+    "play": "播放",
+    "pause": "暂停",
+    "restart": "重新开始",
+    "speed": "速度",
+    "steps": "步数",
+    "time": "用时",
+    "rating": "评分",
+    "step": "步骤"
   },
   "levelSelectPage": {
     "title": "选择关卡",

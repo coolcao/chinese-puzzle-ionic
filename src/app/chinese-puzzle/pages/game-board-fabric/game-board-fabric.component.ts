@@ -70,7 +70,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   // 操作步骤记录
   private gameSteps: GameStep[] = [];
   private currentStepNumber = 0;
-  private initialBoardState: Piece[] = [];
 
   currentLevel = this.store.currentLevel;
 
@@ -586,8 +585,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.gameStartTime = Date.now();
     this.gameTime = 0;
 
-    // 记录初始棋盘状态
-    this.recordInitialBoardState();
 
     // 每秒更新一次游戏时间
     this.timerSubscription = interval(1000).subscribe(() => {
@@ -618,13 +615,8 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   private resetGameSteps() {
     this.gameSteps = [];
     this.currentStepNumber = 0;
-    this.initialBoardState = [];
   }
 
-  // 记录初始棋盘状态
-  private recordInitialBoardState() {
-    this.initialBoardState = JSON.parse(JSON.stringify(this.pieces()));
-  }
 
   // 记录操作步骤
   private recordGameStep(piece: Piece, fromPosition: Position, toPosition: Position, direction: Direction, operationStartTime: number) {
@@ -676,36 +668,18 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
         return;
       }
 
-      const historyRecord = {
-        id: `${currentLevel.id}_${Date.now()}`, // 唯一ID
-        levelId: currentLevel.id,
-        levelName: currentLevel.name,
-        difficulty: currentLevel.difficulty,
-        steps: this.steps,
-        time: this.gameTime,
-        completedAt: new Date().toISOString(),
-        rating: this.getCompletionRating(),
-        gameSteps: [...this.gameSteps], // 详细操作步骤
-        initialBoardState: [...this.initialBoardState] // 初始棋盘状态
-      };
-
-      // 获取现有历史记录
-      const existingHistory = await this.gameStorage.get<any[]>('game_history') || [];
-
-      // 添加新记录到历史记录开头
-      existingHistory.unshift(historyRecord);
-
-      // 限制历史记录数量（保留最近100条）
-      if (existingHistory.length > 100) {
-        existingHistory.splice(100);
-      }
-
-      // 保存到存储
-      await this.gameStorage.set('game_history', existingHistory);
+      await this.gameStorage.saveGameHistory(
+        currentLevel.id,
+        this.steps,
+        this.gameTime,
+        this.gameSteps
+      );
 
       console.log('Game history saved with steps:', {
-        ...historyRecord,
-        gameStepsCount: historyRecord.gameSteps.length
+        levelId: currentLevel.id,
+        steps: this.steps,
+        time: this.gameTime,
+        gameStepsCount: this.gameSteps.length
       });
     } catch (error) {
       console.error('Failed to save game history:', error);
@@ -770,15 +744,11 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     return [...this.gameSteps];
   }
 
-  // 获取初始棋盘状态（用于外部访问）
-  getInitialBoardState(): Piece[] {
-    return [...this.initialBoardState];
-  }
 
   // 演示：打印详细的操作步骤（开发调试用）
   printGameSteps() {
     console.log('=== 游戏操作步骤详情 ===');
-    console.log('初始棋盘状态:', this.initialBoardState);
+    console.log('关卡ID:', this.currentLevel()?.id);
     console.log('总步数:', this.gameSteps.length);
     console.log('总时间:', this.gameTime, '秒');
 

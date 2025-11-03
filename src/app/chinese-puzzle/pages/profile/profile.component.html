@@ -1,8 +1,10 @@
 <div
-  class="flex min-h-screen flex-col bg-wood-lighter transition-colors duration-300 dark:bg-dark-wood-lighter"
+  class="flex h-screen flex-col bg-wood-lighter transition-colors duration-300 dark:bg-dark-wood-lighter"
 >
   <!-- 顶部导航栏 -->
-  <header class="border-b border-wood-border bg-wood-light dark:border-dark-wood-border dark:bg-dark-wood">
+  <header
+    class="border-b border-wood-border bg-wood-light dark:border-dark-wood-border dark:bg-dark-wood"
+  >
     <div class="flex items-center justify-between px-6 py-4">
       <!-- 返回按钮 -->
       <button
@@ -24,7 +26,6 @@
             d="M15 19l-7-7 7-7"
           />
         </svg>
-        <span class="font-medium">{{ "myProfile.back" | translate }}</span>
       </button>
 
       <!-- 标题 -->
@@ -32,166 +33,17 @@
         {{ "myProfile.title" | translate }}
       </h1>
 
-      <!-- 刷新按钮 -->
-      <button
-        (click)="refreshData()"
-        appClickSound
-        class="flex items-center space-x-2 rounded-lg p-2 text-wood-text hover:bg-wood-lighter dark:text-wood-lighter dark:hover:bg-dark-wood-darker"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-          />
-        </svg>
-      </button>
-    </div>
-  </header>
-
-  <!-- 主要内容区域 -->
-  <main class="flex-1 px-6 py-6">
-    <!-- 加载状态 -->
-    <div
-      *ngIf="isLoading()"
-      class="flex items-center justify-center py-20"
-    >
-      <div class="text-center">
-        <div class="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-wood-border border-t-wood-text dark:border-dark-wood-border dark:border-t-wood-lighter mx-auto"></div>
-        <p class="text-wood-text dark:text-wood-lighter">
-          {{ "myProfile.loading" | translate }}
-        </p>
-      </div>
-    </div>
-
-    <!-- 数据展示区域 -->
-    <div *ngIf="!isLoading() && gameStats()" class="space-y-6">
-      <!-- 游戏统计卡片 -->
-      <div class="rounded-2xl border border-wood-border bg-wood-light p-6 shadow-lg dark:border-dark-wood-border dark:bg-dark-wood">
-        <h2 class="mb-4 text-xl font-bold text-wood-text dark:text-wood-lighter">
-          {{ "myProfile.gameStatistics" | translate }}
-        </h2>
-
-        <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <!-- 完成关卡数 -->
-          <div class="rounded-xl bg-wood-lighter p-4 text-center dark:bg-dark-wood-light">
-            <p class="text-2xl font-bold text-wood-text dark:text-wood-lighter">
-              {{ gameStats()?.levelsCompleted || 0 }}
-            </p>
-            <p class="text-sm text-wood-text dark:text-wood-lighter">
-              {{ "myProfile.completedLevels" | translate }}
-            </p>
-          </div>
-
-          <!-- 总游戏次数 -->
-          <div class="rounded-xl bg-wood-lighter p-4 text-center dark:bg-dark-wood-light">
-            <p class="text-2xl font-bold text-wood-text dark:text-wood-lighter">
-              {{ gameStats()?.totalGames || 0 }}
-            </p>
-            <p class="text-sm text-wood-text dark:text-wood-lighter">
-              {{ "myProfile.totalGames" | translate }}
-            </p>
-          </div>
-
-          <!-- 完美通关次数 -->
-          <div class="rounded-xl bg-wood-lighter p-4 text-center dark:bg-dark-wood-light">
-            <p class="text-2xl font-bold text-wood-text dark:text-wood-lighter">
-              {{ gameStats()?.perfectCompletions || 0 }}
-            </p>
-            <p class="text-sm text-wood-text dark:text-wood-lighter">
-              {{ "myProfile.perfectCompletions" | translate }}
-            </p>
-          </div>
-
-          <!-- 当前连续天数 -->
-          <div class="rounded-xl bg-wood-lighter p-4 text-center dark:bg-dark-wood-light">
-            <p class="text-2xl font-bold text-wood-text dark:text-wood-lighter">
-              {{ gameStats()?.currentStreak || 0 }}
-            </p>
-            <p class="text-sm text-wood-text dark:text-wood-lighter">
-              {{ getStreakText(gameStats()?.currentStreak || 0) }}
-            </p>
-          </div>
-        </div>
-
-        <!-- 详细统计信息 -->
-        <div class="mt-6 space-y-3">
-          <div class="flex justify-between text-wood-text dark:text-wood-lighter">
-            <span>{{ "myProfile.totalPlayTime" | translate }}</span>
-            <span class="font-medium">{{ formatTime(gameStats()?.totalPlayTime || 0) }}</span>
-          </div>
-          <div class="flex justify-between text-wood-text dark:text-wood-lighter">
-            <span>{{ "myProfile.totalSteps" | translate }}</span>
-            <span class="font-medium">{{ gameStats()?.totalSteps || 0 }}</span>
-          </div>
-          <div class="flex justify-between text-wood-text dark:text-wood-lighter">
-            <span>{{ "myProfile.maxStreak" | translate }}</span>
-            <span class="font-medium">{{ gameStats()?.maxStreak || 0 }}{{ "myProfile.days" | translate }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 历史记录区域 -->
-      <div class="rounded-2xl border border-wood-border bg-wood-light p-6 shadow-lg dark:border-dark-wood-border dark:bg-dark-wood">
-        <div class="mb-4 flex items-center justify-between">
-          <h2 class="text-xl font-bold text-wood-text dark:text-wood-lighter">
-            {{ "myProfile.gameHistory" | translate }}
-          </h2>
-          <button
-            *ngIf="gameHistory().length > 0"
-            (click)="clearHistory()"
-            appClickSound
-            class="rounded-lg bg-red-500 px-3 py-1 text-sm font-medium text-white hover:bg-red-600"
-          >
-            {{ "myProfile.clearHistory" | translate }}
-          </button>
-        </div>
-
-        <!-- 历史记录列表 -->
-        <div *ngIf="gameHistory().length > 0" class="space-y-3">
-          <div
-            *ngFor="let record of gameHistory().slice(0, 10)"
-            (click)="showHistoryRecord(record)"
-            class="cursor-pointer rounded-lg bg-wood-lighter p-4 transition-colors hover:bg-wood dark:bg-dark-wood-light dark:hover:bg-dark-wood"
-          >
-            <div class="flex items-center justify-between">
-              <div class="flex-1">
-                <h3 class="font-medium text-wood-text dark:text-wood-lighter">
-                  {{ record.levelName }}
-                </h3>
-                <div class="mt-1 flex items-center space-x-4 text-sm text-wood-text dark:text-wood-lighter">
-                  <span>{{ "myProfile.steps" | translate }}: {{ record.steps }}</span>
-                  <span>{{ "myProfile.time" | translate }}: {{ formatTime(record.time) }}</span>
-                  <span>{{ getDifficultyText(record.difficulty) }}</span>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="text-sm font-medium" [ngClass]="getRatingColor(record.rating)">
-                  {{ record.rating }}
-                </p>
-                <p class="text-xs text-wood-text dark:text-wood-lighter">
-                  {{ formatDate(record.completedAt) }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 无历史记录时的提示 -->
-        <div
-          *ngIf="gameHistory().length === 0"
-          class="py-8 text-center text-wood-text dark:text-wood-lighter"
+      <!-- 右侧按钮组 -->
+      <div class="flex items-center space-x-2">
+        <!-- 刷新按钮 -->
+        <button
+          (click)="refreshData()"
+          appClickSound
+          class="flex items-center space-x-2 rounded-lg p-2 text-wood-text hover:bg-wood-lighter dark:text-wood-lighter dark:hover:bg-dark-wood-darker"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="mx-auto mb-4 h-16 w-16 opacity-50"
+            class="h-6 w-6"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -200,19 +52,270 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-          <p>{{ "myProfile.noHistory" | translate }}</p>
-        </div>
+        </button>
       </div>
     </div>
-  </main>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <div class="flex-1 overflow-hidden">
+    <main class="h-full overflow-y-auto px-6 py-6">
+      <!-- 加载状态 -->
+      <div *ngIf="isLoading()" class="flex items-center justify-center py-20">
+        <div class="text-center">
+          <div
+            class="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-wood-border border-t-wood-text dark:border-dark-wood-border dark:border-t-wood-lighter"
+          ></div>
+          <p class="text-wood-text dark:text-wood-lighter">
+            {{ "myProfile.loading" | translate }}
+          </p>
+        </div>
+      </div>
+
+      <!-- 数据展示区域 -->
+      <div *ngIf="!isLoading() && gameStats()" class="animate-fadeIn space-y-6">
+        <!-- 游戏统计卡片 -->
+        <div
+          class="rounded-2xl border border-wood-border bg-wood-light p-6 shadow-lg dark:border-dark-wood-border dark:bg-dark-wood"
+        >
+          <h2
+            class="mb-4 text-xl font-bold text-wood-text dark:text-wood-lighter"
+          >
+            {{ "myProfile.gameStatistics" | translate }}
+          </h2>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <!-- 完成关卡数 -->
+            <div
+              class="rounded-xl bg-wood-lighter p-4 text-center dark:bg-dark-wood-light"
+            >
+              <p
+                class="text-2xl font-bold tabular-nums tracking-tighter text-stone-700 dark:text-stone-300"
+              >
+                {{ gameStats()?.levelsCompleted || 0 }}
+              </p>
+              <p class="text-sm text-stone-700 dark:text-stone-300">
+                {{ "myProfile.completedLevels" | translate }}
+              </p>
+            </div>
+
+            <!-- 总游戏次数 -->
+            <div
+              class="rounded-xl bg-wood-lighter p-4 text-center dark:bg-dark-wood-light"
+            >
+              <p
+                class="text-2xl font-bold tabular-nums tracking-tighter text-stone-700 dark:text-stone-300"
+              >
+                {{ gameStats()?.totalGames || 0 }}
+              </p>
+              <p class="text-sm text-stone-700 dark:text-stone-300">
+                {{ "myProfile.totalGames" | translate }}
+              </p>
+            </div>
+
+            <!-- 完美通关次数 -->
+            <div
+              class="rounded-xl bg-wood-lighter p-4 text-center dark:bg-dark-wood-light"
+            >
+              <p
+                class="text-2xl font-bold tabular-nums tracking-tighter text-stone-700 dark:text-stone-300"
+              >
+                {{ gameStats()?.perfectCompletions || 0 }}
+              </p>
+              <p class="text-sm text-stone-700 dark:text-stone-300">
+                {{ "myProfile.perfectCompletions" | translate }}
+              </p>
+            </div>
+
+            <!-- 当前连续天数 -->
+            <div
+              class="rounded-xl bg-wood-lighter p-4 text-center dark:bg-dark-wood-light"
+            >
+              <p
+                class="text-2xl font-bold tabular-nums tracking-tighter text-stone-700 dark:text-stone-300"
+              >
+                {{ gameStats()?.currentStreak || 0 }}
+              </p>
+              <p class="text-sm text-stone-700 dark:text-stone-300">
+                {{ getStreakText(gameStats()?.currentStreak || 0) }}
+              </p>
+            </div>
+          </div>
+
+          <!-- 详细统计信息 -->
+          <div class="mt-6 space-y-3">
+            <div
+              class="flex justify-between text-stone-700 dark:text-stone-300"
+            >
+              <span>{{ "myProfile.totalPlayTime" | translate }}</span>
+              <span class="font-medium">{{
+                formatTime(gameStats()?.totalPlayTime || 0)
+              }}</span>
+            </div>
+            <div
+              class="flex justify-between text-stone-700 dark:text-stone-300"
+            >
+              <span>{{ "myProfile.totalSteps" | translate }}</span>
+              <span class="font-medium">{{
+                gameStats()?.totalSteps || 0
+              }}</span>
+            </div>
+            <div
+              class="flex justify-between text-stone-700 dark:text-stone-300"
+            >
+              <span>{{ "myProfile.maxStreak" | translate }}</span>
+              <span class="font-medium"
+                >{{ gameStats()?.maxStreak || 0
+                }}{{ "myProfile.days" | translate }}</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- 历史记录区域 -->
+        <div
+          class="rounded-2xl border border-wood-border bg-wood-light p-6 shadow-lg dark:border-dark-wood-border dark:bg-dark-wood"
+        >
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-xl font-bold text-wood-text dark:text-wood-lighter">
+              {{ "myProfile.gameHistory" | translate }}
+            </h2>
+            <button
+              *ngIf="gameHistory().length > 0"
+              (click)="clearHistory()"
+              appClickSound
+              class="rounded-lg bg-red-500 px-3 py-1 text-sm font-medium text-white hover:bg-red-600"
+            >
+              {{ "myProfile.clearHistory" | translate }}
+            </button>
+          </div>
+
+          <!-- 历史记录列表 -->
+          <div *ngIf="gameHistory().length > 0" class="space-y-3">
+            <div
+              *ngFor="let record of gameHistory()"
+              class="rounded-lg bg-wood-lighter p-4 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg dark:bg-dark-wood-light"
+            >
+              <!-- 移动端布局 -->
+              <div class="block sm:hidden">
+                <div (click)="showHistoryRecord(record)" class="cursor-pointer">
+                  <div class="mb-2 flex items-start justify-between">
+                    <h3 class="font-medium text-stone-700 dark:text-stone-300">
+                      {{ getLevelName(record) }}
+                    </h3>
+                    <p
+                      class="text-sm font-medium"
+                      [ngClass]="getRatingColor(record.rating)"
+                    >
+                      {{ getLocalizedRating(record.rating) }}
+                    </p>
+                  </div>
+                  <div
+                    class="space-y-1 text-xs text-stone-700 dark:text-stone-300"
+                  >
+                    <div class="flex justify-between">
+                      <span
+                        >{{ "myProfile.steps" | translate }}:
+                        {{ record.steps }}</span
+                      >
+                      <span
+                        >{{ "myProfile.time" | translate }}:
+                        {{ formatTime(record.time) }}</span
+                      >
+                    </div>
+                    <div class="flex justify-between">
+                      <span>{{ getDifficultyText(record.difficulty) }}</span>
+                      <span>{{ formatDate(record.completedAt) }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-3 flex justify-end">
+                  <button
+                    (click)="replay(record.id); $event.stopPropagation()"
+                    class="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600"
+                  >
+                    {{ "myProfile.replay" | translate }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- 桌面端布局 -->
+              <div class="hidden items-center justify-between sm:flex">
+                <div
+                  (click)="showHistoryRecord(record)"
+                  class="flex-1 cursor-pointer"
+                >
+                  <h3 class="font-medium text-stone-700 dark:text-stone-300">
+                    {{ getLevelName(record) }}
+                  </h3>
+                  <div
+                    class="mt-1 flex items-center space-x-4 text-sm text-stone-700 dark:text-stone-300"
+                  >
+                    <span
+                      >{{ "myProfile.steps" | translate }}:
+                      {{ record.steps }}</span
+                    >
+                    <span
+                      >{{ "myProfile.time" | translate }}:
+                      {{ formatTime(record.time) }}</span
+                    >
+                    <span>{{ getDifficultyText(record.difficulty) }}</span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p
+                    class="text-sm font-medium"
+                    [ngClass]="getRatingColor(record.rating)"
+                  >
+                    {{ getLocalizedRating(record.rating) }}
+                  </p>
+                  <p class="text-xs text-stone-700 dark:text-stone-300">
+                    {{ formatDate(record.completedAt) }}
+                  </p>
+                </div>
+                <button
+                  (click)="replay(record.id); $event.stopPropagation()"
+                  class="ml-4 rounded-lg bg-blue-500 px-3 py-1 text-sm font-medium text-white transition-colors hover:bg-blue-600"
+                >
+                  {{ "myProfile.replay" | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 无历史记录时的提示 -->
+          <div
+            *ngIf="gameHistory().length === 0"
+            class="py-8 text-center text-stone-700 dark:text-stone-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="mx-auto mb-4 h-16 w-16 opacity-50"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <p>{{ "myProfile.noHistory" | translate }}</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 
   <!-- 历史记录详情模态框 -->
   <div
     *ngIf="showHistoryDetail()"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+    class="animate-fadeIn fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
     (click)="closeHistoryDetail()"
   >
     <div
@@ -220,13 +323,13 @@
       (click)="$event.stopPropagation()"
     >
       <div class="mb-4 flex items-center justify-between">
-        <h3 class="text-xl font-bold text-wood-text dark:text-wood-lighter">
-          {{ selectedRecord()?.levelName }}
+        <h3 class="text-xl font-bold text-stone-700 dark:text-stone-300">
+          {{ selectedRecord() ? getLevelName(selectedRecord()!) : "" }}
         </h3>
         <button
           (click)="closeHistoryDetail()"
           appClickSound
-          class="rounded-full p-1 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
+          class="rounded-full p-1 text-stone-700 hover:bg-wood-light dark:text-stone-300 dark:hover:bg-dark-wood"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -250,34 +353,39 @@
         <div class="rounded-xl bg-wood-light p-4 dark:bg-dark-wood">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <p class="text-sm text-wood-text dark:text-wood-lighter">
+              <p class="text-sm text-stone-700 dark:text-stone-300">
                 {{ "myProfile.steps" | translate }}
               </p>
-              <p class="text-lg font-bold text-wood-text dark:text-wood-lighter">
+              <p class="text-lg font-bold text-stone-700 dark:text-stone-300">
                 {{ selectedRecord()?.steps }}
               </p>
             </div>
             <div>
-              <p class="text-sm text-wood-text dark:text-wood-lighter">
+              <p class="text-sm text-stone-700 dark:text-stone-300">
                 {{ "myProfile.time" | translate }}
               </p>
-              <p class="text-lg font-bold text-wood-text dark:text-wood-lighter">
+              <p class="text-lg font-bold text-stone-700 dark:text-stone-300">
                 {{ formatTime(selectedRecord()?.time || 0) }}
               </p>
             </div>
             <div>
-              <p class="text-sm text-wood-text dark:text-wood-lighter">
+              <p class="text-sm text-stone-700 dark:text-stone-300">
                 {{ "myProfile.difficulty" | translate }}
               </p>
-              <p class="text-lg font-bold text-wood-text dark:text-wood-lighter">
-                {{ getDifficultyText(selectedRecord()?.difficulty || 'medium') }}
+              <p class="text-lg font-bold text-stone-700 dark:text-stone-300">
+                {{
+                  getDifficultyText(selectedRecord()?.difficulty || "medium")
+                }}
               </p>
             </div>
             <div>
-              <p class="text-sm text-wood-text dark:text-wood-lighter">
+              <p class="text-sm text-stone-700 dark:text-stone-300">
                 {{ "myProfile.rating" | translate }}
               </p>
-              <p class="text-lg font-bold" [ngClass]="getRatingColor(selectedRecord()?.rating || '')">
+              <p
+                class="text-lg font-bold"
+                [ngClass]="getRatingColor(selectedRecord()?.rating || '')"
+              >
                 {{ selectedRecord()?.rating }}
               </p>
             </div>
@@ -286,10 +394,10 @@
 
         <!-- 完成时间 -->
         <div class="rounded-xl bg-wood-light p-4 dark:bg-dark-wood">
-          <p class="text-sm text-wood-text dark:text-wood-lighter">
+          <p class="text-sm text-stone-700 dark:text-stone-300">
             {{ "myProfile.completedAt" | translate }}
           </p>
-          <p class="text-lg font-bold text-wood-text dark:text-wood-lighter">
+          <p class="text-lg font-bold text-stone-700 dark:text-stone-300">
             {{ selectedRecordDate()?.toLocaleString() }}
           </p>
         </div>
@@ -299,11 +407,11 @@
           *ngIf="hasGameSteps()"
           class="rounded-xl bg-wood-light p-4 dark:bg-dark-wood"
         >
-          <p class="mb-2 text-sm text-wood-text dark:text-wood-lighter">
+          <p class="mb-2 text-sm text-stone-700 dark:text-stone-300">
             {{ "myProfile.gameSteps" | translate }}
           </p>
           <div class="max-h-32 overflow-y-auto">
-            <p class="text-xs text-wood-text dark:text-wood-lighter">
+            <p class="text-xs text-stone-700 dark:text-stone-300">
               {{ gameStepsDisplay() }}
             </p>
           </div>

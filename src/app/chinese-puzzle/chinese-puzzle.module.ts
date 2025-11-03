@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { IonicModule } from '@ionic/angular';
 
 import { ChinesePuzzleRoutingModule } from './chinese-puzzle-routing.module';
 import { ChinesePuzzleBoardComponent } from './pages/chinese-puzzle-board/chinese-puzzle-board.component';
@@ -16,6 +17,7 @@ import { ClickSoundDirective } from './directives/click-sound.directive';
 import { TutorialComponent } from './pages/tutorial/tutorial.component';
 import { GameHeaderComponent } from './components/game-header/game-header.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { ReplayComponent } from './pages/replay/replay.component';
 
 @NgModule({
   declarations: [
@@ -28,8 +30,9 @@ import { ProfileComponent } from './pages/profile/profile.component';
     LevelGeneratorComponent,
     ClickSoundDirective,
     TutorialComponent,
-    GameHeaderComponent,
     ProfileComponent,
+    GameHeaderComponent,
+    ReplayComponent,
   ],
   imports: [
     CommonModule,
@@ -37,7 +40,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
     DragDropModule,
     FormsModule,
     TranslateModule,
+    IonicModule,
   ],
-  providers: [],
 })
 export class ChinesePuzzleModule { }

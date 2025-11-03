@@ -5,6 +5,8 @@ import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
 import { AudioService } from '../../services/audio.service';
 import { GameStorageService } from '../../services/game-storage.service';
 import { GameHistoryRecord, GameStats } from '../../chinese-puzzle.type';
+import { levels } from '../../data/data-set';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-profile',
@@ -16,6 +18,7 @@ export class ProfileComponent implements OnInit {
   private store = inject(ChinesePuzzleStore);
   private audioService = inject(AudioService);
   private gameStorage = inject(GameStorageService);
+  private languageService = inject(LanguageService);
 
   // 信号状态管理
   isLoading = signal(true);
@@ -93,6 +96,12 @@ export class ProfileComponent implements OnInit {
     this.audioService.playClickSound();
     this.showHistoryDetail.set(false);
     this.selectedRecord.set(null);
+  }
+
+  // 回放历史记录
+  replay(recordId: string) {
+    this.audioService.playClickSound();
+    this.router.navigate(['/replay', recordId], { replaceUrl: true });
   }
 
   // 清除历史记录
@@ -177,5 +186,41 @@ export class ProfileComponent implements OnInit {
     } else {
       return `${streak}${this.translate.instant('myProfile.daysStreak')}`;
     }
+  }
+
+  // 获取本地化的关卡名称
+  getLevelName(record: GameHistoryRecord): string {
+    const currentLang = this.translate.currentLang || 'zh';
+    const level = levels.find(l => l.id === record.levelId);
+
+    if (currentLang === 'en' && level?.nameEn) {
+      return level.nameEn;
+    }
+    return record.levelName || record.levelId;
+  }
+
+  // 获取本地化的评价文本
+  getLocalizedRating(rating: string): string {
+    const currentLang = this.translate.currentLang || 'zh';
+
+    // 如果评价包含中英文分隔符
+    if (rating.includes('|')) {
+      const [zhText, enText] = rating.split('|');
+      return currentLang === 'en' ? enText.trim() : zhText.trim();
+    }
+
+    // 如果是旧格式，直接返回
+    return rating;
+  }
+
+  // 切换语言
+  async toggleLanguage() {
+    this.audioService.playClickSound();
+    await this.languageService.toggleLanguage();
+  }
+
+  // 获取当前语言
+  getCurrentLanguage() {
+    return this.languageService.getCurrentLanguage();
   }
 }

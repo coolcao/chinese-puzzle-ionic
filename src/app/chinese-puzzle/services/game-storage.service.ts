@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { GameHistoryRecord, GameProgress, GameStats, UserSettings } from '../chinese-puzzle.type';
+import { GameHistoryRecord, GameProgress, GameStats, UserSettings, GameStep } from '../chinese-puzzle.type';
+import { levels } from '../data/data-set';
 
 
 @Injectable({
@@ -84,12 +85,6 @@ export class GameStorageService {
 
     await this.set(`progress_${levelId}`, progress);
 
-    // 更新游戏统计
-    await this.updateStats({
-      totalSteps: steps,
-      levelsCompleted: existing ? 0 : 1, // 只有首次完成才计数
-      perfectCompletions: progress.stars === 3 ? 1 : 0
-    });
   }
 
   async getProgress(levelId: string): Promise<GameProgress | null> {
@@ -128,7 +123,7 @@ export class GameStorageService {
 
   // ========== 游戏历史记录管理 ==========
 
-  async saveGameHistory(levelId: string, steps: number, time: number): Promise<void> {
+  async saveGameHistory(levelId: string, steps: number, time: number, gameSteps: GameStep[]): Promise<void> {
     const timestamp = Date.now();
     const id = `${levelId}_${timestamp}`; // 使用关卡ID+时间戳生成唯一ID
     const historyRecord: GameHistoryRecord = {
@@ -139,9 +134,8 @@ export class GameStorageService {
       steps,
       time,
       completedAt: new Date().toISOString(),
-      rating: this.calculateRating(steps), // 计算评分
-      gameSteps: [], // 空的操作步骤，实际调用时会传入
-      initialBoardState: [] // 空的初始状态，实际调用时会传入
+      rating: this.calculateRating(steps, levelId), // 基于关卡数据计算评分
+      gameSteps, // 详细操作步骤
     };
 
     // 保存历史记录
@@ -198,7 +192,9 @@ export class GameStorageService {
     const totalSteps = historyRecords.reduce((sum, record) => sum + record.steps, 0);
     const totalGames = historyRecords.length;
     const levelsCompleted = new Set(historyRecords.map(record => record.levelId)).size;
-    const perfectCompletions = historyRecords.filter(record => record.rating.includes('完美') || record.rating.includes('Perfect')).length;
+    const perfectCompletions = historyRecords.filter(record =>
+      record.rating.includes('完美') || record.rating.includes('Perfect')
+    ).length;
 
     // 计算连续完成天数
     const streakInfo = this.calculateStreakInfo(historyRecords);
@@ -299,65 +295,53 @@ export class GameStorageService {
     return { currentStreak, maxStreak };
   }
 
-  // 旧的更新统计方法，为了向后兼容保留（但不推荐使用）
-  private async updateStats(update: Partial<GameStats>): Promise<void> {
-    console.warn('updateStats is deprecated. Please use history-based statistics instead.');
-    const current = await this.getStats();
-    const updated: GameStats = {
-      ...current,
-      totalPlayTime: current.totalPlayTime + (update.totalPlayTime || 0),
-      totalSteps: current.totalSteps + (update.totalSteps || 0),
-      levelsCompleted: current.levelsCompleted + (update.levelsCompleted || 0),
-      perfectCompletions: current.perfectCompletions + (update.perfectCompletions || 0),
-      lastPlayDate: new Date().toISOString(),
-      calculatedAt: new Date().toISOString()
-    };
-
-    await this.set('game_stats', updated);
-  }
-
   // ========== 工具方法 ==========
 
-  private calculateRating(steps: number): string {
-    // 简单的评分计算，实际使用时会被game-board-fabric组件的更准确评分覆盖
-    if (steps <= 80) {
-      return '完美通关！🏆';
-    } else if (steps <= 120) {
-      return '表现优秀！⭐';
-    } else if (steps <= 160) {
-      return '还不错！👍';
-    } else {
-      return '继续努力！💪';
+  private calculateRating(steps: number, levelId?: string): string {
+    // 如果提供了 levelId，基于该关卡的 minSteps 进行评价
+    if (levelId) {
+      const level = this.getLevelData(levelId);
+      if (level) {
+        const minSteps = level.minSteps;
+        const efficiency = steps / minSteps;
+
+        if (efficiency <= 1.1) {
+          return '完美通关！🏆|Perfect! 🏆';
+        } else if (efficiency <= 1.4) {
+          return '表现优秀！⭐|Excellent! ⭐';
+        } else if (efficiency <= 2.0) {
+          return '还不错！👍|Good Job! 👍';
+        } else {
+          return '继续努力！💪|Keep Trying! 💪';
+        }
+      }
     }
+    return '继续努力！💪|Keep Trying! 💪';
   }
 
   private calculateStars(levelId: string, steps: number): number {
-    // 根据关卡难度和步数计算星级
-    const thresholds = this.getStarThresholds(levelId);
+    // 根据关卡的 minSteps 动态计算星级阈值
+    const thresholds = this.calculateStarThresholds(levelId);
 
     if (steps <= thresholds.threeStar) return 3;
     if (steps <= thresholds.twoStar) return 2;
     return 1;
   }
 
-  private getStarThresholds(levelId: string): { threeStar: number; twoStar: number } {
-    // 基于关卡难度的星级阈值
-    const difficultyMap: { [key: string]: { threeStar: number; twoStar: number } } = {
-      '横刀立马': { threeStar: 80, twoStar: 120 },
-      '指挥若定': { threeStar: 120, twoStar: 180 },
-      '将拥曹营': { threeStar: 150, twoStar: 220 },
-      '齐头并进': { threeStar: 130, twoStar: 190 },
-      '兵分三路': { threeStar: 160, twoStar: 240 },
-      '雨声淅沥': { threeStar: 200, twoStar: 300 },
-      '四路进兵': { threeStar: 220, twoStar: 320 },
-      '五虎上将': { threeStar: 250, twoStar: 350 },
-      '左右布兵': { threeStar: 140, twoStar: 200 },
-      '桃花园中': { threeStar: 170, twoStar: 250 },
-      '一字长蛇': { threeStar: 210, twoStar: 310 },
-      '峰回路转': { threeStar: 280, twoStar: 400 }
-    };
+  private calculateStarThresholds(levelId: string): { threeStar: number; twoStar: number } {
+    // 从关卡数据中获取 minSteps
+    const level = this.getLevelData(levelId);
+    const minSteps = level?.minSteps || 50; // 默认值
 
-    return difficultyMap[levelId] || { threeStar: 150, twoStar: 220 };
+    const threeStar = Math.floor(minSteps * 1.1);  // minSteps + 10%
+    const twoStar = Math.floor(minSteps * 1.4);    // minSteps + 40%
+
+    return { threeStar, twoStar };
+  }
+
+  // 获取关卡数据的辅助方法
+  private getLevelData(levelId: string) {
+    return levels.find(level => level.id === levelId) || null;
   }
 
   private getDefaultSettings(): UserSettings {

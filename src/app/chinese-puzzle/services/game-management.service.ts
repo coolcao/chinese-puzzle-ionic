@@ -131,7 +131,7 @@ export class GameManagementService {
   async saveGameProgress(levelId: string, steps: number, time: number) {
     try {
       // 保存游戏历史记录（替代直接更新统计）
-      await this.storage.saveGameHistory(levelId, steps, time);
+      await this.storage.saveGameHistory(levelId, steps, time, []);
       console.log(`关卡 ${levelId} 历史记录已保存: ${steps}步, ${time}秒`);
       return true;
     } catch (error) {

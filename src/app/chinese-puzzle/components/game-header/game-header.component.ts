@@ -20,7 +20,7 @@ export class GameHeaderComponent {
   @Input() backButtonIcon: string = 'arrow-left';
   @Input() customButtons: HeaderButton[] = [];
   @Input() maxWidth: string = 'max-w-7xl';
-  
+
   @Output() backClick = new EventEmitter<void>();
   @Output() buttonClick = new EventEmitter<{ button: HeaderButton; index: number }>();
 

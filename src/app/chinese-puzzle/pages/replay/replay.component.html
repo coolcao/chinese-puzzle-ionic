@@ -1,0 +1,66 @@
+<div
+  class="flex h-screen flex-col bg-wood-lighter transition-colors duration-300 dark:bg-dark-wood-lighter"
+>
+  <app-game-header
+    [titleTranslationKey]="'replay.title'"
+    [showBackButton]="true"
+    (backClick)="goBack()"
+  ></app-game-header>
+
+  <main
+    class="h-full w-full flex-1 overflow-hidden bg-wood-light/50 dark:bg-dark-wood-dark/20"
+  >
+    <div class="flex h-full w-full flex-1 items-center justify-center p-6">
+      <div class="flex max-w-2xl items-center justify-center">
+        <canvas
+          #replayCanvas
+          class="rounded-md border-4 border-b-0 border-solid border-wood-darker"
+        ></canvas>
+      </div>
+    </div>
+  </main>
+
+  <footer
+    class="flex-shrink-0 border-t border-wood-border bg-wood-light px-6 py-4 dark:border-dark-wood-border dark:bg-dark-wood-dark"
+  >
+    <div class="flex items-center justify-center space-x-4">
+      <button
+        (click)="togglePlayPause()"
+        class="rounded-full bg-wood-main p-3 text-white shadow-lg"
+      >
+        <ion-icon
+          [name]="isPlaying ? 'pause' : 'play'"
+          class="text-2xl"
+        ></ion-icon>
+      </button>
+      <div class="flex w-full items-center space-x-2">
+        <span class="text-sm text-wood-text dark:text-dark-wood-text">{{
+          formattedTime
+        }}</span>
+        <input
+          type="range"
+          min="0"
+          [max]="totalDuration"
+          [(ngModel)]="currentTime"
+          (input)="onSliderChange($event)"
+          class="w-full"
+        />
+        <span class="text-sm text-wood-text dark:text-dark-wood-text">{{
+          formattedTotalDuration
+        }}</span>
+      </div>
+      <button
+        (click)="restartReplay()"
+        class="rounded-full bg-wood-main p-3 text-white shadow-lg"
+      >
+        <ion-icon name="refresh" class="text-2xl"></ion-icon>
+      </button>
+      <button
+        (click)="changePlaybackSpeed()"
+        class="rounded-full bg-wood-main p-3 text-white shadow-lg"
+      >
+        <span class="text-sm font-bold">{{ getSpeedText() }}</span>
+      </button>
+    </div>
+  </footer>
+</div>

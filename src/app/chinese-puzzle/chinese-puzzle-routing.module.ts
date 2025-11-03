@@ -7,6 +7,7 @@ import { LevelSelectComponent } from './pages/level-select/level-select.componen
 import { LevelGeneratorComponent } from './pages/level-generator/level-generator.component';
 import { TutorialComponent } from './pages/tutorial/tutorial.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { ReplayComponent } from './pages/replay/replay.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -16,6 +17,7 @@ const routes: Routes = [
   { path: 'tutorial', component: TutorialComponent },
   { path: 'generator', component: LevelGeneratorComponent },
   { path: 'profile', component: ProfileComponent },
+  { path: 'replay/:id', component: ReplayComponent },
 ];
 
 @NgModule({

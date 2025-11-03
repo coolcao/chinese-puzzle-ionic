@@ -82,7 +82,7 @@ export class HomeComponent implements OnInit {
 
   openMyProfile() {
     this.audioService.playClickSound();
-    this.showProfile = true;
+    this.router.navigate(['profile']);
   }
 
   closeProfile() {

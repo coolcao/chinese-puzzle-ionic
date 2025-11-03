@@ -15,6 +15,7 @@ import { LevelGeneratorComponent } from './pages/level-generator/level-generator
 import { ClickSoundDirective } from './directives/click-sound.directive';
 import { TutorialComponent } from './pages/tutorial/tutorial.component';
 import { GameHeaderComponent } from './components/game-header/game-header.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { GameHeaderComponent } from './components/game-header/game-header.compon
     ClickSoundDirective,
     TutorialComponent,
     GameHeaderComponent,
+    ProfileComponent,
   ],
   imports: [
     CommonModule,

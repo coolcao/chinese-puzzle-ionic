@@ -6,6 +6,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { LevelSelectComponent } from './pages/level-select/level-select.component';
 import { LevelGeneratorComponent } from './pages/level-generator/level-generator.component';
 import { TutorialComponent } from './pages/tutorial/tutorial.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'fabric', component: GameBoardFabricComponent },
   { path: 'tutorial', component: TutorialComponent },
   { path: 'generator', component: LevelGeneratorComponent },
+  { path: 'profile', component: ProfileComponent },
 ];
 
 @NgModule({

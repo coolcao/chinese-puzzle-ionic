@@ -145,7 +145,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   async ngOnInit() {
     if (!(await this.gameStorage.isTutorialCompleted())) {
-      this.router.navigate(['']);
+      this.router.navigate([''], { replaceUrl: true });
       return;
     }
 

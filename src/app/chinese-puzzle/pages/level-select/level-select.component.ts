@@ -27,7 +27,7 @@ export class LevelSelectComponent implements OnInit {
 
   async ngOnInit() {
     if (!(await this.gameStorage.isTutorialCompleted())) {
-      this.router.navigate(['']);
+      this.router.navigate([''], { replaceUrl: true });
       return;
     }
     this.groupLevelsByDifficulty();

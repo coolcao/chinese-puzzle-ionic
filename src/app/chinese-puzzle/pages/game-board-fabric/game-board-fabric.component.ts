@@ -213,9 +213,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       // 立即更新单元格尺寸并绘制
       this.updateCellSize();
       this.drawBoard();
-
-      // 游戏初始化完成，启动计时器
-      this.startTimer();
     } else {
       // 如果还是没有找到canvas元素，稍后再尝试
       setTimeout(() => this.initCanvas(), 100);
@@ -412,6 +409,11 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
             this.isLevelJustLoaded = false;
           }
 
+          // 第一次有效移动时启动计时器
+          if (!this.isGameStarted) {
+            this.startTimer();
+          }
+
         } else {
           break;
         }
@@ -461,8 +463,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     // 直接重新绘制棋盘即可
     Promise.resolve().then(() => {
       this.drawBoard();
-      // 重新启动计时器
-      this.startTimer();
     });
   }
 

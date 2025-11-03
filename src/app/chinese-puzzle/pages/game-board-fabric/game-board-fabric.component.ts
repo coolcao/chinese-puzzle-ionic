@@ -143,7 +143,12 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    if (!(await this.gameStorage.isTutorialCompleted())) {
+      this.router.navigate(['']);
+      return;
+    }
+
     // 重置步数和关卡加载标志
     this.steps = 0;
     this.isLevelJustLoaded = true;

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { levels } from '../../data/data-set';
 import { Level } from '../../chinese-puzzle.type';
+import { GameStorageService } from '../../services/game-storage.service';
 
 interface GroupedLevels {
   easy: Level[];
@@ -22,9 +23,13 @@ export class LevelSelectComponent implements OnInit {
     hard: []
   };
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private gameStorage: GameStorageService) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    if (!(await this.gameStorage.isTutorialCompleted())) {
+      this.router.navigate(['']);
+      return;
+    }
     this.groupLevelsByDifficulty();
   }
 

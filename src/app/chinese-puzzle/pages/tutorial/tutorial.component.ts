@@ -65,7 +65,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   showSuccess = false;
   showInstructions = false;
   resourceLoading = false;
-  
+
   // 防止关卡刚加载时就触发完成效果
   private isLevelJustLoaded = true;
 
@@ -118,7 +118,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     // 重置步数和关卡加载标志
     this.steps = 0;
     this.isLevelJustLoaded = true;
-    
+
     // 教程页面始终加载教程关卡
     this.gameManagement.loadLevel(tutorialLevel);
     this.initTutorial();
@@ -727,10 +727,8 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
     event.preventDefault();
   }
 
-  // 返回到关卡选择页面
-  goToLevelSelect() {
-    this.audioService.playClickSound();
-    this.router.navigate(['levels'], { replaceUrl: true });
+  goBack() {
+    this.router.navigate([''], { replaceUrl: true });
   }
 
   // 切换说明显示状态
@@ -808,7 +806,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
   // 监听键盘事件
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
-      this.goToLevelSelect();
+      this.goBack();
     }
   }
 }

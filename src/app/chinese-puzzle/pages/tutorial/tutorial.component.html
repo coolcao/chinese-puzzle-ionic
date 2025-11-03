@@ -12,13 +12,16 @@
     <app-game-header
       titleTranslationKey="tutorial.title"
       [showBackButton]="true"
-      [customButtons]="[{
-        icon: 'help',
-        position: 'right',
-        classes: 'absolute right-0 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light',
-        onClick: toggleInstructions.bind(this)
-      }]"
-      (backClick)="goToLevelSelect()"
+      [customButtons]="[
+        {
+          icon: 'help',
+          position: 'right',
+          classes:
+            'absolute right-0 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light',
+          onClick: toggleInstructions.bind(this),
+        },
+      ]"
+      (backClick)="goBack()"
     ></app-game-header>
 
     <!-- 下面部分左右布局 -->
@@ -48,7 +51,7 @@
             <h2
               class="mb-4 text-xl font-bold text-wood-text dark:text-wood-lighter"
             >
-              {{ 'tutorial.gameControl' | translate }}
+              {{ "tutorial.gameControl" | translate }}
             </h2>
 
             <!-- 当前关卡信息 -->
@@ -56,18 +59,25 @@
               <label
                 class="mb-2 block text-sm font-medium text-wood-text dark:text-wood-lighter"
               >
-                {{ 'tutorial.currentLevel' | translate }}
+                {{ "tutorial.currentLevel" | translate }}
               </label>
               <div
                 class="w-full rounded-lg border border-wood-border bg-wood/50 px-4 py-2 text-wood-text shadow-inner dark:bg-wood-dark/50 dark:text-wood-lighter"
               >
                 <div class="font-semibold">
-                  {{ currentLevel.name || ('tutorial.unknownLevel' | translate) }}
+                  {{
+                    currentLevel.name || ("tutorial.unknownLevel" | translate)
+                  }}
                 </div>
                 <div
                   class="mt-1 text-xs text-wood-text/70 dark:text-wood-lighter/70"
                 >
-                  {{ 'common.difficulty' | translate }}：{{ currentLevel.difficulty ? (('levels.difficulty.' + currentLevel.difficulty) | translate) : ('common.unknown' | translate) }}
+                  {{ "common.difficulty" | translate }}：{{
+                    currentLevel.difficulty
+                      ? ("levels.difficulty." + currentLevel.difficulty
+                        | translate)
+                      : ("common.unknown" | translate)
+                  }}
                 </div>
               </div>
             </div>
@@ -75,9 +85,9 @@
             <!-- 游戏状态 -->
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <span class="text-wood-text dark:text-wood-lighter"
-                  >{{ 'tutorial.currentSteps' | translate }}</span
-                >
+                <span class="text-wood-text dark:text-wood-lighter">{{
+                  "tutorial.currentSteps" | translate
+                }}</span>
                 <div
                   class="rounded-lg bg-wood/50 px-4 py-2 text-wood-text dark:text-wood-lighter"
                 >
@@ -85,18 +95,18 @@
                 </div>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-wood-text dark:text-wood-lighter"
-                  >{{ 'tutorial.gameStatus' | translate }}</span
-                >
+                <span class="text-wood-text dark:text-wood-lighter">{{
+                  "tutorial.gameStatus" | translate
+                }}</span>
                 <div class="rounded-lg bg-wood/50 px-4 py-2">
                   @if (finished()) {
-                    <span class="text-green-600 dark:text-green-300"
-                      >{{ 'tutorial.completed' | translate }}</span
-                    >
+                    <span class="text-green-600 dark:text-green-300">{{
+                      "tutorial.completed" | translate
+                    }}</span>
                   } @else {
-                    <span class="text-wood-text dark:text-wood-lighter"
-                      >{{ 'tutorial.inProgress' | translate }}</span
-                    >
+                    <span class="text-wood-text dark:text-wood-lighter">{{
+                      "tutorial.inProgress" | translate
+                    }}</span>
                   }
                 </div>
               </div>
@@ -128,9 +138,8 @@
                   <span
                     class="text-sm font-medium text-wood-text/80 dark:text-wood-lighter/80"
                   >
-                    {{ 'tutorial.step' | translate }} {{ currentTutorialStep + 1 }}/{{
-                      tutorialSteps.length
-                    }}
+                    {{ "tutorial.step" | translate }}
+                    {{ currentTutorialStep + 1 }}/{{ tutorialSteps.length }}
                   </span>
                 </div>
               </div>
@@ -140,7 +149,7 @@
                 appClickSound
                 class="rounded-lg bg-wood-dark px-3 py-1.5 text-xs font-medium text-wood-lighter transition-colors hover:bg-wood-darker dark:bg-dark-wood-darker dark:hover:bg-dark-wood"
               >
-                {{ 'tutorial.skip' | translate }}
+                {{ "tutorial.skip" | translate }}
               </button>
             </div>
 
@@ -180,7 +189,7 @@
               </div>
               <span
                 class="text-sm font-medium text-wood-text dark:text-wood-lighter"
-                >{{ 'tutorial.followInstructions' | translate }}</span
+                >{{ "tutorial.followInstructions" | translate }}</span
               >
             </div>
 
@@ -192,8 +201,8 @@
             >
               {{
                 currentTutorialStep === tutorialSteps.length - 1
-                  ? ('tutorial.completeNext' | translate)
-                  : ('tutorial.nextStep' | translate)
+                  ? ("tutorial.completeNext" | translate)
+                  : ("tutorial.nextStep" | translate)
               }}
             </button>
             <!-- PC端教程错误提示 - 放在教程模态框下方 -->
@@ -253,13 +262,16 @@
     <app-game-header
       titleTranslationKey="tutorial.title"
       [showBackButton]="true"
-      [customButtons]="[{
-        icon: 'help',
-        position: 'right',
-        classes: 'absolute right-2 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood dark:bg-dark-wood-lighter dark:text-dark-wood-text dark:hover:bg-dark-wood',
-        onClick: toggleInstructions.bind(this)
-      }]"
-      (backClick)="goToLevelSelect()"
+      [customButtons]="[
+        {
+          icon: 'help',
+          position: 'right',
+          classes:
+            'absolute right-2 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood dark:bg-dark-wood-lighter dark:text-dark-wood-text dark:hover:bg-dark-wood',
+          onClick: toggleInstructions.bind(this),
+        },
+      ]"
+      (backClick)="goBack()"
     ></app-game-header>
 
     <div
@@ -286,7 +298,7 @@
             appClickSound
             class="rounded-lg bg-wood-dark px-3 py-1 text-xs text-wood-lighter transition-colors hover:bg-wood-darker dark:bg-dark-wood-darker dark:text-wood-lighter dark:hover:bg-dark-wood"
           >
-            {{ 'tutorial.skip' | translate }}
+            {{ "tutorial.skip" | translate }}
           </button>
         </div>
 
@@ -326,9 +338,9 @@
               style="animation-delay: 0.2s"
             ></div>
           </div>
-          <span class="text-sm text-wood-text dark:text-wood"
-            >{{ 'tutorial.followInstructions' | translate }}</span
-          >
+          <span class="text-sm text-wood-text dark:text-wood">{{
+            "tutorial.followInstructions" | translate
+          }}</span>
         </div>
 
         <button
@@ -339,8 +351,8 @@
         >
           {{
             currentTutorialStep === tutorialSteps.length - 1
-              ? ('tutorial.completeNext' | translate)
-              : ('tutorial.nextStep' | translate)
+              ? ("tutorial.completeNext" | translate)
+              : ("tutorial.nextStep" | translate)
           }}
         </button>
 
@@ -425,7 +437,7 @@
     >
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-2xl font-bold text-wood-text dark:text-wood-lighter">
-          {{ 'tutorial.instructions.title' | translate }}
+          {{ "tutorial.instructions.title" | translate }}
         </h3>
         <button
           (click)="showInstructions = false"
@@ -456,7 +468,7 @@
             1
           </div>
           <p>
-            {{ 'tutorial.instructions.step1' | translate }}
+            {{ "tutorial.instructions.step1" | translate }}
           </p>
         </div>
 
@@ -467,7 +479,7 @@
             2
           </div>
           <p>
-            {{ 'tutorial.instructions.step2' | translate }}
+            {{ "tutorial.instructions.step2" | translate }}
           </p>
         </div>
 
@@ -478,7 +490,7 @@
             3
           </div>
           <p>
-            {{ 'tutorial.instructions.step3' | translate }}
+            {{ "tutorial.instructions.step3" | translate }}
           </p>
         </div>
 
@@ -489,7 +501,7 @@
             4
           </div>
           <p>
-            {{ 'tutorial.instructions.step4' | translate }}
+            {{ "tutorial.instructions.step4" | translate }}
           </p>
         </div>
       </div>
@@ -498,7 +510,7 @@
         (click)="showInstructions = false"
         class="mt-6 w-full rounded-lg bg-wood-dark py-3 font-medium text-wood-text transition-colors hover:bg-wood/60 dark:bg-wood/30 dark:text-wood-light"
       >
-        {{ 'tutorial.instructions.startGame' | translate }}
+        {{ "tutorial.instructions.startGame" | translate }}
       </button>
     </div>
   </div>

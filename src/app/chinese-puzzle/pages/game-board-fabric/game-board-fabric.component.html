@@ -90,7 +90,7 @@
                 <div
                   class="rounded-lg bg-wood/50 px-4 py-2 text-wood-text dark:text-wood-lighter"
                 >
-                  {{ steps }}
+                  {{ steps() }}
                 </div>
               </div>
 
@@ -208,7 +208,7 @@
               >
               <span
                 class="rounded bg-wood/20 px-1 py-0.5 text-xs font-semibold text-wood-text dark:bg-dark-wood/20 dark:text-wood-lighter"
-                >{{ steps }}</span
+                >{{ steps() }}</span
               >
             </div>
 
@@ -261,22 +261,22 @@
   </div>
 
   <!-- 撒花效果 - 最高层级 -->
-  @if (showSuccess) {
+  @if (showSuccess()) {
     <div class="pointer-events-none fixed inset-0 z-[100]">
       <app-scatter-flowers></app-scatter-flowers>
     </div>
   }
 
   <div>
-    @if (showInstructions) {
+    @if (showInstructions()) {
       <div
         class="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm"
-        (click)="showInstructions = false"
+        (click)="showInstructions.set(false)"
       ></div>
     }
 
     <div
-      *ngIf="showInstructions"
+      *ngIf="showInstructions()"
       class="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border-2 border-wood-border bg-wood-light/95 p-6 shadow-2xl backdrop-blur-sm transition-all dark:bg-dark-wood-lighter"
     >
       <div class="mb-4 flex items-center justify-between">
@@ -284,7 +284,7 @@
           {{ "tutorial.instructions.title" | translate }}
         </h3>
         <button
-          (click)="showInstructions = false"
+          (click)="showInstructions.set(false)"
           class="text-wood-text hover:bg-wood-dark dark:text-wood-lighter"
         >
           <svg
@@ -351,7 +351,7 @@
       </div>
 
       <button
-        (click)="showInstructions = false"
+        (click)="showInstructions.set(false)"
         class="mt-6 w-full rounded-lg bg-wood-dark py-3 font-medium text-wood-text transition-colors hover:bg-wood/60 dark:bg-wood/30 dark:text-wood-light"
       >
         {{ "tutorial.instructions.startGame" | translate }}
@@ -362,7 +362,7 @@
 
 <!-- 游戏完成Modal -->
 <div
-  *ngIf="finished() && showCompletionModal"
+  *ngIf="finished() && showCompletionModal()"
   class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
   (click)="onModalBackdropClick($event)"
 >
@@ -435,7 +435,7 @@
             >{{ "gameBoard.currentSteps" | translate }}</span
           >
           <span class="font-semibold text-wood-text dark:text-wood-lighter">
-            {{ steps }}
+            {{ steps() }}
           </span>
         </div>
 
@@ -529,7 +529,7 @@
 </div>
 
 <div
-  [ngClass]="{ hidden: !resourceLoading }"
+  [ngClass]="{ hidden: !resourceLoading() }"
   class="fixed inset-0 flex h-full min-h-screen w-full flex-col items-center justify-center bg-wood-lighter dark:bg-dark-wood-bg"
 >
   <div class="text-2xl text-wood-text dark:text-wood-lighter">

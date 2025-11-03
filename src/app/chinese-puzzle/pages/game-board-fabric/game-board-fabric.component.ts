@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inject, OnInit, computed } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inject, OnInit, computed, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer, interval, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -51,25 +51,25 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   isDarkMode = computed(() => this.store.settings().isDarkMode);
 
 
-  steps = 0;
+  steps = signal(0);
 
-  showSuccess = false;
-  showInstructions = false;
-  resourceLoading = false;
-  showCompletionModal = false;
+  showSuccess = signal(false);
+  showInstructions = signal(false);
+  resourceLoading = signal(false);
+  showCompletionModal = signal(false);
 
   // 防止关卡刚加载时就触发完成效果
   private isLevelJustLoaded = true;
 
   // 计时器相关
-  gameTime = 0; // 游戏时间（秒）
-  private gameStartTime: number | null = null;
+  private gameTime = signal(0); // 游戏时间（秒）
+  private gameStartTime = signal<number | null>(null);
   private timerSubscription: Subscription | null = null;
-  private isGameStarted = false;
+  private isGameStarted = signal(false);
 
   // 操作步骤记录
   private gameSteps: GameStep[] = [];
-  private currentStepNumber = 0;
+  private currentStepNumber = signal(0);
 
   currentLevel = this.store.currentLevel;
 
@@ -82,7 +82,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   constructor() {
     effect(() => {
       // 只有在关卡加载完成且用户确实进行了移动后才触发完成效果
-      if (this.finished() && !this.isLevelJustLoaded && this.steps > 0) {
+      if (this.finished() && !this.isLevelJustLoaded && this.steps() > 0) {
         // 停止计时器
         this.stopTimer();
 
@@ -92,18 +92,18 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
         // 保存游戏进度，包含步数和时间
         const currentLevel = this.currentLevel();
         if (currentLevel) {
-          this.gameManagement.saveGameProgress(currentLevel.id, this.steps, this.gameTime);
+          this.gameManagement.saveGameProgress(currentLevel.id, this.steps(), this.gameTime());
         }
 
         // 保存到历史记录
         this.saveGameHistory();
 
         // 显示完成Modal
-        this.showCompletionModal = true;
+        this.showCompletionModal.set(true);
         // 同时显示撒花效果
-        this.showSuccess = true;
+        this.showSuccess.set(true);
         timer(2500).subscribe(() => {
-          this.showSuccess = false;
+          this.showSuccess.set(false);
         });
       }
     });
@@ -150,7 +150,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     // 重置步数和关卡加载标志
-    this.steps = 0;
+    this.steps.set(0);
     this.isLevelJustLoaded = true;
     // 重置计时器
     this.resetTimer();
@@ -179,7 +179,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
         requestAnimationFrame(() => {
           this.drawBoard();
           // 图片加载完成后重新绘制棋盘
-          this.resourceLoading = false;
+          this.resourceLoading.set(false);
         });
       });
     });
@@ -400,7 +400,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
           // 更新状态
           this.store.updatePiece(moveResult.updatedPiece);
           this.store.updateBoard(moveResult.updatedBoardState);
-          this.steps += 1;
+          this.steps.update(steps => steps + 1);
           totalStepsMoved += 1;
           currentPiece = moveResult.updatedPiece;
 
@@ -410,7 +410,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
           }
 
           // 第一次有效移动时启动计时器
-          if (!this.isGameStarted) {
+          if (!this.isGameStarted()) {
             this.startTimer();
           }
 
@@ -453,7 +453,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   changeDataSet(dataSetName: string) {
     this.audioService.playClickSound();
     this.gameManagement.changeLevel(dataSetName);
-    this.steps = 0;
+    this.steps.set(0);
     // 重置关卡加载标志
     this.isLevelJustLoaded = true;
     // 重置计时器
@@ -474,7 +474,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   // 切换说明显示状态
   toggleInstructions() {
-    this.showInstructions = !this.showInstructions;
+    this.showInstructions.set(!this.showInstructions());
   }
 
   onDataSetChange(dataSetName: string) {
@@ -483,7 +483,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   private async preLoadImage() {
     // 设置加载状态
-    this.resourceLoading = true;
+    this.resourceLoading.set(true);
     // 获取当前最新的棋子数据
     const currentPieces = this.pieces();
     await this.imageLoadingService.preLoadImage(currentPieces);
@@ -535,7 +535,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     const currentLevel = this.currentLevel();
     if (currentLevel) {
       // 重置游戏状态
-      this.steps = 0;
+      this.steps.set(0);
       this.isLevelJustLoaded = true;
       this.resetTimer();
       // 重置操作步骤记录
@@ -564,7 +564,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   // 关闭完成Modal
   closeCompletionModal() {
     this.audioService.playClickSound();
-    this.showCompletionModal = false;
+    this.showCompletionModal.set(false);
 
     // 关闭Modal后，确保游戏状态仍然锁定（如果游戏已完成）
     setTimeout(() => {
@@ -582,19 +582,19 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   // 开始计时器
   private startTimer() {
-    if (this.isGameStarted) {
+    if (this.isGameStarted()) {
       return; // 避免重复启动
     }
 
-    this.isGameStarted = true;
-    this.gameStartTime = Date.now();
-    this.gameTime = 0;
+    this.isGameStarted.set(true);
+    this.gameStartTime.set(Date.now());
+    this.gameTime.set(0);
 
 
     // 每秒更新一次游戏时间
     this.timerSubscription = interval(1000).subscribe(() => {
-      if (this.gameStartTime) {
-        this.gameTime = Math.floor((Date.now() - this.gameStartTime) / 1000);
+      if (this.gameStartTime()) {
+        this.gameTime.set(Math.floor((Date.now() - this.gameStartTime()!) / 1000));
       }
     });
   }
@@ -605,21 +605,21 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       this.timerSubscription.unsubscribe();
       this.timerSubscription = null;
     }
-    this.isGameStarted = false;
+    this.isGameStarted.set(false);
   }
 
   // 重置计时器
   private resetTimer() {
     this.stopTimer();
-    this.gameTime = 0;
-    this.gameStartTime = null;
-    this.isGameStarted = false;
+    this.gameTime.set(0);
+    this.gameStartTime.set(null);
+    this.isGameStarted.set(false);
   }
 
   // 重置操作步骤记录
   private resetGameSteps() {
     this.gameSteps = [];
-    this.currentStepNumber = 0;
+    this.currentStepNumber.set(0);
   }
 
 
@@ -629,8 +629,8 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
     const now = Date.now();
     const step: GameStep = {
-      stepNumber: ++this.currentStepNumber,
-      timestamp: now - this.gameStartTime,
+      stepNumber: this.currentStepNumber() + 1,
+      timestamp: now - this.gameStartTime()!,
       pieceId: piece.id,
       pieceName: piece.name,
       fromPosition: { ...fromPosition },
@@ -660,8 +660,8 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   // 格式化时间显示 (MM:SS)
   getFormattedTime(): string {
-    const minutes = Math.floor(this.gameTime / 60);
-    const seconds = this.gameTime % 60;
+    const minutes = Math.floor(this.gameTime()! / 60);
+    const seconds = this.gameTime()! % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
 
@@ -675,8 +675,8 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
       await this.gameStorage.saveGameHistory(
         currentLevel.id,
-        this.steps,
-        this.gameTime,
+        this.steps(),
+        this.gameTime(),
         this.gameSteps
       );
 
@@ -700,7 +700,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     const optimalSteps = currentLevel?.minSteps || this.getDefaultThresholdByDifficulty(currentLevel?.difficulty);
 
     // 计算步数与最优步数的比率
-    const efficiency = steps / optimalSteps;
+    const efficiency = steps() / optimalSteps;
 
     let ratingKey: string;
     if (efficiency <= 1.05) {
@@ -772,7 +772,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   // 监听键盘事件
   onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Escape' && this.showCompletionModal) {
+    if (event.key === 'Escape' && this.showCompletionModal()) {
       this.closeCompletionModal();
     }
 

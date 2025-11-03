@@ -14,7 +14,8 @@
     "steps": "步数",
     "completed": "完成",
     "inProgress": "进行中",
-    "unknown": "未知"
+    "unknown": "未知",
+    "exit": "退出"
   },
   "home": {
     "title": "三国华容道",

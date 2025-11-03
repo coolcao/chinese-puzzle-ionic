@@ -1,3 +1,50 @@
 <main>
   <router-outlet />
 </main>
+
+<div
+  *ngIf="showExit()"
+  class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 backdrop-blur-sm dark:bg-black/70"
+  id="exitGameModal"
+  aria-labelledby="exitGameModalLabel"
+  aria-hidden="true"
+>
+  <div
+    class="relative mx-auto w-11/12 max-w-sm rounded-2xl bg-wood-light p-6 text-wood-text shadow-2xl ring-1 ring-wood-border dark:bg-dark-wood dark:text-wood-lighter dark:ring-dark-wood-border sm:p-8"
+  >
+    <div class="flex items-start justify-between">
+      <h3
+        class="text-xl font-semibold leading-6 text-wood-text dark:text-wood-lighter"
+        id="exitGameModalLabel"
+      >
+        {{ "common.exit" | translate }}
+        {{ "home.title" | translate }}
+      </h3>
+    </div>
+    <div class="mt-4">
+      <p class="text-sm text-wood-text dark:text-wood-lighter">
+        {{ "common.confirm" | translate }} {{ "common.exit" | translate }}
+        {{ "home.title" | translate }}？
+      </p>
+    </div>
+    <div class="mt-6 flex justify-end gap-3">
+      <button
+        type="button"
+        appAudioClick
+        (click)="showExit.set(false)"
+        class="rounded-xl border border-wood-border bg-wood-lighter px-4 py-2 text-sm text-wood-text shadow-sm hover:bg-wood-lighter/80 focus:outline-none focus:ring-2 focus:ring-wood-dark focus:ring-offset-0 dark:border-dark-wood-border dark:bg-dark-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood-light/80"
+        data-bs-dismiss="modal"
+      >
+        {{ "common.cancel" | translate }}
+      </button>
+      <button
+        type="button"
+        class="rounded-xl border border-wood-dark bg-wood-main px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-wood-main/90 focus:outline-none focus:ring-2 focus:ring-wood-dark focus:ring-offset-0 dark:border-dark-wood-darker dark:bg-wood-dark dark:hover:bg-wood-dark/90"
+        appAudioClick
+        (click)="exitGame()"
+      >
+        {{ "common.exit" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

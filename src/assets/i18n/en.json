@@ -14,7 +14,8 @@
     "steps": "Moves",
     "completed": "Done",
     "inProgress": "In Progress",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "exit": "Exit"
   },
   "home": {
     "title": "Three Kingdoms Puzzle",

@@ -1289,6 +1289,11 @@
   resolved "https://registry.npmjs.org/@capacitor/keyboard/-/keyboard-7.0.1.tgz"
   integrity sha512-Gi064vOARMac+x9/DmEFeywN9oAETMf3OYsMuYm9gA8SvdsDJ3QJqMoFnSEIORYXe21Jzt2SIEdLlpT65P/b2g==
 
+"@capacitor/screen-orientation@^7.0.2":
+  version "7.0.2"
+  resolved "https://registry.yarnpkg.com/@capacitor/screen-orientation/-/screen-orientation-7.0.2.tgz#4206de5b708ace5d6e54f3e7fdb7fc08085e5c3d"
+  integrity sha512-73+ZeD0eZYJjTL/gcSCBuqmlCdO3LqIMcHgS21olrQE5MAmOodmmDwPV523OJbs8T0Ye3FXK7TSsq0BCZ3EQdQ==
+
 "@capacitor/status-bar@7.0.1":
   version "7.0.1"
   resolved "https://registry.npmjs.org/@capacitor/status-bar/-/status-bar-7.0.1.tgz"

@@ -349,7 +349,7 @@ export class GameStorageService {
       isDarkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
       smoothDragMode: true,
       soundEffectsEnabled: true,
-      backgroundMusicEnabled: false, // 默认关闭背景音乐
+      backgroundMusicEnabled: true, // 默认开启背景音乐
       vibrationEnabled: true,
       tutorialCompleted: false
     };

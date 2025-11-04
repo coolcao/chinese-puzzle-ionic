@@ -113,6 +113,7 @@ export class HomeComponent implements OnInit {
   async toggleBackgroundMusic() {
     this.audioService.playClickSound();
     this.store.updateSetting('backgroundMusicEnabled', !this.settings().backgroundMusicEnabled);
+    this.audioService.updateBackgroundMusicStatus();
     await this.saveSettings();
   }
 

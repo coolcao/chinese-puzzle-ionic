@@ -22,7 +22,7 @@ export class ChinesePuzzleStore {
     isDarkMode: false,
     smoothDragMode: true,
     soundEffectsEnabled: true,
-    backgroundMusicEnabled: false,
+    backgroundMusicEnabled: true, // 默认开启背景音乐
     vibrationEnabled: true,
     tutorialCompleted: false
   });

@@ -6,6 +6,7 @@ import { App, BackButtonListenerEvent } from '@capacitor/app';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { ChinesePuzzleStore } from 'src/app/chinese-puzzle/chinese-puzzle.store';
 import { GameManagementService } from 'src/app/chinese-puzzle/services/game-management.service';
+import { AudioService } from 'src/app/chinese-puzzle/services/audio.service';
 import { AppStore } from './app.store';
 
 @Component({
@@ -18,6 +19,7 @@ export class AppComponent implements OnInit {
   private readonly appStore = inject(AppStore);
   private readonly gameManagement = inject(GameManagementService);
   private readonly store = inject(ChinesePuzzleStore);
+  private readonly audioService = inject(AudioService);
   private readonly location = inject(Location);
 
   showExit = signal(false);
@@ -31,6 +33,9 @@ export class AppComponent implements OnInit {
     this.appStore.setPlatform(platform);
 
     await this.gameManagement.loadSettings();
+
+    // 初始化背景音乐
+    this.audioService.updateBackgroundMusicStatus();
 
     if (platform !== 'web') {
       this.lockPortrait();
@@ -108,6 +113,9 @@ export class AppComponent implements OnInit {
         this.updateStatusBarColor(false);
         document.documentElement.classList.remove('dark');
       }
+      
+      // 监听背景音乐设置变化
+      this.audioService.updateBackgroundMusicStatus();
     });
   }
 }

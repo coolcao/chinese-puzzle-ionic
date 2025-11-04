@@ -16,6 +16,12 @@ export class AudioService {
   // 音效对象存储
   private soundEffects: Map<string, Howl> = new Map();
 
+  // 背景音乐对象
+  private backgroundMusic: Howl | null = null;
+  
+  // 背景音乐加载状态
+  private isBackgroundMusicLoaded = false;
+
   // 音效文件配置
   private readonly soundConfig = {
     clicked: 'assets/audios/clicked.mp3',
@@ -27,6 +33,7 @@ export class AudioService {
 
   constructor() {
     this.initializeSounds();
+    this.initializeBackgroundMusic();
   }
 
   /**
@@ -182,5 +189,113 @@ export class AudioService {
    */
   playWoodSound(): void {
     this.playSound('wood', 0.6);
+  }
+
+  /**
+   * 初始化背景音乐
+   */
+  private initializeBackgroundMusic(): void {
+    this.backgroundMusic = new Howl({
+      src: ['assets/audios/bg.mp3'],
+      loop: true,
+      volume: 0.3, // 设置较小的音量
+      preload: true,
+      onload: () => {
+        this.isBackgroundMusicLoaded = true;
+        // 背景音乐加载完成后，检查当前设置是否需要播放
+        if (this.store.settings().backgroundMusicEnabled && !this.backgroundMusic?.playing()) {
+          this.backgroundMusic?.play();
+        }
+      },
+      onloaderror: (id, error) => {
+        console.warn('背景音乐加载失败:', error);
+        this.isBackgroundMusicLoaded = false;
+      }
+    });
+  }
+
+  /**
+   * 播放背景音乐
+   */
+  playBackgroundMusic(): void {
+    if (!this.store.settings().backgroundMusicEnabled) {
+      return;
+    }
+
+    // 确保背景音乐已加载
+    if (!this.isBackgroundMusicLoaded) {
+      console.log('背景音乐尚未加载完成，等待加载...');
+      return;
+    }
+
+    if (this.backgroundMusic && !this.backgroundMusic.playing()) {
+      this.backgroundMusic.play();
+    }
+  }
+
+  /**
+   * 停止背景音乐
+   */
+  stopBackgroundMusic(): void {
+    if (this.backgroundMusic && this.backgroundMusic.playing()) {
+      this.backgroundMusic.stop();
+    }
+  }
+
+  /**
+   * 暂停背景音乐
+   */
+  pauseBackgroundMusic(): void {
+    if (this.backgroundMusic && this.backgroundMusic.playing()) {
+      this.backgroundMusic.pause();
+    }
+  }
+
+  /**
+   * 恢复背景音乐
+   */
+  resumeBackgroundMusic(): void {
+    if (this.store.settings().backgroundMusicEnabled && this.backgroundMusic && this.isBackgroundMusicLoaded) {
+      this.backgroundMusic.play();
+    }
+  }
+
+  /**
+   * 设置背景音乐音量
+   * @param volume 音量 (0-1)
+   */
+  setBackgroundMusicVolume(volume: number): void {
+    if (this.backgroundMusic) {
+      this.backgroundMusic.volume(volume);
+    }
+  }
+
+  /**
+   * 根据设置状态更新背景音乐
+   */
+  updateBackgroundMusicStatus(): void {
+    if (this.store.settings().backgroundMusicEnabled) {
+      // 如果背景音乐已加载且未在播放，则播放
+      if (this.isBackgroundMusicLoaded && this.backgroundMusic && !this.backgroundMusic.playing()) {
+        this.backgroundMusic.play();
+      }
+      // 如果未加载，则等待加载完成后自动播放（由onload回调处理）
+    } else {
+      this.stopBackgroundMusic();
+    }
+  }
+
+  /**
+   * 检查背景音乐是否正在播放
+   */
+  isBackgroundMusicPlaying(): boolean {
+    return this.backgroundMusic && this.isBackgroundMusicLoaded ? this.backgroundMusic.playing() : false;
+  }
+
+  /**
+   * 检查背景音乐是否已加载
+   */
+  isBackgroundMusicLoadedStatus(): boolean {
+    return this.isBackgroundMusicLoaded;
   }
 }

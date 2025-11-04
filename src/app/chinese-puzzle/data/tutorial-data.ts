@@ -119,6 +119,7 @@ export const tutorialSteps: TutorialStep[] = [
 export const tutorialLevel: Level = {
   id: 'tutorial-level',
   name: 'Tutorial Level',
+  nameEn: 'Tutorial Level',
   difficulty: 'tutorial',
   minSteps: 3,
   pieces: tutorialPieces,

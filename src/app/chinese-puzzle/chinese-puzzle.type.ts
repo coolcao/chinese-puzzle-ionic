@@ -23,7 +23,7 @@ export enum Direction {
 export interface Level {
   id: string;
   name: string;
-  nameEn?: string; // 英文名称
+  nameEn: string; // 英文名称
   difficulty: string;
   minSteps: number;
   pieces: Piece[];

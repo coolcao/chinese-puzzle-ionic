@@ -48,7 +48,11 @@
                 <h3
                   class="text-lg font-bold text-stone-800 dark:text-wood-light"
                 >
-                  {{ level.name }}
+                  @if (currentLanguage === "zh") {
+                    {{ level.name }}
+                  } @else {
+                    {{ level.nameEn }}
+                  }
                 </h3>
               </div>
 
@@ -99,7 +103,11 @@
                 <h3
                   class="text-lg font-bold text-stone-900 dark:text-wood-light"
                 >
-                  {{ level.name }}
+                  @if (currentLanguage === "zh") {
+                    {{ level.name }}
+                  } @else {
+                    {{ level.nameEn }}
+                  }
                 </h3>
               </div>
 
@@ -150,7 +158,11 @@
                 <h3
                   class="text-lg font-bold text-stone-900 dark:text-wood-light"
                 >
-                  {{ level.name }}
+                  @if (currentLanguage === "zh") {
+                    {{ level.name }}
+                  } @else {
+                    {{ level.nameEn }}
+                  }
                 </h3>
               </div>
 

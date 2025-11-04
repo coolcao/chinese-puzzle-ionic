@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { levels } from '../../data/data-set';
 import { Level } from '../../chinese-puzzle.type';
 import { GameStorageService } from '../../services/game-storage.service';
+import { LanguageService } from '../../services/language.service';
 
 interface GroupedLevels {
   easy: Level[];
@@ -17,6 +18,12 @@ interface GroupedLevels {
   styleUrls: ['./level-select.component.css']
 })
 export class LevelSelectComponent implements OnInit {
+
+  private router = inject(Router);
+  private gameStorage = inject(GameStorageService);
+  private languageService = inject(LanguageService);
+
+
   levels = levels;
   groupedLevels: GroupedLevels = {
     easy: [],
@@ -25,7 +32,10 @@ export class LevelSelectComponent implements OnInit {
   };
   resourceLoading = true;
 
-  constructor(private router: Router, private gameStorage: GameStorageService) { }
+  currentLanguage = this.languageService.getCurrentLanguage();
+
+
+  constructor() { }
 
   async ngOnInit() {
     // 先设置loading为true，确保页面一打开就显示loading
@@ -62,4 +72,5 @@ export class LevelSelectComponent implements OnInit {
   goBack() {
     this.router.navigate([''], { replaceUrl: true });
   }
+
 }

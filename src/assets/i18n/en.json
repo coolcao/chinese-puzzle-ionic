@@ -156,16 +156,16 @@
     "needImprovement": "⭐⭐"
   },
   "gameInstructions": {
-    "title": "Guide",
+    "title": "Game Guide",
     "goal": "Goal: ",
-    "operation": "Move: ",
+    "operation": "How: ",
     "tips": "Tip: ",
-    "challenge": "Goal: ",
-    "instructions": "Drag to move pieces",
-    "clearPath": "Move large pieces to clear the path",
-    "moveToExit": "Move Cao Cao to the bottom exit",
-    "minimumSteps": "Complete in as few moves as possible",
-    "description": "Huarong Road is a traditional Chinese puzzle game, famous for its countless variations and endless fun."
+    "challenge": "Challenge: ",
+    "instructions": "Drag pieces to slide them",
+    "clearPath": "Move large pieces first to clear paths",
+    "moveToExit": "Move Cao Cao (2×2 piece) to bottom exit",
+    "minimumSteps": "Complete in minimum moves",
+    "description": "Three Kingdoms Puzzle is a classic sliding block game. Move different sized pieces to help Cao Cao escape through the bottom exit. Pieces can only slide into empty spaces - no overlapping or jumping."
   },
   "settings": {
     "title": "Settings",

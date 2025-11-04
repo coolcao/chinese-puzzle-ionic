@@ -7,6 +7,7 @@ import { AudioService } from '../../services/audio.service';
 import { GameStorageService } from '../../services/game-storage.service';
 import { LanguageService } from '../../services/language.service';
 import { environment } from 'src/environments/environment';
+import { AppStore } from 'src/app/app.store';
 
 @Component({
   selector: 'app-home',
@@ -20,6 +21,7 @@ export class HomeComponent implements OnInit {
   showSettings = false;
   showProfile = false;
 
+  private appStore = inject(AppStore);
   private store = inject(ChinesePuzzleStore);
   private gameManagement = inject(GameManagementService);
   private audioService = inject(AudioService);
@@ -28,6 +30,7 @@ export class HomeComponent implements OnInit {
 
   settings = this.store.settings;
   isDarkMode = computed(() => this.settings().isDarkMode);
+  platform = this.appStore.platform;
 
   constructor(private router: Router, private translate: TranslateService) {
   }

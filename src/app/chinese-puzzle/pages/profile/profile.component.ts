@@ -120,15 +120,16 @@ export class ProfileComponent implements OnInit {
   // 格式化时间
   formatTime(seconds: number): string {
     if (seconds < 60) {
-      return `${seconds}秒`;
+      return `00:${seconds.toString().padStart(2, '0')}`;
     } else if (seconds < 3600) {
       const minutes = Math.floor(seconds / 60);
       const remainingSeconds = seconds % 60;
-      return `${minutes}分${remainingSeconds}秒`;
+      return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
     } else {
       const hours = Math.floor(seconds / 3600);
       const minutes = Math.floor((seconds % 3600) / 60);
-      return `${hours}小时${minutes}分`;
+      const remainingSeconds = seconds % 60;
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
     }
   }
 

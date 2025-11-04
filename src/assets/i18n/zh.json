@@ -161,11 +161,11 @@
     "operation": "操作：",
     "tips": "技巧：",
     "challenge": "挑战：",
-    "instructions": "拖拽方块移动棋子",
-    "clearPath": "优先移动大块棋子开路",
-    "moveToExit": "将曹操移动到底部出口",
-    "minimumSteps": "挑战最少步数完成",
-    "description": "华容道是中国民间传统智力游戏，以其变化多端、百玩不厌的特点而闻名。"
+    "instructions": "拖拽棋子进行移动",
+    "clearPath": "优先移动关羽等大棋子开路",
+    "moveToExit": "将曹操（2×2大棋子）移动到底部出口",
+    "minimumSteps": "用最少的步数完成挑战",
+    "description": "华容道是经典的三国主题滑块益智游戏。通过移动不同大小的棋子，帮助曹操从底部出口逃脱。棋子只能在空位方向滑动，不能重叠或跳跃。"
   },
   "settings": {
     "title": "设置",

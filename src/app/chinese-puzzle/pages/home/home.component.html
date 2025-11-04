@@ -342,23 +342,11 @@
             </span>
           </button>
         </div>
-        <!-- 语言设置 -->
-        <div class="flex items-center justify-between">
-          <span class="text-wood-text dark:text-wood-lighter"
-            >语言/Language</span
-          >
-          <button
-            (click)="toggleLanguage()"
-            appClickSound
-            class="rounded-lg bg-wood-light px-3 py-1 text-sm font-medium text-wood-text transition-colors hover:bg-wood dark:bg-dark-wood dark:text-wood-lighter dark:hover:bg-dark-wood-darker"
-          >
-            {{ getLanguageDisplayName() }}
-          </button>
-        </div>
-
         <!-- 背景音乐设置 -->
         <div class="flex items-center justify-between">
-          <span class="text-wood-text dark:text-wood-lighter">{{ 'settings.backgroundMusic' | translate }}</span>
+          <span class="text-wood-text dark:text-wood-lighter">{{
+            "settings.backgroundMusic" | translate
+          }}</span>
           <button
             (click)="toggleBackgroundMusic()"
             appClickSound
@@ -387,44 +375,8 @@
                   'text-wood-lighter dark:text-wood-lighter':
                     !settings().backgroundMusicEnabled,
                 }"
-                >{{ settings().backgroundMusicEnabled ? ('settings.on' | translate) : ('settings.off' | translate) }}</span
-              >
-            </span>
-          </button>
-        </div>
-        <div class="flex items-center justify-between">
-          <span class="text-wood-text dark:text-wood-lighter">{{
-            "settings.vibrationFeedback" | translate
-          }}</span>
-          <button
-            (click)="toggleVibration()"
-            appClickSound
-            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
-            [ngClass]="{
-              'bg-wood-darker dark:bg-dark-wood-darker':
-                settings().vibrationEnabled,
-              'bg-wood-light dark:bg-wood-dark': !settings().vibrationEnabled,
-            }"
-          >
-            <span
-              class="flex h-5 w-5 transform items-center justify-center rounded-full text-center text-[10px] font-bold transition-transform duration-300"
-              [ngClass]="{
-                'translate-x-6 bg-wood-text dark:bg-wood-lighter':
-                  settings().vibrationEnabled,
-                'translate-x-1 bg-wood dark:bg-wood-darker':
-                  !settings().vibrationEnabled,
-              }"
-            >
-              <span
-                class="text-xs"
-                [ngClass]="{
-                  'text-wood-light dark:text-dark-wood':
-                    settings().vibrationEnabled,
-                  'text-wood-lighter dark:text-wood-lighter':
-                    !settings().vibrationEnabled,
-                }"
                 >{{
-                  settings().vibrationEnabled
+                  settings().backgroundMusicEnabled
                     ? ("settings.on" | translate)
                     : ("settings.off" | translate)
                 }}</span
@@ -432,6 +384,64 @@
             </span>
           </button>
         </div>
+        <!-- 语言设置 -->
+        <div class="flex items-center justify-between">
+          <span class="text-wood-text dark:text-wood-lighter"
+            >语言/Language</span
+          >
+          <button
+            (click)="toggleLanguage()"
+            appClickSound
+            class="rounded-lg bg-wood-light px-3 py-1 text-sm font-medium text-wood-text transition-colors hover:bg-wood dark:bg-dark-wood dark:text-wood-lighter dark:hover:bg-dark-wood-darker"
+          >
+            {{ getLanguageDisplayName() }}
+          </button>
+        </div>
+
+        <!-- 触感反馈 -->
+        @if (platform() != "web") {
+          <div class="flex items-center justify-between">
+            <span class="text-wood-text dark:text-wood-lighter">{{
+              "settings.vibrationFeedback" | translate
+            }}</span>
+            <button
+              (click)="toggleVibration()"
+              appClickSound
+              class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300"
+              [ngClass]="{
+                'bg-wood-darker dark:bg-dark-wood-darker':
+                  settings().vibrationEnabled,
+                'bg-wood-light dark:bg-wood-dark': !settings().vibrationEnabled,
+              }"
+            >
+              <span
+                class="flex h-5 w-5 transform items-center justify-center rounded-full text-center text-[10px] font-bold transition-transform duration-300"
+                [ngClass]="{
+                  'translate-x-6 bg-wood-text dark:bg-wood-lighter':
+                    settings().vibrationEnabled,
+                  'translate-x-1 bg-wood dark:bg-wood-darker':
+                    !settings().vibrationEnabled,
+                }"
+              >
+                <span
+                  class="text-xs"
+                  [ngClass]="{
+                    'text-wood-light dark:text-dark-wood':
+                      settings().vibrationEnabled,
+                    'text-wood-lighter dark:text-wood-lighter':
+                      !settings().vibrationEnabled,
+                  }"
+                  >{{
+                    settings().vibrationEnabled
+                      ? ("settings.on" | translate)
+                      : ("settings.off" | translate)
+                  }}</span
+                >
+              </span>
+            </button>
+          </div>
+        }
+
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-2">
             <span class="text-wood-text dark:text-wood-lighter">{{

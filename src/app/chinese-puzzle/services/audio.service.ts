@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Howl, Howler } from 'howler';
 import { ChinesePuzzleStore } from '../chinese-puzzle.store';
+import { HapticService } from './haptic.service';
 
 export interface SoundEffect {
   id: string;
@@ -12,6 +13,7 @@ export interface SoundEffect {
 })
 export class AudioService {
   private store = inject(ChinesePuzzleStore);
+  private hapticService = inject(HapticService);
 
   // 音效对象存储
   private soundEffects: Map<string, Howl> = new Map();
@@ -161,6 +163,7 @@ export class AudioService {
    */
   playClickSound(): void {
     this.playSound('clicked', 0.5);
+    this.hapticService.buttonClick();
   }
 
   /**
@@ -168,6 +171,7 @@ export class AudioService {
    */
   playSuccessSound(): void {
     this.playSound('success', 0.8);
+    this.hapticService.gameSuccess();
   }
 
   /**
@@ -175,6 +179,7 @@ export class AudioService {
    */
   playFailSound(): void {
     this.playSound('lineFail', 0.6);
+    this.hapticService.gameFail();
   }
 
   /**
@@ -189,6 +194,7 @@ export class AudioService {
    */
   playWoodSound(): void {
     this.playSound('wood', 0.6);
+    this.hapticService.pieceMove();
   }
 
   /**
@@ -297,5 +303,35 @@ export class AudioService {
    */
   isBackgroundMusicLoadedStatus(): boolean {
     return this.isBackgroundMusicLoaded;
+  }
+
+  // 游戏特定的震动方法
+
+  /**
+   * 棋子移动震动
+   */
+  playPieceMoveHaptic(): void {
+    this.hapticService.pieceMove();
+  }
+
+  /**
+   * 棋子放置震动
+   */
+  playPiecePlaceHaptic(): void {
+    this.hapticService.piecePlace();
+  }
+
+  /**
+   * 关卡完成震动
+   */
+  playLevelCompleteHaptic(): void {
+    this.hapticService.levelComplete();
+  }
+
+  /**
+   * 选择震动
+   */
+  playSelectionHaptic(): void {
+    this.hapticService.selection();
   }
 }

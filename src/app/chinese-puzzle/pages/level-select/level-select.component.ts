@@ -42,7 +42,7 @@ export class LevelSelectComponent implements OnInit {
     // 为了让用户能看到loading效果，延迟显示内容
     setTimeout(() => {
       this.resourceLoading = false;
-    }, 300);
+    }, 200);
   }
 
   groupLevelsByDifficulty() {

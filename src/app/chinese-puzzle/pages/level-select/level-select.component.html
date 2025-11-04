@@ -1,4 +1,5 @@
 <div
+  *ngIf="!resourceLoading"
   class="flex h-screen flex-col bg-wood-lighter transition-colors duration-300 dark:bg-dark-wood-lighter"
 >
   <!-- 头部 -->
@@ -13,10 +14,12 @@
     class="flex-1 overflow-hidden bg-wood-light/50 dark:bg-dark-wood-dark/20"
   >
     <!-- 滚动容器 -->
-    <div class="h-full overflow-y-auto px-6 py-8">
+    <div class="h-full overflow-y-auto px-6 py-4 md:py-8">
       <!-- Easy 关卡组 -->
-      <div class="mb-8">
-        <h2 class="mb-4 text-2xl font-bold text-stone-700 dark:text-stone-300">
+      <div class="mb-4 md:mb-8">
+        <h2
+          class="mb-4 text-xl font-bold text-stone-700 dark:text-wood-light md:text-2xl"
+        >
           {{ "levels.difficulty.easy" | translate }} ({{
             groupedLevels.easy.length
           }})
@@ -28,41 +31,35 @@
             *ngFor="let level of groupedLevels.easy; let i = index"
             (click)="selectLevel(level.id)"
             appClickSound
-                        class="transform cursor-pointer overflow-hidden rounded-2xl border-2 shadow-lg transition duration-300 hover:translate-y-[-2px] hover:shadow-xl active:scale-95
-                        border-wood-easy-border bg-wood-easy-bg hover:border-wood-easy-hover-border hover:bg-wood-easy-hover-bg"
-                      >
-                        <div class="p-4">
-                          <div class="mb-3 flex items-start justify-between">
-                            <h3
-                              class="text-lg font-bold text-stone-800 dark:text-stone-100"
-                            >
-                              {{ level.name }}
-                            </h3>
-                            <span
-                              class="rounded-full px-2 py-1 text-xs font-medium text-stone-700 dark:text-stone-200 bg-wood-easy-span-bg"
-                            >{{ i + 1 }}</span
-                            >              </div>
-
-              <!-- 关卡预览 -->
-              <div class="flex h-32 items-center justify-center">
-                <app-level-preview
-                  [level]="level"
-                  size="medium"
-                ></app-level-preview>
+            class="transform cursor-pointer overflow-hidden rounded-2xl border-2 border-wood-border bg-wood-lighter shadow-lg transition duration-300 hover:translate-y-[-2px] hover:border-dark-wood hover:bg-dark-wood hover:shadow-xl active:scale-95 dark:border-dark-wood-border dark:bg-dark-wood-dark"
+          >
+            <div class="relative p-3">
+              <!-- 难度标签 - 右上角 -->
+              <div class="absolute right-2 top-2">
+                <span
+                  class="rounded-full border border-green-300 bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:border-green-700 dark:bg-green-900 dark:text-green-200"
+                >
+                  {{ "levels.difficulty.easy" | translate }}
+                </span>
               </div>
 
-              <!-- 关卡信息 -->
-              <div class="mt-3 flex items-center justify-between">
-                <span
-                  class="text-xs font-medium text-stone-600/90 dark:text-stone-400/90"
-                  >{{ "common.steps" | translate }}:
-                  {{ level.minSteps || "?" }}</span
+              <!-- 关卡名称 - 居中显示 -->
+              <div class="mb-0.5 text-center">
+                <h3
+                  class="text-lg font-bold text-stone-800 dark:text-wood-light"
                 >
-                <span
-                  class="text-xs font-medium text-stone-600/90 dark:text-stone-400/90"
-                  >{{ "common.pieces" | translate }}:
-                  {{ level.pieces.length }}</span
-                >
+                  {{ level.name }}
+                </h3>
+              </div>
+
+              <!-- 关卡预览 -->
+              <div
+                class="flex min-h-[180px] flex-1 items-center justify-center"
+              >
+                <app-level-preview
+                  [level]="level"
+                  size="large"
+                ></app-level-preview>
               </div>
             </div>
           </div>
@@ -70,8 +67,10 @@
       </div>
 
       <!-- Medium 关卡组 -->
-      <div class="mb-8">
-        <h2 class="mb-4 text-2xl font-bold text-stone-700 dark:text-stone-300">
+      <div class="mb-4 md:mb-8">
+        <h2
+          class="mb-4 text-xl font-bold text-stone-700 dark:text-wood-light md:text-2xl"
+        >
           {{ "levels.difficulty.medium" | translate }} ({{
             groupedLevels.medium.length
           }})
@@ -83,42 +82,35 @@
             *ngFor="let level of groupedLevels.medium; let i = index"
             (click)="selectLevel(level.id)"
             appClickSound
-            class="transform cursor-pointer overflow-hidden rounded-2xl border-2 shadow-lg transition duration-300 hover:translate-y-[-2px] hover:shadow-xl active:scale-95
-            border-wood-medium-border bg-wood-medium-bg hover:border-wood-medium-hover-border hover:bg-wood-medium-hover-bg"
+            class="transform cursor-pointer overflow-hidden rounded-2xl border-2 border-wood-border bg-wood-lighter shadow-lg transition duration-300 hover:translate-y-[-2px] hover:border-dark-wood hover:bg-dark-wood hover:shadow-xl active:scale-95 dark:border-dark-wood-border dark:bg-dark-wood-dark"
           >
-            <div class="p-4">
-              <div class="mb-3 flex items-start justify-between">
+            <div class="relative p-3">
+              <!-- 难度标签 - 右上角 -->
+              <div class="absolute right-2 top-2">
+                <span
+                  class="rounded-full border border-yellow-300 bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200"
+                >
+                  {{ "levels.difficulty.medium" | translate }}
+                </span>
+              </div>
+
+              <!-- 关卡名称 - 居中显示 -->
+              <div class="mb-0.5 text-center">
                 <h3
-                  class="text-lg font-bold text-stone-900 dark:text-stone-100"
+                  class="text-lg font-bold text-stone-900 dark:text-wood-light"
                 >
                   {{ level.name }}
                 </h3>
-                <span
-                  class="rounded-full px-2 py-1 text-xs font-medium text-stone-800 dark:text-stone-200 bg-wood-medium-span-bg"
-                >{{ i + 1 }}</span
-                >
               </div>
 
               <!-- 关卡预览 -->
-              <div class="flex h-32 items-center justify-center">
+              <div
+                class="flex min-h-[180px] flex-1 items-center justify-center"
+              >
                 <app-level-preview
                   [level]="level"
-                  size="medium"
+                  size="large"
                 ></app-level-preview>
-              </div>
-
-              <!-- 关卡信息 -->
-              <div class="mt-3 flex items-center justify-between">
-                <span
-                  class="text-xs font-medium text-stone-700 dark:text-stone-300"
-                  >{{ "common.steps" | translate }}:
-                  {{ level.minSteps || "?" }}</span
-                >
-                <span
-                  class="text-xs font-medium text-stone-700 dark:text-stone-300"
-                  >{{ "common.pieces" | translate }}:
-                  {{ level.pieces.length }}</span
-                >
               </div>
             </div>
           </div>
@@ -126,8 +118,10 @@
       </div>
 
       <!-- Hard 关卡组 -->
-      <div class="mb-8">
-        <h2 class="mb-4 text-2xl font-bold text-stone-700 dark:text-stone-300">
+      <div class="mb-4 md:mb-8">
+        <h2
+          class="mb-4 text-xl font-bold text-stone-700 dark:text-wood-light md:text-2xl"
+        >
           {{ "levels.difficulty.hard" | translate }} ({{
             groupedLevels.hard.length
           }})
@@ -139,42 +133,35 @@
             *ngFor="let level of groupedLevels.hard; let i = index"
             (click)="selectLevel(level.id)"
             appClickSound
-            class="transform cursor-pointer overflow-hidden rounded-2xl border-2 shadow-lg transition duration-300 hover:translate-y-[-2px] hover:shadow-xl active:scale-95
-            border-wood-hard-border bg-wood-hard-bg hover:border-wood-hard-hover-border hover:bg-wood-hard-hover-bg"
+            class="transform cursor-pointer overflow-hidden rounded-2xl border-2 border-wood-border bg-wood-lighter shadow-lg transition duration-300 hover:translate-y-[-2px] hover:border-dark-wood hover:bg-dark-wood hover:shadow-xl active:scale-95 dark:border-dark-wood-border dark:bg-dark-wood-dark"
           >
-            <div class="p-4">
-              <div class="mb-3 flex items-start justify-between">
+            <div class="relative p-3">
+              <!-- 难度标签 - 右上角 -->
+              <div class="absolute right-2 top-2">
+                <span
+                  class="rounded-full border border-red-300 bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:border-red-700 dark:bg-red-900 dark:text-red-200"
+                >
+                  {{ "levels.difficulty.hard" | translate }}
+                </span>
+              </div>
+
+              <!-- 关卡名称 - 居中显示 -->
+              <div class="mb-0.5 text-center">
                 <h3
-                  class="text-lg font-bold text-stone-900 dark:text-stone-100"
+                  class="text-lg font-bold text-stone-900 dark:text-wood-light"
                 >
                   {{ level.name }}
                 </h3>
-                <span
-                  class="rounded-full px-2 py-1 text-xs font-medium text-stone-900 dark:text-stone-100 bg-wood-hard-span-bg"
-                >{{ i + 1 }}</span
-                >
               </div>
 
               <!-- 关卡预览 -->
-              <div class="flex h-32 items-center justify-center">
+              <div
+                class="flex min-h-[180px] flex-1 items-center justify-center"
+              >
                 <app-level-preview
                   [level]="level"
-                  size="medium"
+                  size="large"
                 ></app-level-preview>
-              </div>
-
-              <!-- 关卡信息 -->
-              <div class="mt-3 flex items-center justify-between">
-                <span
-                  class="text-xs font-medium text-stone-800 dark:text-stone-200"
-                  >{{ "common.steps" | translate }}:
-                  {{ level.minSteps || "?" }}</span
-                >
-                <span
-                  class="text-xs font-medium text-stone-800 dark:text-stone-200"
-                  >{{ "common.pieces" | translate }}:
-                  {{ level.pieces.length }}</span
-                >
               </div>
             </div>
           </div>
@@ -184,9 +171,18 @@
   </main>
 
   <!-- 底部提示 -->
-  <footer
+  <!-- <footer
     class="flex-shrink-0 border-t border-wood-border bg-wood-light px-6 py-4 text-center text-sm text-wood-text dark:border-dark-wood-border dark:bg-dark-wood-dark dark:text-wood-lighter"
   >
     <p>{{ "levelSelectPage.selectHint" | translate }}</p>
-  </footer>
+  </footer> -->
+</div>
+
+<div
+  *ngIf="resourceLoading"
+  class="flex h-full min-h-screen w-full flex-col items-center justify-center bg-wood-lighter dark:bg-dark-wood-bg"
+>
+  <div class="text-2xl text-wood-text dark:text-wood-lighter">
+    <div class="loader"></div>
+  </div>
 </div>

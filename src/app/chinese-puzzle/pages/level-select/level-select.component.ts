@@ -14,6 +14,7 @@ interface GroupedLevels {
   selector: 'app-level-select',
   standalone: false,
   templateUrl: './level-select.component.html',
+  styleUrls: ['./level-select.component.css']
 })
 export class LevelSelectComponent implements OnInit {
   levels = levels;
@@ -22,15 +23,26 @@ export class LevelSelectComponent implements OnInit {
     medium: [],
     hard: []
   };
+  resourceLoading = true;
 
   constructor(private router: Router, private gameStorage: GameStorageService) { }
 
   async ngOnInit() {
+    // 先设置loading为true，确保页面一打开就显示loading
+    this.resourceLoading = true;
+
     if (!(await this.gameStorage.isTutorialCompleted())) {
       this.router.navigate([''], { replaceUrl: true });
       return;
     }
+
+    // 立即执行分组逻辑，然后显示loading效果
     this.groupLevelsByDifficulty();
+
+    // 为了让用户能看到loading效果，延迟显示内容
+    setTimeout(() => {
+      this.resourceLoading = false;
+    }, 300);
   }
 
   groupLevelsByDifficulty() {

@@ -275,18 +275,18 @@
     ></app-game-header>
 
     <div
-      class="tutorial-content-mobile min-h-32 w-full bg-wood-light/70 dark:bg-dark-wood-darker/70 sm:min-h-40 md:min-h-48 lg:min-h-52"
+      class="tutorial-content-mobile w-full bg-wood-light/70 dark:bg-dark-wood-darker/70"
     >
       <!-- 教程提示栏 - 替换状态栏位置 -->
       <div
         *ngIf="currentTutorialData"
-        class="border-b-2 border-wood-border bg-wood-light px-4 py-2 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-dark-wood-dark"
+        class="border-b-2 border-wood-border bg-wood-light px-4 py-1.5 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-dark-wood-dark"
       >
-        <div class="mb-2 flex items-center justify-between">
+        <div class="mb-1 flex items-center justify-between">
           <!-- 步骤和标题 -->
           <div class="flex-1">
             <h4
-              class="text-base font-bold text-wood-text dark:text-wood-lighter"
+              class="text-sm font-bold text-wood-text dark:text-wood-lighter"
             >
               {{ currentTutorialData.title }}
             </h4>
@@ -303,12 +303,12 @@
         </div>
 
         <!-- 描述 -->
-        <p class="mb-2 text-sm text-wood-text dark:text-wood">
+        <p class="mb-1 text-xs text-wood-text dark:text-wood">
           {{ currentTutorialData.description }}
         </p>
 
         <!-- 进度条 -->
-        <div class="mb-2 flex space-x-1">
+        <div class="mb-1 flex space-x-1">
           <div
             *ngFor="let step of tutorialSteps; let i = index"
             class="h-1 flex-1 rounded-full transition-colors"
@@ -359,7 +359,7 @@
         <!-- 移动端教程错误提示 - 放在教程提示栏下方 -->
         <div
           *ngIf="showTutorialError"
-          class="mt-3 rounded-lg border-2 border-red-500 bg-red-50 px-3 py-2 shadow-lg dark:border-red-400 dark:bg-red-900/80"
+          class="mt-2 rounded-lg border-2 border-red-500 bg-red-50 px-3 py-2 shadow-lg dark:border-red-400 dark:bg-red-900/80"
         >
           <div class="flex items-center space-x-2">
             <div class="flex-shrink-0">

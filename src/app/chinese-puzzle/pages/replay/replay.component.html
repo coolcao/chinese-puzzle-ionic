@@ -1,86 +1,270 @@
 <div
-  class="flex h-screen flex-col bg-wood-lighter transition-colors duration-300 dark:bg-dark-wood-lighter"
+  class="h-screen w-screen select-none overflow-hidden bg-wood-lighter transition-colors duration-300 dark:bg-dark-wood-lighter"
 >
-  <app-game-header
-    [titleTranslationKey]="'replay.title'"
-    [showBackButton]="true"
-    (backClick)="goBack()"
-  ></app-game-header>
+  <!-- PC大屏左右布局 -->
+  <div
+    class="hidden h-full w-full flex-col bg-wood-light/50 dark:bg-dark-wood-dark/20 lg:flex"
+  >
+    <!-- 顶部header -->
+    <app-game-header
+      [titleTranslationKey]="'replay.title'"
+      [showBackButton]="true"
+      (backClick)="goBack()"
+    ></app-game-header>
 
-  <!-- 关卡信息区域 - 响应式布局 -->
-  <div *ngIf="currentLevel" class="bg-wood-light/80 dark:bg-dark-wood-dark/80 border-b border-wood-border dark:border-dark-wood-border px-4 py-2 sm:px-6 sm:py-3">
-    <div class="text-center">
-      <!-- 在小屏幕上使用更小的字体和间距 -->
-      <h2 class="text-base sm:text-lg font-bold text-wood-text dark:text-wood-light leading-tight">
-        {{ currentLanguage === 'zh' ? currentLevel.name : currentLevel.nameEn }}
-      </h2>
-      <!-- 在小屏幕上改为垂直布局或更紧凑的水平布局 -->
-      <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-1 text-xs sm:text-sm text-wood-text/70 dark:text-wood-light/70">
-        <span>{{ 'levels.difficulty.' + currentLevel.difficulty | translate }}</span>
-        <span class="hidden sm:inline">•</span>
-        <span>{{ 'replay.steps' | translate }}: {{ historyRecord?.steps || 0 }}</span>
-        <span class="hidden sm:inline">•</span>
-        <span>{{ 'replay.time' | translate }}: {{ formattedTotalDuration }}</span>
+    <!-- 下面部分左右布局 -->
+    <div class="mx-auto flex max-w-6xl flex-1">
+      <!-- 左侧棋盘 -->
+      <div class="flex flex-1 items-center justify-center p-6">
+        <div class="flex max-w-2xl items-center justify-center">
+          <canvas
+            #replayCanvasPC
+            class="replay-canvas rounded-md border-4 border-b-0 border-solid border-wood-darker"
+          ></canvas>
+        </div>
+      </div>
+
+      <!-- 右侧信息卡片 -->
+      <div class="flex h-full w-full items-center justify-center">
+        <div
+          class="m-6 flex w-80 flex-col justify-between rounded-lg border-2 border-wood-border bg-wood-light shadow-lg dark:bg-dark-wood-lighter dark:text-wood"
+          [style.height.px]="
+            fabricGameService.boardHeight * fabricGameService.cellSize
+          "
+        >
+          <div class="rounded-t-lg border-b border-wood-border p-6">
+            <h2
+              class="mb-4 text-xl font-bold text-wood-text dark:text-wood-lighter"
+            >
+              {{ "replay.title" | translate }}
+            </h2>
+
+            <!-- 当前关卡信息 -->
+            <div *ngIf="currentLevel" class="mb-6">
+              <label
+                class="mb-2 block text-sm font-medium text-wood-text dark:text-wood-lighter"
+              >
+                {{ "gameBoard.currentLevel" | translate }}
+              </label>
+              <div
+                class="w-full rounded-lg border border-wood-border bg-wood/50 px-4 py-2 text-wood-text shadow-inner dark:bg-wood-dark/50 dark:text-wood-lighter"
+              >
+                <div class="font-semibold">
+                  {{
+                    currentLanguage === "zh"
+                      ? currentLevel.name
+                      : currentLevel.nameEn
+                  }}
+                </div>
+                <div
+                  class="mt-1 text-xs text-wood-text/70 dark:text-wood-lighter/70"
+                >
+                  {{ "common.difficulty" | translate }}：{{
+                    "levels.difficulty." + currentLevel.difficulty | translate
+                  }}
+                </div>
+              </div>
+            </div>
+
+            <!-- 回放状态 -->
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-wood-text dark:text-wood-lighter">{{
+                  "replay.steps" | translate
+                }}</span>
+                <div
+                  class="rounded-lg bg-wood/50 px-4 py-2 text-wood-text dark:text-wood-lighter"
+                >
+                  {{ historyRecord?.steps || 0 }}
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-wood-text dark:text-wood-lighter">{{
+                  "replay.totalSteps" | translate
+                }}</span>
+                <div
+                  class="rounded-lg bg-wood/50 px-4 py-2 font-mono text-wood-text dark:text-wood-lighter"
+                >
+                  {{ totalSteps }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 控制面板 -->
+          <div class="flex flex-col justify-end p-6">
+            <h3
+              class="mb-4 text-lg font-semibold text-wood-text dark:text-wood-lighter"
+            >
+              {{ "replay.controls" | translate }}
+            </h3>
+
+            <!-- 内容区域，保持空间 -->
+            <div class="flex-1"></div>
+
+            <!-- 底部控制区 -->
+            <div class="space-y-4">
+              <!-- 进度条 -->
+              <div class="space-y-2">
+                <div
+                  class="flex items-center justify-between text-sm text-wood-text dark:text-wood-lighter"
+                >
+                  <span>{{ translate.instant("replay.currentStep") }}: {{ currentStep }}</span>
+                  <span>{{ translate.instant("replay.totalSteps") }}: {{ totalSteps }}</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  [max]="totalSteps"
+                  [(ngModel)]="currentStep"
+                  (input)="onSliderChange($event)"
+                  class="w-full"
+                />
+              </div>
+
+              <!-- 播放控制按钮 -->
+              <div class="flex justify-center space-x-4">
+                <button
+                  (click)="togglePlayPause()"
+                  class="hover:bg-wood-main-hover h-16 w-16 rounded-full bg-wood-main p-3 text-white shadow-lg"
+                  [disabled]="isCountingDown"
+                >
+                  <ion-icon
+                    [name]="isPlaying ? 'pause' : 'play'"
+                    class="text-2xl"
+                  ></ion-icon>
+                </button>
+                <button
+                  (click)="restartReplay()"
+                  class="hover:bg-wood-main-hover h-16 w-16 rounded-full bg-wood-main p-3 text-white shadow-lg"
+                >
+                  <ion-icon name="refresh" class="text-2xl"></ion-icon>
+                </button>
+                <button
+                  (click)="changePlaybackSpeed()"
+                  class="hover:bg-wood-main-hover h-16 w-16 rounded-full bg-wood-main p-3 text-white shadow-lg"
+                >
+                  <span class="text-base font-bold">{{ getSpeedText() }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <main
-    class="h-full w-full flex-1 overflow-hidden bg-wood-light/50 dark:bg-dark-wood-dark/20"
-  >
-    <!-- 响应式padding：小屏幕使用更小的间距 -->
-    <div class="flex h-full w-full flex-1 items-center justify-center p-2 sm:p-4 md:p-6">
-      <div class="flex max-w-2xl items-center justify-center">
-        <canvas
-          #replayCanvas
-          class="rounded-md border-4 border-b-0 border-solid border-wood-darker max-h-full max-w-full"
-        ></canvas>
-      </div>
-    </div>
-  </main>
+  <!-- 移动端布局 -->
+  <div class="flex h-full flex-col lg:hidden">
+    <app-game-header
+      [titleTranslationKey]="'replay.title'"
+      [showBackButton]="true"
+      (backClick)="goBack()"
+    ></app-game-header>
 
-  <footer
-    class="flex-shrink-0 border-t border-wood-border bg-wood-light px-2 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 dark:border-dark-wood-border dark:bg-dark-wood-dark"
-  >
-    <!-- 响应式控制面板布局 -->
-    <div class="flex items-center justify-center space-x-2 sm:space-x-3 md:space-x-4">
-      <button
-        (click)="togglePlayPause()"
-        class="rounded-full bg-wood-main p-2 sm:p-3 text-white shadow-lg flex-shrink-0"
-      >
-        <ion-icon
-          [name]="isPlaying ? 'pause' : 'play'"
-          class="text-lg sm:text-xl md:text-2xl"
-        ></ion-icon>
-      </button>
-      <div class="flex w-full items-center space-x-1 sm:space-x-2 min-w-0">
-        <span class="text-xs sm:text-sm text-wood-text dark:text-dark-wood-text whitespace-nowrap">{{
-          formattedTime
-        }}</span>
-        <input
-          type="range"
-          min="0"
-          [max]="totalDuration"
-          [(ngModel)]="currentTime"
-          (input)="onSliderChange($event)"
-          class="w-full min-w-0"
-        />
-        <span class="text-xs sm:text-sm text-wood-text dark:text-dark-wood-text whitespace-nowrap">{{
-          formattedTotalDuration
-        }}</span>
+    <!-- 关卡信息区域 - 移动端 -->
+    <div
+      *ngIf="currentLevel"
+      class="border-b border-wood-border bg-wood-light/80 px-4 py-2 dark:border-dark-wood-border dark:bg-dark-wood-dark/80"
+    >
+      <div class="text-center">
+        <h2
+          class="text-base font-bold leading-tight text-wood-text dark:text-wood-light"
+        >
+          {{
+            currentLanguage === "zh" ? currentLevel.name : currentLevel.nameEn
+          }}
+        </h2>
+        <div
+          class="mt-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-wood-text/70 dark:text-wood-light/70"
+        >
+          <span>{{
+            "levels.difficulty." + currentLevel.difficulty | translate
+          }}</span>
+          <span class="hidden sm:inline">•</span>
+          <span
+            >{{ "replay.steps" | translate }}:
+            {{ historyRecord?.steps || 0 }}</span
+          >
+          <span class="hidden sm:inline">•</span>
+          <span
+            >{{ "replay.totalSteps" | translate }}: {{ totalSteps }}</span
+          >
+        </div>
       </div>
-      <button
-        (click)="restartReplay()"
-        class="rounded-full bg-wood-main p-2 sm:p-3 text-white shadow-lg flex-shrink-0"
-      >
-        <ion-icon name="refresh" class="text-lg sm:text-xl md:text-2xl"></ion-icon>
-      </button>
-      <button
-        (click)="changePlaybackSpeed()"
-        class="rounded-full bg-wood-main p-2 sm:p-3 text-white shadow-lg flex-shrink-0"
-      >
-        <span class="text-xs sm:text-sm font-bold">{{ getSpeedText() }}</span>
-      </button>
     </div>
-  </footer>
+
+    <!-- 棋盘区域 -->
+    <div
+      class="flex flex-1 flex-col items-center justify-center bg-wood-light/50 px-4 dark:bg-dark-wood-darker/50"
+    >
+      <canvas
+        #replayCanvasMobile
+        class="h-auto w-full max-w-md rounded-md border-4 border-b-0 border-solid border-wood-darker"
+      ></canvas>
+    </div>
+
+    <!-- 底部控制面板 -->
+    <footer
+      class="flex-shrink-0 border-t border-wood-border bg-wood-light px-2 py-2 dark:border-dark-wood-border dark:bg-dark-wood-dark sm:px-4 sm:py-3"
+    >
+      <div class="flex items-center justify-center space-x-2 sm:space-x-3">
+        <button
+          (click)="togglePlayPause()"
+          class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main p-2 text-white shadow-lg sm:p-3"
+          [disabled]="isCountingDown"
+        >
+          <ion-icon
+            [name]="isPlaying ? 'pause' : 'play'"
+            class="text-lg sm:text-xl"
+          ></ion-icon>
+        </button>
+        <div class="flex w-full min-w-0 items-center space-x-1 sm:space-x-2">
+          <span
+            class="whitespace-nowrap text-xs text-wood-text dark:text-dark-wood-text sm:text-sm"
+            >{{ currentStep }}</span
+          >
+          <input
+            type="range"
+            min="0"
+            [max]="totalSteps"
+            [(ngModel)]="currentStep"
+            (input)="onSliderChange($event)"
+            class="w-full min-w-0"
+          />
+          <span
+            class="whitespace-nowrap text-xs text-wood-text dark:text-dark-wood-text sm:text-sm"
+            >{{ totalSteps }}</span
+          >
+        </div>
+        <button
+          (click)="restartReplay()"
+          class="h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main p-2 text-white shadow-lg sm:p-3"
+        >
+          <ion-icon name="refresh" class="text-lg sm:text-xl"></ion-icon>
+        </button>
+        <button
+          (click)="changePlaybackSpeed()"
+          class="h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main text-white shadow-lg sm:p-3"
+        >
+          <span class="text-xs font-bold sm:text-sm">{{ getSpeedText() }}</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 倒计时覆盖层 -->
+  <div
+    *ngIf="isCountingDown"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+  >
+    <div
+      class="flex h-32 w-32 items-center justify-center rounded-full bg-black/60 shadow-2xl backdrop-blur-sm dark:bg-gray-800/90"
+    >
+      <div class="text-6xl font-bold text-wood-main dark:text-wood-light">
+        {{ countdownValue }}
+      </div>
+    </div>
+  </div>
 </div>

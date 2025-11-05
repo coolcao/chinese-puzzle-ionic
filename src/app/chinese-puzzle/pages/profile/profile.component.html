@@ -5,7 +5,8 @@
   <header
     class="border-b border-wood-border bg-wood-light dark:border-dark-wood-border dark:bg-dark-wood"
   >
-    <div class="flex items-center justify-between px-6 py-4">
+    <div class="mx-auto max-w-6xl">
+      <div class="flex items-center justify-between px-6 py-4">
       <!-- 返回按钮 -->
       <button
         (click)="goBack()"
@@ -57,12 +58,14 @@
           </svg>
         </button>
       </div>
+      </div>
     </div>
   </header>
 
   <!-- 主要内容区域 -->
   <div class="flex-1 overflow-hidden">
     <main class="h-full overflow-y-auto px-3 py-6">
+      <div class="mx-auto max-w-6xl">
       <!-- 加载状态 -->
       <div *ngIf="isLoading()" class="flex items-center justify-center py-20">
         <div class="text-center">
@@ -305,6 +308,7 @@
             <p>{{ "myProfile.noHistory" | translate }}</p>
           </div>
         </div>
+      </div>
       </div>
     </main>
   </div>

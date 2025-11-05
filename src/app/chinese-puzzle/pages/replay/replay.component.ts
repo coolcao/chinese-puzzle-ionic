@@ -1,7 +1,20 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, effect } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  effect,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameStorageService } from '../../services/game-storage.service';
-import { GameHistoryRecord, Level, Piece, GameStep } from '../../chinese-puzzle.type';
+import {
+  GameHistoryRecord,
+  Level,
+  Piece,
+  GameStep,
+} from '../../chinese-puzzle.type';
 import { FabricGameService } from '../game-board-fabric/services/fabric-game.service';
 import { FabricDrawingService } from '../game-board-fabric/services/fabric-drawing.service';
 import { levels } from '../../data/data-set';
@@ -10,25 +23,32 @@ import { ImageLoadingService } from '../../services/image-loading.service';
 import { ToastController } from '@ionic/angular';
 import { LanguageService } from '../../services/language.service';
 import { PieceImageService } from '../../services/piece-image.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-replay',
   templateUrl: './replay.component.html',
+  styleUrls: ['./replay.component.css'],
   standalone: false,
 })
 export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('replayCanvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('replayCanvasPC', { static: false })
+  canvasPCRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('replayCanvasMobile', { static: false })
+  canvasMobileRef!: ElementRef<HTMLCanvasElement>;
 
   historyRecord: GameHistoryRecord | null = null;
   currentLevel: Level | null = null;
   currentPieces: Piece[] = [];
   isPlaying = false;
-  currentTime = 0;
-  totalDuration = 0;
-  formattedTime = '00:00';
-  formattedTotalDuration = '00:00';
+  currentStep = 0;
+  totalSteps = 0;
   playbackSpeed = 1;
   currentStepIndex = 0;
+
+  // 倒计时相关状态
+  isCountingDown = false;
+  countdownValue = 0;
 
   historyId: string | null = null;
   private playbackTimer: Subscription | null = null;
@@ -43,12 +63,13 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private gameStorage: GameStorageService,
-    private fabricGameService: FabricGameService,
+    public fabricGameService: FabricGameService,
     private fabricDrawingService: FabricDrawingService,
     private imageLoadingService: ImageLoadingService,
     private toastController: ToastController,
     private languageService: LanguageService,
-    private pieceImageService: PieceImageService
+    private pieceImageService: PieceImageService,
+    public translate: TranslateService,
   ) {
     effect(() => {
       const cellSize = this.fabricGameService.cellSizeSignal();
@@ -80,18 +101,24 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async loadHistoryRecord() {
     const allHistory = await this.gameStorage.getGameHistory();
-    this.historyRecord = allHistory.find(record => record.id === this.historyId) || null;
+    this.historyRecord =
+      allHistory.find((record) => record.id === this.historyId) || null;
 
     if (this.historyRecord) {
       this.currentLevel = this.findLevelById(this.historyRecord.levelId);
 
       if (this.currentLevel) {
         // 使用PieceImageService更新图片路径，确保1*2和2*1棋子使用正确的图片
-        const piecesWithCorrectImages = this.pieceImageService.updatePiecesImagePaths(this.currentLevel.pieces);
-        this.currentPieces = JSON.parse(JSON.stringify(piecesWithCorrectImages));
-        
-        this.totalDuration = this.historyRecord.time;
-        this.formattedTotalDuration = this.formatTime(this.totalDuration);
+        const piecesWithCorrectImages =
+          this.pieceImageService.updatePiecesImagePaths(
+            this.currentLevel.pieces,
+          );
+        this.currentPieces = JSON.parse(
+          JSON.stringify(piecesWithCorrectImages),
+        );
+
+        this.totalSteps = this.historyRecord.gameSteps.length;
+        this.currentStep = 0;
         this.currentStepIndex = 0;
 
         await this.preLoadImages();
@@ -105,11 +132,12 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private findLevelById(levelId: string): Level | null {
-    return levels.find(level => level.id === levelId) || null;
+    return levels.find((level) => level.id === levelId) || null;
   }
 
   private initCanvas() {
-    const canvasElement = this.canvasRef?.nativeElement;
+    // 根据屏幕尺寸选择合适的canvas
+    const canvasElement = this.getCurrentCanvas();
     if (canvasElement) {
       this.fabricGameService.boardWidth = 4;
       this.fabricGameService.boardHeight = 5;
@@ -121,14 +149,42 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  private getCurrentCanvas(): HTMLCanvasElement | null {
+    const isLargeScreen = window.innerWidth >= 1024;
+    if (isLargeScreen && this.canvasPCRef?.nativeElement) {
+      return this.canvasPCRef.nativeElement;
+    } else if (!isLargeScreen && this.canvasMobileRef?.nativeElement) {
+      return this.canvasMobileRef.nativeElement;
+    }
+    return null;
+  }
+
   private initResizeObserver() {
     this.resizeObserver = new ResizeObserver(() => {
       this.handleCanvasResize();
     });
-    this.resizeObserver.observe(this.canvasRef.nativeElement.parentElement!);
+
+    // 监听两个canvas的父元素
+    if (this.canvasPCRef?.nativeElement?.parentElement) {
+      this.resizeObserver.observe(this.canvasPCRef.nativeElement.parentElement);
+    }
+    if (this.canvasMobileRef?.nativeElement?.parentElement) {
+      this.resizeObserver.observe(
+        this.canvasMobileRef.nativeElement.parentElement,
+      );
+    }
+
+    // 监听窗口大小变化以切换canvas
+    window.addEventListener('resize', () => {
+      setTimeout(() => {
+        this.initCanvas(); // 重新初始化适当的canvas
+      }, 100);
+    });
 
     if (window.matchMedia) {
-      this.darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      this.darkModeMediaQuery = window.matchMedia(
+        '(prefers-color-scheme: dark)',
+      );
       this.darkModeListener = (e: MediaQueryListEvent) => {
         this.drawBoard();
       };
@@ -148,14 +204,17 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (this.darkModeMediaQuery && this.darkModeListener) {
-      this.darkModeMediaQuery.removeEventListener('change', this.darkModeListener);
+      this.darkModeMediaQuery.removeEventListener(
+        'change',
+        this.darkModeListener,
+      );
       this.darkModeListener = null;
       this.darkModeMediaQuery = null;
     }
   }
 
   private updateCellSize() {
-    const canvasElement = this.canvasRef?.nativeElement;
+    const canvasElement = this.getCurrentCanvas();
     if (!canvasElement) {
       return;
     }
@@ -169,12 +228,49 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   togglePlayPause() {
-    this.isPlaying = !this.isPlaying;
     if (this.isPlaying) {
-      this.play();
-    } else {
+      // 如果正在播放，则暂停
       this.pause();
+    } else {
+      // 检查是否已播放完毕
+      if (this.isPlaybackCompleted()) {
+        // 如果已播放完毕，重新开始播放
+        this.restartAndPlay();
+      } else {
+        // 如果未播放或暂停中，开始倒计时
+        this.startCountdown();
+      }
     }
+  }
+
+  // 检查播放是否已完毕
+  private isPlaybackCompleted(): boolean {
+    return !!(this.historyRecord && 
+           this.currentStepIndex >= this.historyRecord.gameSteps.length);
+  }
+
+  // 重新开始播放
+  private async restartAndPlay() {
+    // 重新加载关卡数据
+    await this.restartReplay();
+    // 开始倒计时并播放
+    this.startCountdown();
+  }
+
+  startCountdown() {
+    this.isCountingDown = true;
+    this.countdownValue = 3;
+
+    const countdownTimer = interval(1000).subscribe(() => {
+      this.countdownValue--;
+
+      if (this.countdownValue <= 0) {
+        // 倒计时结束，开始播放
+        this.isCountingDown = false;
+        countdownTimer.unsubscribe();
+        this.play();
+      }
+    });
   }
 
   play() {
@@ -200,69 +296,114 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private nextFrame() {
+  private async nextFrame() {
     if (!this.historyRecord) return;
 
     if (this.currentStepIndex >= this.historyRecord.gameSteps.length) {
       this.pause();
-      this.showToast('播放完毕');
+      this.showToast(this.translate.instant('replay.completed'));
       return;
     }
 
-    const currentStep = this.historyRecord.gameSteps[this.currentStepIndex];
-    this.executeStep(currentStep);
+    const currentGameStep = this.historyRecord.gameSteps[this.currentStepIndex];
+    await this.executeStep(currentGameStep);
     this.currentStepIndex++;
-
-    this.currentTime = Math.floor(currentStep.timestamp / 1000);
-    this.formattedTime = this.formatTime(this.currentTime);
+    // 当前步数应该是已完成的步数，最大不超过总步数
+    this.currentStep = Math.min(this.currentStepIndex, this.totalSteps);
   }
 
-  private executeStep(step: GameStep) {
-    const piece = this.currentPieces.find(p => p.id === step.pieceId);
+  private async executeStep(step: GameStep) {
+    const piece = this.currentPieces.find((p) => p.id === step.pieceId);
     if (!piece) return;
 
-    piece.x = step.toPosition.x;
-    piece.y = step.toPosition.y;
+    // 检查是否真的需要移动
+    if (piece.x === step.toPosition.x && piece.y === step.toPosition.y) {
+      return;
+    }
 
-    this.drawBoard();
+    // 使用动画移动棋子
+    const animationDuration = Math.max(200, 600 / this.playbackSpeed); // 根据播放速度调整动画时长
+
+    try {
+      await this.fabricGameService.animatePieceToPosition(
+        step.pieceId,
+        step.toPosition.x,
+        step.toPosition.y,
+        animationDuration,
+      );
+
+      // 更新逻辑位置
+      piece.x = step.toPosition.x;
+      piece.y = step.toPosition.y;
+    } catch (error) {
+      // 如果动画失败，直接设置位置
+      piece.x = step.toPosition.x;
+      piece.y = step.toPosition.y;
+      this.drawBoard();
+    }
   }
 
   onSliderChange(event: any) {
-    const targetTime = parseInt(event.target.value);
-    this.seek(targetTime);
+    const targetStep = parseInt(event.target.value);
+    this.seek(targetStep);
   }
 
-  seek(targetTime?: number) {
+  async seek(targetStep?: number) {
     if (!this.historyRecord || !this.currentLevel) return;
 
-    const seekTime = targetTime !== undefined ? targetTime : this.currentTime;
+    const seekStep = targetStep !== undefined ? targetStep : this.currentStep;
 
     // 使用PieceImageService更新图片路径，确保1*2和2*1棋子使用正确的图片
-    const piecesWithCorrectImages = this.pieceImageService.updatePiecesImagePaths(this.currentLevel.pieces);
+    const piecesWithCorrectImages =
+      this.pieceImageService.updatePiecesImagePaths(this.currentLevel.pieces);
     this.currentPieces = JSON.parse(JSON.stringify(piecesWithCorrectImages));
     this.currentStepIndex = 0;
 
-    for (const step of this.historyRecord.gameSteps) {
-      const stepTime = Math.floor(step.timestamp / 1000);
-      if (stepTime <= seekTime) {
-        this.executeStep(step);
-        this.currentStepIndex++;
-      } else {
-        break;
+    // 重绘棋盘以显示初始状态
+    this.drawBoard();
+
+    // 对于seek操作，我们直接设置位置而不使用动画，以提高性能
+    for (let i = 0; i < Math.min(seekStep, this.historyRecord.gameSteps.length); i++) {
+      const step = this.historyRecord.gameSteps[i];
+      // 直接设置位置，不使用动画
+      const piece = this.currentPieces.find((p) => p.id === step.pieceId);
+      if (piece) {
+        piece.x = step.toPosition.x;
+        piece.y = step.toPosition.y;
       }
+      this.currentStepIndex++;
     }
 
-    this.currentTime = seekTime;
-    this.formattedTime = this.formatTime(this.currentTime);
+    // 重绘棋盘以反映所有变化
+    this.drawBoard();
+
+    this.currentStep = seekStep;
   }
 
-  restartReplay() {
+  async restartReplay() {
     this.pause();
-    this.seek(0);
+
+    // 重新加载关卡数据
+    if (this.currentLevel) {
+      // 使用PieceImageService更新图片路径，确保1*2和2*1棋子使用正确的图片
+      const piecesWithCorrectImages =
+        this.pieceImageService.updatePiecesImagePaths(this.currentLevel.pieces);
+      this.currentPieces = JSON.parse(JSON.stringify(piecesWithCorrectImages));
+
+      // 重新预加载图片
+      await this.preLoadImages();
+
+      // 重置播放状态
+      this.currentStepIndex = 0;
+      this.currentStep = 0;
+
+      // 重绘棋盘
+      this.drawBoard();
+    }
   }
 
   changePlaybackSpeed() {
-    const speeds = [0.5, 1, 2, 4];
+    const speeds = [1, 2, 4, 6];
     const currentIndex = speeds.indexOf(this.playbackSpeed);
     const nextIndex = (currentIndex + 1) % speeds.length;
     this.playbackSpeed = speeds[nextIndex];
@@ -281,11 +422,6 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['/profile']);
   }
 
-  formatTime(seconds: number): string {
-    const min = Math.floor(seconds / 60);
-    const sec = Math.floor(seconds % 60);
-    return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-  }
 
   private lockBoard() {
     if (this.fabricGameService.canvas) {
@@ -314,14 +450,19 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDarkMode =
+      window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches;
 
     this.fabricGameService.clearCanvas();
     this.fabricDrawingService.drawBoard(isDarkMode);
 
     if (this.currentPieces.length > 0) {
-      this.currentPieces.forEach(piece => {
-        const pieceGroup = this.fabricDrawingService.createPieceGroup(piece, isDarkMode);
+      this.currentPieces.forEach((piece) => {
+        const pieceGroup = this.fabricDrawingService.createPieceGroup(
+          piece,
+          isDarkMode,
+        );
         this.fabricGameService.addPieceObject(piece.id, pieceGroup);
         this.fabricGameService.canvas!.add(pieceGroup);
       });

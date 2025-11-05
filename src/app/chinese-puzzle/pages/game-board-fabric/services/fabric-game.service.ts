@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Canvas, Group } from 'fabric';
+import { Canvas, Group, util, FabricObject } from 'fabric';
 
 @Injectable({
   providedIn: 'root'
@@ -151,6 +151,35 @@ export class FabricGameService {
     this.canvas.renderAll();
   }
 
+
+  // 动画移动棋子到新位置
+  animatePieceToPosition(pieceId: number, newX: number, newY: number, duration: number = 300): Promise<void> {
+    return new Promise((resolve) => {
+      const pieceObject = this.pieceObjects.get(pieceId);
+      if (!pieceObject || !this.canvas) {
+        resolve();
+        return;
+      }
+
+      const targetLeft = newX * this.cellSize;
+      const targetTop = newY * this.cellSize;
+
+      // 使用 Fabric.js 的 animate 方法
+      pieceObject.animate({
+        left: targetLeft,
+        top: targetTop
+      }, {
+        duration: duration,
+        easing: util.ease.easeOutQuad,
+        onChange: () => {
+          this.canvas?.renderAll();
+        },
+        onComplete: () => {
+          resolve();
+        }
+      });
+    });
+  }
 
   // 重新渲染画布
   renderCanvas(): void {

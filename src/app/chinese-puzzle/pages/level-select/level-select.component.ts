@@ -5,6 +5,7 @@ import { LevelStateService } from '../../services/level-state.service';
 import { LanguageService } from '../../services/language.service';
 import { LevelStore } from 'src/app/chinese-puzzle/level.store';
 import { GameProgress } from '../../chinese-puzzle.type';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-level-select',
@@ -26,6 +27,11 @@ export class LevelSelectComponent implements OnInit {
   // 直接使用LevelStore的计算属性
   groupedLevelsWithUnlock = this.levelStore.groupedLevelsWithProgress;
   statistics = this.levelStore.statistics;
+
+  // 检查是否为开发模式
+  get isDebugMode(): boolean {
+    return !environment.production;
+  }
 
 
   constructor() { }

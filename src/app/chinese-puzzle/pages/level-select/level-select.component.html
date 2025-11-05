@@ -7,6 +7,7 @@
     titleTranslationKey="levelSelectPage.title"
     [showBackButton]="true"
     (backClick)="goBack()"
+    maxWidth="max-w-6xl"
   ></app-game-header>
 
   <!-- 主要内容 -->
@@ -15,6 +16,7 @@
   >
     <!-- 滚动容器 -->
     <div class="h-full overflow-y-auto px-6 py-4 md:py-8">
+      <div class="mx-auto max-w-6xl">
       <!-- Easy 关卡组 -->
       <div class="mb-4 md:mb-8">
         <h2
@@ -263,6 +265,7 @@
           </div>
         </div>
       </div>
+      </div>
     </div>
   </main>
 
@@ -283,5 +286,5 @@
   </div>
 </div>
 
-<!-- 调试面板组件 -->
-<app-debug-panel></app-debug-panel>
+<!-- 调试面板组件 - 仅在开发模式下显示 -->
+<app-debug-panel *ngIf="isDebugMode"></app-debug-panel>

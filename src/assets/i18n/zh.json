@@ -223,7 +223,11 @@
     "steps": "步数",
     "time": "用时",
     "rating": "评分",
-    "step": "步骤"
+    "step": "步骤",
+    "controls": "回放控制",
+    "completed": "播放完毕",
+    "currentStep": "当前步数",
+    "totalSteps": "总步数"
   },
   "levelSelectPage": {
     "title": "选择关卡",

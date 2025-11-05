@@ -44,6 +44,11 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   boardWidth = this.store.boardWidth();
   boardHeight = this.store.boardHeight();
 
+  // 获取当前语言
+  get currentLanguage(): string {
+    return this.translate.currentLang || 'zh';
+  }
+
   dataSetNames = this.store.dataSetNames;
   dataSetName = this.store.dataSetName;
 

@@ -17,11 +17,12 @@
           icon: 'help',
           position: 'right',
           classes:
-            'absolute right-0 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light',
+            'rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood/30 dark:bg-dark-wood-lighter dark:text-wood-light',
           onClick: toggleInstructions.bind(this),
         },
       ]"
       (backClick)="goToLevelSelect()"
+      maxWidth="max-w-6xl"
     ></app-game-header>
 
     <!-- 下面部分左右布局 -->
@@ -64,8 +65,9 @@
               >
                 <div class="font-semibold">
                   {{
-                    currentLevel()?.name ||
-                      ("gameBoard.unknownLevel" | translate)
+                    currentLevel() 
+                      ? (currentLanguage === 'zh' ? currentLevel()?.name : currentLevel()?.nameEn)
+                      : ("gameBoard.unknownLevel" | translate)
                   }}
                 </div>
                 <div
@@ -154,11 +156,12 @@
           icon: 'help',
           position: 'right',
           classes:
-            'absolute right-2 rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood dark:bg-dark-wood-lighter dark:text-dark-wood-text dark:hover:bg-dark-wood',
+            'rounded-full bg-wood-light p-2 text-wood-text shadow-md hover:bg-wood dark:bg-dark-wood-lighter dark:text-dark-wood-text dark:hover:bg-dark-wood',
           onClick: toggleInstructions.bind(this),
         },
       ]"
       (backClick)="goToLevelSelect()"
+      maxWidth="max-w-6xl"
     ></app-game-header>
 
     <div class="w-full bg-wood-light/70 dark:bg-dark-wood-darker/70">
@@ -179,7 +182,9 @@
             >
               <div class="flex items-center justify-between">
                 <span class="font-semibold">{{
-                  currentLevel()?.name || ("gameBoard.unknownLevel" | translate)
+                  currentLevel() 
+                    ? (currentLanguage === 'zh' ? currentLevel()?.name : currentLevel()?.nameEn)
+                    : ("gameBoard.unknownLevel" | translate)
                 }}</span>
                 <span
                   class="text-xs text-wood-text/70 dark:text-wood-lighter/70"
@@ -416,7 +421,11 @@
             >{{ "gameBoard.currentLevel" | translate }}</span
           >
           <span class="font-semibold text-wood-text dark:text-wood-lighter">
-            {{ currentLevel()?.name || ("gameBoard.unknownLevel" | translate) }}
+            {{ 
+              currentLevel() 
+                ? (currentLanguage === 'zh' ? currentLevel()?.name : currentLevel()?.nameEn)
+                : ("gameBoard.unknownLevel" | translate)
+            }}
             ({{
               currentLevel()?.difficulty
                 ? ("levels.difficulty." + currentLevel()?.difficulty

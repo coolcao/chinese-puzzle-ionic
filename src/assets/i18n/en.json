@@ -223,7 +223,11 @@
     "steps": "Steps",
     "time": "Time",
     "rating": "Rating",
-    "step": "Step"
+    "step": "Step",
+    "controls": "Playback Controls",
+    "completed": "Playback Completed",
+    "currentStep": "Current Step",
+    "totalSteps": "Total Steps"
   },
   "levelSelectPage": {
     "title": "Select Level",

@@ -15,15 +15,17 @@ export class LevelStore {
   // 关卡进度信息 (levelId -> GameProgress)
   private _levelProgress = signal<Map<string, GameProgress>>(new Map());
 
-  readonly allLevels = this._allLevels.asReadonly();
+  readonly allLevels = computed(() => {
+    return this._allLevels().sort((a, b) => a.minSteps - b.minSteps);
+  });
   readonly easyLevels = computed(() => {
-    return this._allLevels().filter(level => level.difficulty === 'easy').sort((a, b) => a.minSteps - b.minSteps);
+    return this.allLevels().filter(level => level.difficulty === 'easy');
   });
   readonly mediumLevels = computed(() => {
-    return this._allLevels().filter(level => level.difficulty === 'medium').sort((a, b) => a.minSteps - b.minSteps);
+    return this.allLevels().filter(level => level.difficulty === 'medium');
   });
   readonly hardLevels = computed(() => {
-    return this._allLevels().filter(level => level.difficulty === 'hard').sort((a, b) => a.minSteps - b.minSteps);
+    return this.allLevels().filter(level => level.difficulty === 'hard');
   });
 
   readonly unlockedLevels = this._unlockedLevels.asReadonly();
@@ -42,13 +44,13 @@ export class LevelStore {
     const progress = this._levelProgress();
     const unlocked = this._unlockedLevels();
 
-    return this._allLevels().map(level => ({
+    return this.allLevels().map(level => ({
       ...level,
       isUnlocked: unlocked.includes(level.id),
       progress: progress.get(level.id) || null,
       isCompleted: progress.get(level.id)?.isCompleted || false,
       stars: progress.get(level.id)?.stars || 0
-    })).sort((a, b) => a.minSteps - b.minSteps);
+    }));
   });
 
   // 计算属性：分组的带进度信息关卡

@@ -7,34 +7,54 @@
     (backClick)="goBack()"
   ></app-game-header>
 
+  <!-- 关卡信息区域 - 响应式布局 -->
+  <div *ngIf="currentLevel" class="bg-wood-light/80 dark:bg-dark-wood-dark/80 border-b border-wood-border dark:border-dark-wood-border px-4 py-2 sm:px-6 sm:py-3">
+    <div class="text-center">
+      <!-- 在小屏幕上使用更小的字体和间距 -->
+      <h2 class="text-base sm:text-lg font-bold text-wood-text dark:text-wood-light leading-tight">
+        {{ currentLanguage === 'zh' ? currentLevel.name : currentLevel.nameEn }}
+      </h2>
+      <!-- 在小屏幕上改为垂直布局或更紧凑的水平布局 -->
+      <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-1 text-xs sm:text-sm text-wood-text/70 dark:text-wood-light/70">
+        <span>{{ 'levels.difficulty.' + currentLevel.difficulty | translate }}</span>
+        <span class="hidden sm:inline">•</span>
+        <span>{{ 'replay.steps' | translate }}: {{ historyRecord?.steps || 0 }}</span>
+        <span class="hidden sm:inline">•</span>
+        <span>{{ 'replay.time' | translate }}: {{ formattedTotalDuration }}</span>
+      </div>
+    </div>
+  </div>
+
   <main
     class="h-full w-full flex-1 overflow-hidden bg-wood-light/50 dark:bg-dark-wood-dark/20"
   >
-    <div class="flex h-full w-full flex-1 items-center justify-center p-6">
+    <!-- 响应式padding：小屏幕使用更小的间距 -->
+    <div class="flex h-full w-full flex-1 items-center justify-center p-2 sm:p-4 md:p-6">
       <div class="flex max-w-2xl items-center justify-center">
         <canvas
           #replayCanvas
-          class="rounded-md border-4 border-b-0 border-solid border-wood-darker"
+          class="rounded-md border-4 border-b-0 border-solid border-wood-darker max-h-full max-w-full"
         ></canvas>
       </div>
     </div>
   </main>
 
   <footer
-    class="flex-shrink-0 border-t border-wood-border bg-wood-light px-6 py-4 dark:border-dark-wood-border dark:bg-dark-wood-dark"
+    class="flex-shrink-0 border-t border-wood-border bg-wood-light px-2 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 dark:border-dark-wood-border dark:bg-dark-wood-dark"
   >
-    <div class="flex items-center justify-center space-x-4">
+    <!-- 响应式控制面板布局 -->
+    <div class="flex items-center justify-center space-x-2 sm:space-x-3 md:space-x-4">
       <button
         (click)="togglePlayPause()"
-        class="rounded-full bg-wood-main p-3 text-white shadow-lg"
+        class="rounded-full bg-wood-main p-2 sm:p-3 text-white shadow-lg flex-shrink-0"
       >
         <ion-icon
           [name]="isPlaying ? 'pause' : 'play'"
-          class="text-2xl"
+          class="text-lg sm:text-xl md:text-2xl"
         ></ion-icon>
       </button>
-      <div class="flex w-full items-center space-x-2">
-        <span class="text-sm text-wood-text dark:text-dark-wood-text">{{
+      <div class="flex w-full items-center space-x-1 sm:space-x-2 min-w-0">
+        <span class="text-xs sm:text-sm text-wood-text dark:text-dark-wood-text whitespace-nowrap">{{
           formattedTime
         }}</span>
         <input
@@ -43,23 +63,23 @@
           [max]="totalDuration"
           [(ngModel)]="currentTime"
           (input)="onSliderChange($event)"
-          class="w-full"
+          class="w-full min-w-0"
         />
-        <span class="text-sm text-wood-text dark:text-dark-wood-text">{{
+        <span class="text-xs sm:text-sm text-wood-text dark:text-dark-wood-text whitespace-nowrap">{{
           formattedTotalDuration
         }}</span>
       </div>
       <button
         (click)="restartReplay()"
-        class="rounded-full bg-wood-main p-3 text-white shadow-lg"
+        class="rounded-full bg-wood-main p-2 sm:p-3 text-white shadow-lg flex-shrink-0"
       >
-        <ion-icon name="refresh" class="text-2xl"></ion-icon>
+        <ion-icon name="refresh" class="text-lg sm:text-xl md:text-2xl"></ion-icon>
       </button>
       <button
         (click)="changePlaybackSpeed()"
-        class="rounded-full bg-wood-main p-3 text-white shadow-lg"
+        class="rounded-full bg-wood-main p-2 sm:p-3 text-white shadow-lg flex-shrink-0"
       >
-        <span class="text-sm font-bold">{{ getSpeedText() }}</span>
+        <span class="text-xs sm:text-sm font-bold">{{ getSpeedText() }}</span>
       </button>
     </div>
   </footer>

@@ -8,6 +8,8 @@ import { levels } from '../../data/data-set';
 import { interval, Subscription } from 'rxjs';
 import { ImageLoadingService } from '../../services/image-loading.service';
 import { ToastController } from '@ionic/angular';
+import { LanguageService } from '../../services/language.service';
+import { PieceImageService } from '../../services/piece-image.service';
 
 @Component({
   selector: 'app-replay',
@@ -34,6 +36,9 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
   private darkModeMediaQuery: MediaQueryList | null = null;
   private darkModeListener: ((e: MediaQueryListEvent) => void) | null = null;
 
+  // 当前语言
+  currentLanguage = this.languageService.getCurrentLanguage();
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -41,7 +46,9 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
     private fabricGameService: FabricGameService,
     private fabricDrawingService: FabricDrawingService,
     private imageLoadingService: ImageLoadingService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private languageService: LanguageService,
+    private pieceImageService: PieceImageService
   ) {
     effect(() => {
       const cellSize = this.fabricGameService.cellSizeSignal();
@@ -79,7 +86,10 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
       this.currentLevel = this.findLevelById(this.historyRecord.levelId);
 
       if (this.currentLevel) {
-        this.currentPieces = JSON.parse(JSON.stringify(this.currentLevel.pieces));
+        // 使用PieceImageService更新图片路径，确保1*2和2*1棋子使用正确的图片
+        const piecesWithCorrectImages = this.pieceImageService.updatePiecesImagePaths(this.currentLevel.pieces);
+        this.currentPieces = JSON.parse(JSON.stringify(piecesWithCorrectImages));
+        
         this.totalDuration = this.historyRecord.time;
         this.formattedTotalDuration = this.formatTime(this.totalDuration);
         this.currentStepIndex = 0;
@@ -227,7 +237,9 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const seekTime = targetTime !== undefined ? targetTime : this.currentTime;
 
-    this.currentPieces = JSON.parse(JSON.stringify(this.currentLevel.pieces));
+    // 使用PieceImageService更新图片路径，确保1*2和2*1棋子使用正确的图片
+    const piecesWithCorrectImages = this.pieceImageService.updatePiecesImagePaths(this.currentLevel.pieces);
+    this.currentPieces = JSON.parse(JSON.stringify(piecesWithCorrectImages));
     this.currentStepIndex = 0;
 
     for (const step of this.historyRecord.gameSteps) {

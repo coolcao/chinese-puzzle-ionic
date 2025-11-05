@@ -21,22 +21,36 @@
           class="mb-4 text-xl font-bold text-stone-700 dark:text-wood-light md:text-2xl"
         >
           {{ "levels.difficulty.easy" | translate }} ({{
-            groupedLevels.easy.length
+            groupedLevelsWithUnlock().easy.length
           }})
         </h2>
         <div
           class="mx-auto grid max-w-7xl grid-cols-1 gap-4 pb-8 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4"
         >
           <div
-            *ngFor="let level of groupedLevels.easy; let i = index"
+            *ngFor="let level of groupedLevelsWithUnlock().easy; let i = index"
             (click)="selectLevel(level.id)"
             appClickSound
-            class="transform cursor-pointer overflow-hidden rounded-2xl border-2 border-wood-border/50 bg-wood-lighter shadow-lg transition duration-300 hover:translate-y-[-2px] hover:border-dark-wood/20 hover:bg-wood-dark/50 hover:shadow-xl active:scale-95 dark:border-dark-wood-border dark:bg-dark-wood-dark dark:hover:bg-dark-wood-main"
+            class="relative transform overflow-hidden rounded-2xl border-2 border-wood-border/50 bg-wood-lighter shadow-lg transition duration-300 dark:border-dark-wood-border dark:bg-dark-wood-dark"
+            [class]="
+              level.isUnlocked
+                ? 'cursor-pointer hover:translate-y-[-2px] hover:border-dark-wood/20 hover:bg-wood-dark/50 hover:shadow-xl active:scale-95 dark:hover:bg-dark-wood-main'
+                : 'cursor-not-allowed'
+            "
           >
             <div class="relative p-3">
-              <!-- 难度标签 - 右上角 -->
+              <!-- 难度标签或星级显示 - 右上角 -->
               <div class="absolute right-2 top-2">
+                <!-- 已完成：显示星级 -->
                 <span
+                  *ngIf="level.isCompleted"
+                  class="rounded-full border border-yellow-300 bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200"
+                >
+                  {{ getStarsDisplay(level.id) }}
+                </span>
+                <!-- 未完成：显示难度 -->
+                <span
+                  *ngIf="!level.isCompleted"
                   class="rounded-full border border-green-300 bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:border-green-700 dark:bg-green-900 dark:text-green-200"
                 >
                   {{ "levels.difficulty.easy" | translate }}
@@ -65,6 +79,19 @@
                   size="large"
                 ></app-level-preview>
               </div>
+
+              <!-- 锁定覆盖层 (Easy) -->
+              <div
+                *ngIf="!level.isUnlocked"
+                class="absolute inset-0 z-10 flex flex-col items-center justify-center space-y-2 rounded-2xl backdrop-blur-sm"
+              >
+                <i
+                  class="fas fa-lock animate-pulse text-4xl text-dark-wood drop-shadow-lg dark:text-wood-light"
+                ></i>
+                <span class="text-dark-wood dark:text-wood-light"
+                  >完成前一关解锁</span
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -76,22 +103,39 @@
           class="mb-4 text-xl font-bold text-stone-700 dark:text-wood-light md:text-2xl"
         >
           {{ "levels.difficulty.medium" | translate }} ({{
-            groupedLevels.medium.length
+            groupedLevelsWithUnlock().medium.length
           }})
         </h2>
         <div
           class="mx-auto grid max-w-7xl grid-cols-1 gap-4 pb-8 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4"
         >
           <div
-            *ngFor="let level of groupedLevels.medium; let i = index"
+            *ngFor="
+              let level of groupedLevelsWithUnlock().medium;
+              let i = index
+            "
             (click)="selectLevel(level.id)"
             appClickSound
-            class="transform cursor-pointer overflow-hidden rounded-2xl border-2 border-wood-border/50 bg-wood-lighter shadow-lg transition duration-300 hover:translate-y-[-2px] hover:border-dark-wood/20 hover:bg-wood-dark/50 hover:shadow-xl active:scale-95 dark:border-dark-wood-border dark:bg-dark-wood-dark dark:hover:bg-dark-wood-main"
+            class="relative transform overflow-hidden rounded-2xl border-2 border-wood-border/50 bg-wood-lighter shadow-lg transition duration-300 dark:border-dark-wood-border dark:bg-dark-wood-dark"
+            [class]="
+              level.isUnlocked
+                ? 'cursor-pointer hover:translate-y-[-2px] hover:border-dark-wood/20 hover:bg-wood-dark/50 hover:shadow-xl active:scale-95 dark:hover:bg-dark-wood-main'
+                : 'cursor-not-allowed'
+            "
           >
             <div class="relative p-3">
-              <!-- 难度标签 - 右上角 -->
+              <!-- 难度标签或星级显示 - 右上角 -->
               <div class="absolute right-2 top-2">
+                <!-- 已完成：显示星级 -->
                 <span
+                  *ngIf="level.isCompleted"
+                  class="rounded-full border border-yellow-300 bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200"
+                >
+                  {{ getStarsDisplay(level.id) }}
+                </span>
+                <!-- 未完成：显示难度 -->
+                <span
+                  *ngIf="!level.isCompleted"
                   class="rounded-full border border-yellow-300 bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200"
                 >
                   {{ "levels.difficulty.medium" | translate }}
@@ -120,6 +164,19 @@
                   size="large"
                 ></app-level-preview>
               </div>
+
+              <!-- 锁定覆盖层 (Medium) -->
+              <div
+                *ngIf="!level.isUnlocked"
+                class="absolute inset-0 z-10 flex flex-col items-center justify-center space-y-2 rounded-2xl backdrop-blur-sm"
+              >
+                <i
+                  class="fas fa-lock animate-pulse text-4xl text-dark-wood drop-shadow-lg dark:text-wood-light"
+                ></i>
+                <span class="text-dark-wood dark:text-wood-light"
+                  >完成前一关解锁</span
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -131,22 +188,36 @@
           class="mb-4 text-xl font-bold text-stone-700 dark:text-wood-light md:text-2xl"
         >
           {{ "levels.difficulty.hard" | translate }} ({{
-            groupedLevels.hard.length
+            groupedLevelsWithUnlock().hard.length
           }})
         </h2>
         <div
           class="mx-auto grid max-w-7xl grid-cols-1 gap-4 pb-8 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-4"
         >
           <div
-            *ngFor="let level of groupedLevels.hard; let i = index"
+            *ngFor="let level of groupedLevelsWithUnlock().hard; let i = index"
             (click)="selectLevel(level.id)"
             appClickSound
-            class="transform cursor-pointer overflow-hidden rounded-2xl border-2 border-wood-border/50 bg-wood-lighter shadow-lg transition duration-300 hover:translate-y-[-2px] hover:border-dark-wood/20 hover:bg-wood-dark/50 hover:shadow-xl active:scale-95 dark:border-dark-wood-border dark:bg-dark-wood-dark dark:hover:bg-dark-wood-main"
+            class="relative transform overflow-hidden rounded-2xl border-2 border-wood-border/50 bg-wood-lighter shadow-lg transition duration-300 dark:border-dark-wood-border dark:bg-dark-wood-dark"
+            [class]="
+              level.isUnlocked
+                ? 'cursor-pointer hover:translate-y-[-2px] hover:border-dark-wood/20 hover:bg-wood-dark/50 hover:shadow-xl active:scale-95 dark:hover:bg-dark-wood-main'
+                : 'cursor-not-allowed'
+            "
           >
             <div class="relative p-3">
-              <!-- 难度标签 - 右上角 -->
+              <!-- 难度标签或星级显示 - 右上角 -->
               <div class="absolute right-2 top-2">
+                <!-- 已完成：显示星级 -->
                 <span
+                  *ngIf="level.isCompleted"
+                  class="rounded-full border border-yellow-300 bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200"
+                >
+                  {{ getStarsDisplay(level.id) }}
+                </span>
+                <!-- 未完成：显示难度 -->
+                <span
+                  *ngIf="!level.isCompleted"
                   class="rounded-full border border-red-300 bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:border-red-700 dark:bg-red-900 dark:text-red-200"
                 >
                   {{ "levels.difficulty.hard" | translate }}
@@ -175,6 +246,19 @@
                   size="large"
                 ></app-level-preview>
               </div>
+
+              <!-- 锁定覆盖层 (Hard) -->
+              <div
+                *ngIf="!level.isUnlocked"
+                class="absolute inset-0 z-10 flex flex-col items-center justify-center space-y-2 rounded-2xl backdrop-blur-sm"
+              >
+                <i
+                  class="fas fa-lock animate-pulse text-4xl text-dark-wood drop-shadow-lg dark:text-wood-light"
+                ></i>
+                <span class="text-dark-wood dark:text-wood-light"
+                  >完成前一关解锁</span
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -198,3 +282,6 @@
     <div class="loader"></div>
   </div>
 </div>
+
+<!-- 调试面板组件 -->
+<app-debug-panel></app-debug-panel>

@@ -1,0 +1,103 @@
+/* 调试面板样式 */
+
+/* 滚动条样式 */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* 暗色模式下的滚动条 */
+.dark .overflow-y-auto::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* 面板进入动画 */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.fixed.right-0.top-0 {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* 模拟中的高亮效果 */
+.bg-yellow-50 {
+  background-color: #fefce8;
+  border-color: #facc15;
+}
+
+.dark\:bg-yellow-900 {
+  background-color: #451a03;
+}
+
+/* 按钮禁用状态 */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 日志区域字体 */
+.font-mono {
+  font-family: 'Courier New', Courier, monospace;
+  line-height: 1.4;
+}
+
+/* 状态指示器 */
+.status-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.status-unlocked {
+  background-color: #10b981;
+}
+
+.status-locked {
+  background-color: #ef4444;
+}
+
+.status-completed {
+  background-color: #3b82f6;
+}
+
+/* 工具提示样式 */
+[title] {
+  position: relative;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .w-96 {
+    width: 100vw;
+    max-width: 100vw;
+  }
+}

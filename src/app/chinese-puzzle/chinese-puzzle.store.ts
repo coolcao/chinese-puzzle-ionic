@@ -21,7 +21,7 @@ export class ChinesePuzzleStore {
   private _settings = signal<UserSettings>({
     isDarkMode: false,
     smoothDragMode: true,
-    soundEffectsEnabled: true,
+    soundEffectsEnabled: true, // 默认开启背景音乐
     backgroundMusicEnabled: true, // 默认开启背景音乐
     vibrationEnabled: true,
     tutorialCompleted: false
@@ -144,5 +144,8 @@ export class ChinesePuzzleStore {
     this._pieces.set(this.tools.deepClone(processedPieces));
     this.initBoard();
   }
+
+
+
 
 }

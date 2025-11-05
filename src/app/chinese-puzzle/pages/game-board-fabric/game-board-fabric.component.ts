@@ -10,6 +10,7 @@ import { ImageLoadingService } from '../../services/image-loading.service';
 import { PieceMovementService } from '../../services/piece-movement.service';
 import { AudioService } from '../../services/audio.service';
 import { GameStorageService } from '../../services/game-storage.service';
+import { LevelStateService } from '../../services/level-state.service';
 import { FabricGameService } from './services/fabric-game.service';
 import { FabricDrawingService } from './services/fabric-drawing.service';
 import { FabricInteractionService } from './services/fabric-interaction.service';
@@ -33,6 +34,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   private pieceMovementService = inject(PieceMovementService);
   private audioService = inject(AudioService);
   private gameStorage = inject(GameStorageService);
+  private levelStateService = inject(LevelStateService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private translate = inject(TranslateService);
@@ -92,11 +94,12 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
         // 保存游戏进度，包含步数和时间
         const currentLevel = this.currentLevel();
         if (currentLevel) {
-          this.gameManagement.saveGameProgress(currentLevel.id, this.steps(), this.gameTime());
+          // 保存到历史记录
+          this.saveGameHistory();
+          
+          // 保存游戏进度并处理关卡解锁
+          this.saveGameProgressAndUnlock(currentLevel.id, this.steps(), this.gameTime());
         }
-
-        // 保存到历史记录
-        this.saveGameHistory();
 
         // 显示完成Modal
         this.showCompletionModal.set(true);
@@ -688,6 +691,25 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       });
     } catch (error) {
       console.error('Failed to save game history:', error);
+    }
+  }
+
+  // 保存游戏进度并处理关卡解锁
+  private async saveGameProgressAndUnlock(levelId: string, steps: number, time: number) {
+    try {
+      // 保存游戏进度
+      await this.gameStorage.saveProgress(levelId, steps, time);
+      
+      // 处理关卡解锁逻辑
+      const nextLevelId = await this.levelStateService.completeLevel(levelId);
+      
+      if (nextLevelId) {
+        console.log(`🎉 关卡 "${levelId}" 完成，已解锁下一关: "${nextLevelId}"`);
+      } else {
+        console.log(`🏆 恭喜！你已完成关卡 "${levelId}"`);
+      }
+    } catch (error) {
+      console.error('保存进度和处理解锁失败:', error);
     }
   }
 

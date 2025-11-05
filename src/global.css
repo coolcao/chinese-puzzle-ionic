@@ -1,6 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* FontAwesome Icons */
+@import "@fortawesome/fontawesome-free/css/all.css";
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 

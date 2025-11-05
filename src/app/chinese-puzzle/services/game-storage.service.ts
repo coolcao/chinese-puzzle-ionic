@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import { GameHistoryRecord, GameProgress, GameStats, UserSettings, GameStep } from '../chinese-puzzle.type';
 import { levels } from '../data/data-set';
@@ -84,7 +84,6 @@ export class GameStorageService {
     };
 
     await this.set(`progress_${levelId}`, progress);
-
   }
 
   async getProgress(levelId: string): Promise<GameProgress | null> {
@@ -298,50 +297,38 @@ export class GameStorageService {
   // ========== 工具方法 ==========
 
   private calculateRating(steps: number, levelId?: string): string {
-    // 如果提供了 levelId，基于该关卡的 minSteps 进行评价
+    // 基于星级评分系统的评价，星级数量与progress中的stars保持一致
     if (levelId) {
-      const level = this.getLevelData(levelId);
-      if (level) {
-        const minSteps = level.minSteps;
-        const efficiency = steps / minSteps;
-
-        if (efficiency <= 1.1) {
-          return '完美通关！🏆|Perfect! 🏆';
-        } else if (efficiency <= 1.4) {
-          return '表现优秀！⭐|Excellent! ⭐';
-        } else if (efficiency <= 2.0) {
-          return '还不错！👍|Good Job! 👍';
-        } else {
-          return '继续努力！💪|Keep Trying! 💪';
-        }
+      const stars = this.calculateStars(levelId, steps);
+      const starsDisplay = '⭐'.repeat(stars);
+      
+      if (stars === 3) {
+        return `完美通关！${starsDisplay}|Perfect! ${starsDisplay}`;
+      } else if (stars === 2) {
+        return `表现优秀！${starsDisplay}|Excellent! ${starsDisplay}`;
+      } else {
+        return `继续努力！${starsDisplay}|Keep Trying! ${starsDisplay}`;
       }
     }
     return '继续努力！💪|Keep Trying! 💪';
   }
 
   private calculateStars(levelId: string, steps: number): number {
-    // 根据关卡的 minSteps 动态计算星级阈值
-    const thresholds = this.calculateStarThresholds(levelId);
-
-    if (steps <= thresholds.threeStar) return 3;
-    if (steps <= thresholds.twoStar) return 2;
-    return 1;
-  }
-
-  private calculateStarThresholds(levelId: string): { threeStar: number; twoStar: number } {
-    // 从关卡数据中获取 minSteps
-    const level = this.getLevelData(levelId);
-    const minSteps = level?.minSteps || 50; // 默认值
-
-    const threeStar = Math.floor(minSteps * 1.1);  // minSteps + 10%
-    const twoStar = Math.floor(minSteps * 1.4);    // minSteps + 40%
-
-    return { threeStar, twoStar };
-  }
-
-  // 获取关卡数据的辅助方法
-  private getLevelData(levelId: string) {
-    return levels.find(level => level.id === levelId) || null;
+    // 获取关卡数据
+    const level = levels.find(l => l.id === levelId);
+    const optimalSteps = level?.minSteps || 50; // 如果找不到关卡数据，使用默认值
+    
+    // 计算步数与最优步数的比率
+    const efficiency = steps / optimalSteps;
+    
+    // 基于效率比率确定星级（1-3星系统，用于关卡选择页面）
+    if (efficiency <= 1.1) {
+      return 3; // 110%以内 - 3星
+    } else if (efficiency <= 1.5) {
+      return 2; // 150%以内 - 2星
+    } else {
+      return 1; // 超过150% - 1星
+    }
   }
 
   private getDefaultSettings(): UserSettings {
@@ -369,6 +356,7 @@ export class GameStorageService {
   async resetTutorial(): Promise<void> {
     await this.updateSetting('tutorialCompleted', false);
   }
+
 
   private getDefaultStats(): GameStats {
     const now = new Date().toISOString();

@@ -1,15 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, computed, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { levels } from '../../data/data-set';
-import { Level } from '../../chinese-puzzle.type';
 import { GameStorageService } from '../../services/game-storage.service';
+import { LevelStateService } from '../../services/level-state.service';
 import { LanguageService } from '../../services/language.service';
-
-interface GroupedLevels {
-  easy: Level[];
-  medium: Level[];
-  hard: Level[];
-}
+import { LevelStore } from 'src/app/chinese-puzzle/level.store';
+import { GameProgress } from '../../chinese-puzzle.type';
 
 @Component({
   selector: 'app-level-select',
@@ -21,18 +16,16 @@ export class LevelSelectComponent implements OnInit {
 
   private router = inject(Router);
   private gameStorage = inject(GameStorageService);
+  private levelStateService = inject(LevelStateService);
   private languageService = inject(LanguageService);
+  private levelStore = inject(LevelStore);
 
-
-  levels = levels;
-  groupedLevels: GroupedLevels = {
-    easy: [],
-    medium: [],
-    hard: []
-  };
   resourceLoading = true;
-
   currentLanguage = this.languageService.getCurrentLanguage();
+
+  // 直接使用LevelStore的计算属性
+  groupedLevelsWithUnlock = this.levelStore.groupedLevelsWithProgress;
+  statistics = this.levelStore.statistics;
 
 
   constructor() { }
@@ -46,8 +39,8 @@ export class LevelSelectComponent implements OnInit {
       return;
     }
 
-    // 立即执行分组逻辑，然后显示loading效果
-    this.groupLevelsByDifficulty();
+    // 初始化关卡状态（从Storage加载到Store，包括进度信息）
+    await this.levelStateService.initializeLevelState();
 
     // 为了让用户能看到loading效果，延迟显示内容
     setTimeout(() => {
@@ -55,15 +48,19 @@ export class LevelSelectComponent implements OnInit {
     }, 200);
   }
 
-  groupLevelsByDifficulty() {
-    this.groupedLevels = {
-      easy: this.levels.filter(level => level.difficulty === 'easy'),
-      medium: this.levels.filter(level => level.difficulty === 'medium'),
-      hard: this.levels.filter(level => level.difficulty === 'hard')
-    };
+  // 获取星级显示字符串
+  getStarsDisplay(levelId: string): string {
+    return this.levelStore.getStarsDisplay(levelId);
   }
 
   selectLevel(levelId: string) {
+    // 检查关卡是否已解锁
+    if (!this.levelStore.isLevelUnlocked(levelId)) {
+      console.log('🔒 关卡未解锁:', levelId);
+      // 可以在这里添加提示消息
+      return;
+    }
+
     this.router.navigate(['fabric'], {
       queryParams: { levelId: levelId }
     });

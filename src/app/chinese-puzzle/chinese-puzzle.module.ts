@@ -18,6 +18,7 @@ import { TutorialComponent } from './pages/tutorial/tutorial.component';
 import { GameHeaderComponent } from './components/game-header/game-header.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ReplayComponent } from './pages/replay/replay.component';
+import { DebugPanelComponent } from './components/debug-panel/debug-panel.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { ReplayComponent } from './pages/replay/replay.component';
     FormsModule,
     TranslateModule,
     IonicModule,
+    DebugPanelComponent,
   ],
 })
 export class ChinesePuzzleModule { }

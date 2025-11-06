@@ -143,6 +143,7 @@
     "tutorialLevel": "教程关卡",
     "difficulty": {
       "tutorial": "教程",
+      "beginner": "入门",
       "easy": "简单",
       "medium": "中等",
       "hard": "困难",
@@ -209,6 +210,7 @@
     "today": "今天",
     "yesterday": "昨天",
     "daysAgo": "天前",
+    "difficultyBeginner": "入门",
     "difficultyEasy": "简单",
     "difficultyMedium": "中等",
     "difficultyHard": "困难",

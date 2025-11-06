@@ -1,21 +1,190 @@
-import { Level, Piece } from "../chinese-puzzle.type";
+import { Level, Piece } from '../chinese-puzzle.type';
 
-const caocao = { id: 1, name: '曹操', width: 2, height: 2, x: 1, y: 0, img: 'assets/img/chinese-puzzle/曹操.png' };
-const guanyu = { id: 2, name: '关羽', width: 2, height: 1, x: 1, y: 2, img: 'assets/img/chinese-puzzle/关羽21.png' };
-const zhangfei = { id: 3, name: '张飞', width: 1, height: 2, x: 0, y: 0, img: 'assets/img/chinese-puzzle/张飞12.png' };
-const zhaoyun = { id: 4, name: '赵云', width: 1, height: 2, x: 3, y: 0, img: 'assets/img/chinese-puzzle/赵云12.png' };
-const machao = { id: 5, name: '马超', width: 1, height: 2, x: 0, y: 2, img: 'assets/img/chinese-puzzle/马超12.png' };
-const huangzhong = { id: 6, name: '黄忠', width: 1, height: 2, x: 3, y: 2, img: 'assets/img/chinese-puzzle/黄忠12.png' };
-const zu1 = { id: 7, name: '卒1', width: 1, height: 1, x: 0, y: 4, img: 'assets/img/chinese-puzzle/卒.png' };
-const zu2 = { id: 8, name: '卒2', width: 1, height: 1, x: 1, y: 3, img: 'assets/img/chinese-puzzle/卒.png' };
-const zu3 = { id: 9, name: '卒3', width: 1, height: 1, x: 2, y: 3, img: 'assets/img/chinese-puzzle/卒.png' };
-const zu4 = { id: 10, name: '卒4', width: 1, height: 1, x: 3, y: 4, img: 'assets/img/chinese-puzzle/卒.png' };
+const caocao = {
+  id: 1,
+  name: '曹操',
+  width: 2,
+  height: 2,
+  x: 1,
+  y: 0,
+  img: 'assets/img/chinese-puzzle/曹操.png',
+};
+const guanyu = {
+  id: 2,
+  name: '关羽',
+  width: 2,
+  height: 1,
+  x: 1,
+  y: 2,
+  img: 'assets/img/chinese-puzzle/关羽21.png',
+};
+const zhangfei = {
+  id: 3,
+  name: '张飞',
+  width: 1,
+  height: 2,
+  x: 0,
+  y: 0,
+  img: 'assets/img/chinese-puzzle/张飞12.png',
+};
+const zhaoyun = {
+  id: 4,
+  name: '赵云',
+  width: 1,
+  height: 2,
+  x: 3,
+  y: 0,
+  img: 'assets/img/chinese-puzzle/赵云12.png',
+};
+const machao = {
+  id: 5,
+  name: '马超',
+  width: 1,
+  height: 2,
+  x: 0,
+  y: 2,
+  img: 'assets/img/chinese-puzzle/马超12.png',
+};
+const huangzhong = {
+  id: 6,
+  name: '黄忠',
+  width: 1,
+  height: 2,
+  x: 3,
+  y: 2,
+  img: 'assets/img/chinese-puzzle/黄忠12.png',
+};
+const zu1 = {
+  id: 7,
+  name: '卒1',
+  width: 1,
+  height: 1,
+  x: 0,
+  y: 4,
+  img: 'assets/img/chinese-puzzle/卒.png',
+};
+const zu2 = {
+  id: 8,
+  name: '卒2',
+  width: 1,
+  height: 1,
+  x: 1,
+  y: 3,
+  img: 'assets/img/chinese-puzzle/卒.png',
+};
+const zu3 = {
+  id: 9,
+  name: '卒3',
+  width: 1,
+  height: 1,
+  x: 2,
+  y: 3,
+  img: 'assets/img/chinese-puzzle/卒.png',
+};
+const zu4 = {
+  id: 10,
+  name: '卒4',
+  width: 1,
+  height: 1,
+  x: 3,
+  y: 4,
+  img: 'assets/img/chinese-puzzle/卒.png',
+};
 
 export const dataSet: Record<string, Piece[]> = {
-  '横刀立马': [
-    caocao, guanyu, zhangfei, zhaoyun, machao, huangzhong, zu1, zu2, zu3, zu4
+  身陷囹圄: [
+    { ...caocao, x: 0, y: 0 },
+    { ...zhangfei, x: 0, y: 2 },
+    { ...zhaoyun, x: 1, y: 2 },
+    { ...zu1, x: 2, y: 0 },
+    { ...zu2, x: 2, y: 1 },
   ],
-  '比翼横空': [
+  四面楚歌: [
+    { ...caocao, x: 1, y: 0 },
+    { ...zhangfei, x: 0, y: 1 },
+    { ...zhaoyun, x: 3, y: 1 },
+    { ...guanyu, x: 1, y: 2 },
+    { ...zu1, x: 0, y: 0 },
+    { ...zu2, x: 3, y: 0 },
+  ],
+  横纵联盟: [
+    { ...caocao, x: 0, y: 0 },
+    { ...guanyu, x: 0, y: 2 },
+    { ...zhangfei, x: 2, y: 0 },
+    { ...zhaoyun, x: 2, y: 2 },
+    { ...huangzhong, x: 0, y: 3, width: 2, height: 1 },
+  ],
+  四虎围山: [
+    { ...caocao, x: 1, y: 0 },
+    { ...guanyu, x: 2, y: 2 },
+    { ...zhaoyun, x: 3, y: 0 },
+    { ...machao, x: 0, y: 2, width: 2, height: 1 },
+    { ...zhangfei, x: 0, y: 0 },
+  ],
+  七星伴月: [
+    { ...caocao, x: 1, y: 0 },
+    { ...guanyu, x: 0, y: 2 },
+    { ...zhaoyun, x: 2, y: 2, width: 2, height: 1 },
+    { ...zhangfei, x: 0, y: 3 },
+    { ...huangzhong, x: 3, y: 3 },
+    { ...zu1, x: 0, y: 0 },
+    { ...zu2, x: 3, y: 0 },
+  ],
+  铜墙铁壁: [
+    { ...caocao, x: 1, y: 1 },
+    { ...zu1, x: 0, y: 0 },
+    { ...zu2, x: 1, y: 0 },
+    { ...zu3, x: 2, y: 0 },
+    { ...zu4, x: 3, y: 0 },
+    { ...zhangfei, x: 0, y: 1 },
+    { ...zhaoyun, x: 3, y: 1 },
+    { ...machao, x: 0, y: 3, width: 2, height: 1 },
+    { ...huangzhong, x: 2, y: 3, width: 2, height: 1 },
+  ],
+  人海战术: [
+    { ...caocao, x: 1, y: 0 },
+    { ...guanyu, x: 0, y: 3 },
+    { ...zhangfei, x: 3, y: 0 },
+    { ...zhaoyun, x: 0, y: 0 },
+    { ...huangzhong, x: 2, y: 3, width: 2, height: 1 },
+    { ...zu1, x: 0, y: 2 },
+    { ...zu2, x: 1, y: 2 },
+    { ...zu3, x: 2, y: 2 },
+    { ...zu4, x: 3, y: 2 },
+  ],
+  五虎围剿: [
+    { ...caocao, x: 1, y: 0 },
+    { ...guanyu, x: 1, y: 2 },
+    { ...zhangfei, x: 0, y: 0 },
+    { ...zhaoyun, x: 3, y: 0 },
+    { ...machao, x: 0, y: 2 },
+    { ...huangzhong, x: 3, y: 2 },
+  ],
+  天罗地网: [
+    { ...caocao, x: 1, y: 0 },
+    { ...zhangfei, x: 3, y: 1 },
+    { ...zu1, x: 1, y: 2 },
+    { ...zu2, x: 2, y: 2 },
+    { ...zu3, x: 0, y: 0 },
+    { ...zu4, x: 3, y: 0 },
+    { ...huangzhong, x: 0, y: 1 },
+    { ...guanyu, x: 1, y: 3 },
+    { ...zhaoyun, x: 0, y: 3 },
+    { ...machao, x: 3, y: 3 },
+  ],
+  横刀立马: [
+    caocao,
+    guanyu,
+    zhangfei,
+    zhaoyun,
+    machao,
+    huangzhong,
+    zu1,
+    zu2,
+    zu3,
+    zu4,
+  ],
+  比翼横空: [
     { ...caocao, x: 2, y: 0 },
     { ...guanyu, x: 0, y: 0 },
     { ...zhangfei, x: 0, y: 1, width: 2, height: 1 },
@@ -25,9 +194,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 0, y: 3 },
     { ...zu2, x: 0, y: 4 },
     { ...zu3, x: 2, y: 3 },
-    { ...zu4, x: 2, y: 4 }
+    { ...zu4, x: 2, y: 4 },
   ],
-  '将拥曹营': [
+  将拥曹营: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 0, y: 1 },
     { ...zhaoyun, x: 3, y: 1 },
@@ -37,9 +206,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu2, x: 3, y: 3 },
     { ...guanyu, x: 0, y: 4 },
     { ...zu3, x: 2, y: 4 },
-    { ...zu4, x: 3, y: 4 }
+    { ...zu4, x: 3, y: 4 },
   ],
-  '齐头并进': [
+  齐头并进: [
     { ...zhangfei, x: 0, y: 0 },
     { ...caocao, x: 1, y: 0 },
     { ...zhaoyun, x: 3, y: 0 },
@@ -51,7 +220,7 @@ export const dataSet: Record<string, Piece[]> = {
     { ...guanyu, x: 1, y: 3 },
     { ...huangzhong, x: 3, y: 3 },
   ],
-  '指挥若定': [
+  指挥若定: [
     { ...zhangfei, x: 0, y: 0 },
     { ...caocao, x: 1, y: 0 },
     { ...zhaoyun, x: 3, y: 0 },
@@ -61,9 +230,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...machao, x: 0, y: 3 },
     { ...zu3, x: 1, y: 3 },
     { ...zu4, x: 2, y: 3 },
-    { ...huangzhong, x: 3, y: 3 }
+    { ...huangzhong, x: 3, y: 3 },
   ],
-  '兵分两路': [
+  兵分两路: [
     { ...zu1, x: 0, y: 0 },
     { ...caocao, x: 1, y: 0 },
     { ...zu2, x: 3, y: 0 },
@@ -73,9 +242,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...machao, x: 0, y: 3 },
     { ...zu3, x: 1, y: 3 },
     { ...zu4, x: 2, y: 3 },
-    { ...huangzhong, x: 3, y: 3 }
+    { ...huangzhong, x: 3, y: 3 },
   ],
-  '兵临城下': [
+  兵临城下: [
     { ...caocao, x: 1, y: 0 },
     { ...zu1, x: 0, y: 0 },
     { ...zu2, x: 0, y: 1 },
@@ -85,9 +254,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zhaoyun, x: 1, y: 2 },
     { ...machao, x: 2, y: 2 },
     { ...huangzhong, x: 3, y: 2 },
-    { ...guanyu, x: 1, y: 4 }
+    { ...guanyu, x: 1, y: 4 },
   ],
-  '一路进军': [
+  一路进军: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 0, y: 0 },
     { ...zhaoyun, x: 0, y: 2 },
@@ -97,9 +266,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu2, x: 3, y: 1 },
     { ...zu3, x: 3, y: 2 },
     { ...zu4, x: 3, y: 3 },
-    { ...guanyu, x: 1, y: 4 }
+    { ...guanyu, x: 1, y: 4 },
   ],
-  '一路顺风': [
+  一路顺风: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 0, y: 0 },
     { ...zu1, x: 3, y: 0 },
@@ -109,9 +278,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...guanyu, x: 1, y: 2 },
     { ...machao, x: 2, y: 3 },
     { ...zu3, x: 1, y: 3 },
-    { ...zu4, x: 1, y: 4 }
+    { ...zu4, x: 1, y: 4 },
   ],
-  '兵临曹营': [
+  兵临曹营: [
     { ...caocao, x: 1, y: 0 },
     { ...zu1, x: 0, y: 0 },
     { ...zu2, x: 0, y: 1 },
@@ -121,9 +290,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zhaoyun, x: 3, y: 2 },
     { ...guanyu, x: 1, y: 2 },
     { ...machao, x: 1, y: 3 },
-    { ...huangzhong, x: 2, y: 3 }
+    { ...huangzhong, x: 2, y: 3 },
   ],
-  '雨声淅沥': [
+  雨声淅沥: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 0, y: 0 },
     { ...zu1, x: 3, y: 0 },
@@ -133,9 +302,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...machao, x: 3, y: 2 },
     { ...huangzhong, x: 1, y: 3 },
     { ...zu3, x: 0, y: 4 },
-    { ...zu4, x: 3, y: 4 }
+    { ...zu4, x: 3, y: 4 },
   ],
-  '桃花园中': [
+  桃花园中: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 0, y: 1 },
     { ...zhaoyun, x: 3, y: 1 },
@@ -145,9 +314,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...machao, x: 2, y: 2 },
     { ...zu3, x: 0, y: 3 },
     { ...zu4, x: 3, y: 3 },
-    { ...guanyu, x: 1, y: 4 }
+    { ...guanyu, x: 1, y: 4 },
   ],
-  '捷足先登': [
+  捷足先登: [
     { ...caocao, x: 1, y: 0 },
     { ...zu1, x: 0, y: 0 },
     { ...zu2, x: 3, y: 0 },
@@ -157,9 +326,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zhangfei, x: 0, y: 3 },
     { ...zhaoyun, x: 1, y: 3 },
     { ...machao, x: 2, y: 3 },
-    { ...huangzhong, x: 3, y: 3 }
+    { ...huangzhong, x: 3, y: 3 },
   ],
-  '围而不歼': [
+  围而不歼: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 0, y: 0 },
     { ...machao, x: 0, y: 2 },
@@ -169,9 +338,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu4, x: 3, y: 3 },
     { ...guanyu, x: 1, y: 2 },
     { ...zhaoyun, x: 1, y: 3 },
-    { ...huangzhong, x: 2, y: 3 }
+    { ...huangzhong, x: 2, y: 3 },
   ],
-  '将守角楼': [
+  将守角楼: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 0, y: 0 },
     { ...zhaoyun, x: 3, y: 0 },
@@ -181,9 +350,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...machao, x: 0, y: 3 },
     { ...huangzhong, x: 3, y: 3 },
     { ...zu3, x: 1, y: 3 },
-    { ...zu4, x: 2, y: 3 }
+    { ...zu4, x: 2, y: 3 },
   ],
-  '屯兵东路': [
+  屯兵东路: [
     { ...caocao, x: 0, y: 0 },
     { ...zhangfei, x: 2, y: 0 },
     { ...zhaoyun, x: 3, y: 0 },
@@ -193,9 +362,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 2, y: 2 },
     { ...zu2, x: 3, y: 2 },
     { ...zu3, x: 2, y: 3 },
-    { ...zu4, x: 3, y: 3 }
+    { ...zu4, x: 3, y: 3 },
   ],
-  '凹凸有致': [
+  凹凸有致: [
     { ...caocao, x: 1, y: 0 },
     { ...guanyu, x: 0, y: 2 },
     { ...zhangfei, x: 2, y: 2, width: 2, height: 1 },
@@ -205,9 +374,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 0, y: 3 },
     { ...zu2, x: 3, y: 3 },
     { ...zu3, x: 0, y: 4 },
-    { ...zu4, x: 3, y: 4 }
+    { ...zu4, x: 3, y: 4 },
   ],
-  '横竖皆将': [
+  横竖皆将: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 0, y: 0 },
     { ...zhaoyun, x: 3, y: 0 },
@@ -217,9 +386,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 3, y: 2 },
     { ...zu2, x: 3, y: 3 },
     { ...zu3, x: 0, y: 4 },
-    { ...zu4, x: 3, y: 4 }
+    { ...zu4, x: 3, y: 4 },
   ],
-  '守口如瓶': [
+  守口如瓶: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 0, y: 0 },
     { ...zhaoyun, x: 3, y: 0 },
@@ -229,9 +398,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu3, x: 3, y: 2 },
     { ...guanyu, x: 0, y: 4 },
     { ...huangzhong, x: 2, y: 4, width: 2, height: 1 },
-    { ...zu4, x: 3, y: 3 }
+    { ...zu4, x: 3, y: 3 },
   ],
-  '守口如瓶之二': [
+  守口如瓶之二: [
     { ...caocao, x: 1, y: 0 },
     { ...zu1, x: 0, y: 0 },
     { ...zu2, x: 3, y: 0 },
@@ -241,9 +410,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...guanyu, x: 2, y: 4 },
     { ...machao, x: 1, y: 2 },
     { ...zu3, x: 0, y: 3 },
-    { ...zu4, x: 3, y: 3 }
+    { ...zu4, x: 3, y: 3 },
   ],
-  '层层设防': [
+  层层设防: [
     { ...zhangfei, x: 0, y: 0 },
     { ...zhaoyun, x: 3, y: 0 },
     { ...caocao, x: 1, y: 0 },
@@ -253,9 +422,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 0, y: 2 },
     { ...zu2, x: 0, y: 3 },
     { ...zu3, x: 3, y: 2 },
-    { ...zu4, x: 3, y: 3 }
+    { ...zu4, x: 3, y: 3 },
   ],
-  '层层设防之二': [
+  层层设防之二: [
     { ...caocao, x: 1, y: 0 },
     { ...zu1, x: 0, y: 0 },
     { ...zu2, x: 3, y: 0 },
@@ -265,9 +434,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...machao, x: 1, y: 3, width: 2, height: 1 },
     { ...huangzhong, x: 1, y: 4, width: 2, height: 1 },
     { ...zu3, x: 0, y: 3 },
-    { ...zu4, x: 3, y: 3 }
+    { ...zu4, x: 3, y: 3 },
   ],
-  '三军联防': [
+  三军联防: [
     { ...caocao, x: 0, y: 0 },
     { ...zhangfei, x: 2, y: 0 },
     { ...zhaoyun, x: 3, y: 0 },
@@ -277,9 +446,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 0, y: 3 },
     { ...zu2, x: 3, y: 3 },
     { ...zu3, x: 0, y: 4 },
-    { ...zu4, x: 3, y: 4 }
+    { ...zu4, x: 3, y: 4 },
   ],
-  '堵塞要道': [
+  堵塞要道: [
     { ...caocao, x: 1, y: 0 },
     { ...zu1, x: 0, y: 0 },
     { ...zu2, x: 0, y: 1 },
@@ -289,9 +458,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...huangzhong, x: 2, y: 3, width: 2, height: 1 },
     { ...zhangfei, x: 1, y: 2 },
     { ...machao, x: 0, y: 2 },
-    { ...guanyu, x: 1, y: 4 }
+    { ...guanyu, x: 1, y: 4 },
   ],
-  '四路皆兵': [
+  四路皆兵: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 3, y: 0 },
     { ...machao, x: 2, y: 3, width: 2, height: 1 },
@@ -301,9 +470,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 0, y: 2 },
     { ...zu2, x: 1, y: 2 },
     { ...zu3, x: 2, y: 2 },
-    { ...zu4, x: 3, y: 2 }
+    { ...zu4, x: 3, y: 2 },
   ],
-  '五虎拦路': [
+  五虎拦路: [
     { ...caocao, x: 0, y: 0 },
     { ...guanyu, x: 2, y: 0 },
     { ...zhangfei, x: 2, y: 1, width: 2, height: 1 },
@@ -313,9 +482,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 2, y: 3 },
     { ...zu2, x: 3, y: 3 },
     { ...zu3, x: 0, y: 4 },
-    { ...zu4, x: 3, y: 4 }
+    { ...zu4, x: 3, y: 4 },
   ],
-  '兵将连环': [
+  兵将连环: [
     { ...caocao, x: 0, y: 0 },
     { ...zhangfei, x: 3, y: 0 },
     { ...machao, x: 2, y: 2, width: 2, height: 1 },
@@ -325,9 +494,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 0, y: 4 },
     { ...zu2, x: 3, y: 4 },
     { ...zu3, x: 2, y: 1 },
-    { ...zu4, x: 2, y: 0 }
+    { ...zu4, x: 2, y: 0 },
   ],
-  '横马当关': [
+  横马当关: [
     { ...caocao, x: 1, y: 0 },
     { ...zhaoyun, x: 0, y: 0 },
     { ...zhangfei, x: 3, y: 0 },
@@ -337,9 +506,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 0, y: 3 },
     { ...zu2, x: 0, y: 4 },
     { ...zu3, x: 3, y: 3 },
-    { ...zu4, x: 3, y: 4 }
+    { ...zu4, x: 3, y: 4 },
   ],
-  '前挡后堵': [
+  前挡后堵: [
     { ...caocao, x: 0, y: 0 },
     { ...guanyu, x: 2, y: 0 },
     { ...zhangfei, x: 1, y: 4, width: 2, height: 1 },
@@ -349,9 +518,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 3, y: 1 },
     { ...zu2, x: 3, y: 2 },
     { ...zu3, x: 2, y: 3 },
-    { ...zu4, x: 3, y: 3 }
+    { ...zu4, x: 3, y: 3 },
   ],
-  '兵挡将阻': [
+  兵挡将阻: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 3, y: 0 },
     { ...zu1, x: 0, y: 0 },
@@ -361,9 +530,9 @@ export const dataSet: Record<string, Piece[]> = {
     { ...huangzhong, x: 1, y: 3, width: 2, height: 1 },
     { ...guanyu, x: 1, y: 4 },
     { ...zu3, x: 3, y: 2 },
-    { ...zu4, x: 3, y: 3 }
+    { ...zu4, x: 3, y: 3 },
   ],
-  '巧过五关': [
+  巧过五关: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 2, y: 2, width: 2, height: 1 },
     { ...machao, x: 0, y: 2, width: 2, height: 1 },
@@ -373,9 +542,21 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 0, y: 0 },
     { ...zu2, x: 0, y: 1 },
     { ...zu3, x: 3, y: 0 },
-    { ...zu4, x: 3, y: 1 }
+    { ...zu4, x: 3, y: 1 },
   ],
-  '水泄不通': [
+  十面埋伏: [
+    { ...caocao, x: 1, y: 0 },
+    { ...zhangfei, x: 1, y: 3 },
+    { ...machao, x: 2, y: 3 },
+    { ...guanyu, x: 1, y: 2 },
+    { ...zhaoyun, x: 0, y: 0 },
+    { ...huangzhong, x: 3, y: 0 },
+    { ...zu1, x: 0, y: 3 },
+    { ...zu2, x: 3, y: 3 },
+    { ...zu3, x: 3, y: 2 },
+    { ...zu4, x: 0, y: 2 },
+  ],
+  水泄不通: [
     { ...caocao, x: 1, y: 0 },
     { ...zhangfei, x: 0, y: 0 },
     { ...zhaoyun, x: 0, y: 2, width: 2, height: 1 },
@@ -385,44 +566,345 @@ export const dataSet: Record<string, Piece[]> = {
     { ...zu1, x: 3, y: 0 },
     { ...zu2, x: 3, y: 1 },
     { ...zu3, x: 0, y: 4 },
-    { ...zu4, x: 3, y: 4 }
+    { ...zu4, x: 3, y: 4 },
   ],
-
 };
 
 export const levels: Level[] = [
-  { id: '横刀立马', name: '横刀立马', nameEn: 'Horse Stance', difficulty: 'hard', minSteps: 116, pieces: dataSet['横刀立马'] },
-  { id: '将拥曹营', name: '将拥曹营', nameEn: 'Cao Guard', difficulty: 'hard', minSteps: 101, pieces: dataSet['将拥曹营'] },
-  { id: '齐头并进', name: '齐头并进', nameEn: 'Advance', difficulty: 'hard', minSteps: 85, pieces: dataSet['齐头并进'] },
-  { id: '指挥若定', name: '指挥若定', nameEn: 'Command', difficulty: 'hard', minSteps: 85, pieces: dataSet['指挥若定'] },
-  { id: '兵分两路', name: '兵分两路', nameEn: 'Split Force', difficulty: 'hard', minSteps: 92, pieces: dataSet['兵分两路'] },
-  { id: '兵临城下', name: '兵临城下', nameEn: 'At the Gate', difficulty: 'medium', minSteps: 78, pieces: dataSet['兵临城下'] },
-  { id: '一路进军', name: '一路进军', nameEn: 'March On', difficulty: 'medium', minSteps: 78, pieces: dataSet['一路进军'] },
-  { id: '一路顺风', name: '一路顺风', nameEn: 'Smooth', difficulty: 'easy', minSteps: 49, pieces: dataSet['一路顺风'] },
-  { id: '兵临曹营', name: '兵临曹营', nameEn: 'Siege Camp', difficulty: 'easy', minSteps: 49, pieces: dataSet['兵临曹营'] },
-  { id: '雨声淅沥', name: '雨声淅沥', nameEn: 'Rain Drop', difficulty: 'easy', minSteps: 49, pieces: dataSet['雨声淅沥'] },
-  { id: '桃花园中', name: '桃花园中', nameEn: 'Peach Garden', difficulty: 'medium', minSteps: 60, pieces: dataSet['桃花园中'] },
-  { id: '捷足先登', name: '捷足先登', nameEn: 'First Step', difficulty: 'easy', minSteps: 47, pieces: dataSet['捷足先登'] },
-  { id: '围而不歼', name: '围而不歼', nameEn: 'Surround', difficulty: 'easy', minSteps: 47, pieces: dataSet['围而不歼'] },
-  { id: '将守角楼', name: '将守角楼', nameEn: 'Guard Tower', difficulty: 'medium', minSteps: 80, pieces: dataSet['将守角楼'] },
-  { id: '屯兵东路', name: '屯兵东路', nameEn: 'East Road', difficulty: 'hard', minSteps: 100, pieces: dataSet['屯兵东路'] },
-  { id: '凹凸有致', name: '凹凸有致', nameEn: 'Arranged', difficulty: 'hard', minSteps: 102, pieces: dataSet['凹凸有致'] },
-  { id: '比翼横空', name: '比翼横空', nameEn: 'Side Flight', difficulty: 'easy', minSteps: 39, pieces: dataSet['比翼横空'] },
-  { id: '横竖皆将', name: '横竖皆将', nameEn: 'All Generals', difficulty: 'hard', minSteps: 104, pieces: dataSet['横竖皆将'] },
-  { id: '守口如瓶', name: '守口如瓶', nameEn: 'Silent', difficulty: 'hard', minSteps: 103, pieces: dataSet['守口如瓶'] },
-  { id: '守口如瓶之二', name: '守口如瓶之二', nameEn: 'Silent II', difficulty: 'hard', minSteps: 131, pieces: dataSet['守口如瓶之二'] },
-  { id: '层层设防', name: '层层设防', nameEn: 'Defense', difficulty: 'hard', minSteps: 138, pieces: dataSet['层层设防'] },
-  { id: '层层设防之二', name: '层层设防之二', nameEn: 'Defense II', difficulty: 'hard', minSteps: 158, pieces: dataSet['层层设防之二'] },
-  { id: '三军联防', name: '三军联防', nameEn: 'Army Defense', difficulty: 'medium', minSteps: 89, pieces: dataSet['三军联防'] },
-  { id: '堵塞要道', name: '堵塞要道', nameEn: 'Block Path', difficulty: 'medium', minSteps: 53, pieces: dataSet['堵塞要道'] },
-  { id: '四路皆兵', name: '四路皆兵', nameEn: 'All Troops', difficulty: 'hard', minSteps: 96, pieces: dataSet['四路皆兵'] },
-  { id: '五虎拦路', name: '五虎拦路', nameEn: 'Five Tigers', difficulty: 'medium', minSteps: 55, pieces: dataSet['五虎拦路'] },
-  { id: '兵将连环', name: '兵将连环', nameEn: 'Chain Link', difficulty: 'hard', minSteps: 107, pieces: dataSet['兵将连环'] },
-  { id: '横马当关', name: '横马当关', nameEn: 'Horse Block', difficulty: 'hard', minSteps: 110, pieces: dataSet['横马当关'] },
-  { id: '前挡后堵', name: '前挡后堵', nameEn: 'Front Block', difficulty: 'medium', minSteps: 53, pieces: dataSet['前挡后堵'] },
-  { id: '兵挡将阻', name: '兵挡将阻', nameEn: 'Block Guard', difficulty: 'hard', minSteps: 118, pieces: dataSet['兵挡将阻'] },
-  { id: '巧过五关', name: '巧过五关', nameEn: 'Five Gates', difficulty: 'easy', minSteps: 46, pieces: dataSet['巧过五关'] },
-  { id: '水泄不通', name: '水泄不通', nameEn: 'Watertight', difficulty: 'hard', minSteps: 114, pieces: dataSet['水泄不通'] },
+  {
+    id: '身陷囹圄',
+    name: '身陷囹圄',
+    nameEn: 'Trapped',
+    difficulty: 'beginner',
+    minSteps: 8,
+    pieces: dataSet['身陷囹圄'],
+  },
+  {
+    id: '四面楚歌',
+    name: '四面楚歌',
+    nameEn: 'Surrounded',
+    difficulty: 'beginner',
+    minSteps: 14,
+    pieces: dataSet['四面楚歌'],
+  },
+  {
+    id: '横纵联盟',
+    name: '横纵联盟',
+    nameEn: 'Cross Alliance',
+    difficulty: 'beginner',
+    minSteps: 14,
+    pieces: dataSet['横纵联盟'],
+  },
+  {
+    id: '四虎围山',
+    name: '四虎围山',
+    nameEn: 'Four Tigers',
+    difficulty: 'beginner',
+    minSteps: 17,
+    pieces: dataSet['四虎围山'],
+  },
+  {
+    id: '七星伴月',
+    name: '七星伴月',
+    nameEn: 'Seven Stars',
+    difficulty: 'beginner',
+    minSteps: 25,
+    pieces: dataSet['七星伴月'],
+  },
+  {
+    id: '铜墙铁壁',
+    name: '铜墙铁壁',
+    nameEn: 'Iron Wall',
+    difficulty: 'beginner',
+    minSteps: 20,
+    pieces: dataSet['铜墙铁壁'],
+  },
+  {
+    id: '人海战术',
+    name: '人海战术',
+    nameEn: 'Human Wall',
+    difficulty: 'beginner',
+    minSteps: 29,
+    pieces: dataSet['人海战术'],
+  },
+  {
+    id: '五虎围剿',
+    name: '五虎围剿',
+    nameEn: 'Five Tigers',
+    difficulty: 'beginner',
+    minSteps: 16,
+    pieces: dataSet['五虎围剿'],
+  },
+  {
+    id: '天罗地网',
+    name: '天罗地网',
+    nameEn: 'Dragnet',
+    difficulty: 'easy',
+    minSteps: 45,
+    pieces: dataSet['天罗地网'],
+  },
+  {
+    id: '横刀立马',
+    name: '横刀立马',
+    nameEn: 'Horse Stance',
+    difficulty: 'hard',
+    minSteps: 116,
+    pieces: dataSet['横刀立马'],
+  },
+  {
+    id: '将拥曹营',
+    name: '将拥曹营',
+    nameEn: 'Cao Guard',
+    difficulty: 'hard',
+    minSteps: 101,
+    pieces: dataSet['将拥曹营'],
+  },
+  {
+    id: '齐头并进',
+    name: '齐头并进',
+    nameEn: 'Advance',
+    difficulty: 'hard',
+    minSteps: 85,
+    pieces: dataSet['齐头并进'],
+  },
+  {
+    id: '指挥若定',
+    name: '指挥若定',
+    nameEn: 'Command',
+    difficulty: 'hard',
+    minSteps: 85,
+    pieces: dataSet['指挥若定'],
+  },
+  {
+    id: '兵分两路',
+    name: '兵分两路',
+    nameEn: 'Split Force',
+    difficulty: 'hard',
+    minSteps: 92,
+    pieces: dataSet['兵分两路'],
+  },
+  {
+    id: '兵临城下',
+    name: '兵临城下',
+    nameEn: 'At the Gate',
+    difficulty: 'medium',
+    minSteps: 78,
+    pieces: dataSet['兵临城下'],
+  },
+  {
+    id: '一路进军',
+    name: '一路进军',
+    nameEn: 'March On',
+    difficulty: 'medium',
+    minSteps: 78,
+    pieces: dataSet['一路进军'],
+  },
+  {
+    id: '一路顺风',
+    name: '一路顺风',
+    nameEn: 'Smooth',
+    difficulty: 'easy',
+    minSteps: 49,
+    pieces: dataSet['一路顺风'],
+  },
+  {
+    id: '兵临曹营',
+    name: '兵临曹营',
+    nameEn: 'Siege Camp',
+    difficulty: 'easy',
+    minSteps: 49,
+    pieces: dataSet['兵临曹营'],
+  },
+  {
+    id: '雨声淅沥',
+    name: '雨声淅沥',
+    nameEn: 'Rain Drop',
+    difficulty: 'easy',
+    minSteps: 49,
+    pieces: dataSet['雨声淅沥'],
+  },
+  {
+    id: '桃花园中',
+    name: '桃花园中',
+    nameEn: 'Peach Garden',
+    difficulty: 'medium',
+    minSteps: 60,
+    pieces: dataSet['桃花园中'],
+  },
+  {
+    id: '捷足先登',
+    name: '捷足先登',
+    nameEn: 'First Step',
+    difficulty: 'easy',
+    minSteps: 47,
+    pieces: dataSet['捷足先登'],
+  },
+  {
+    id: '围而不歼',
+    name: '围而不歼',
+    nameEn: 'Surround',
+    difficulty: 'easy',
+    minSteps: 47,
+    pieces: dataSet['围而不歼'],
+  },
+  {
+    id: '将守角楼',
+    name: '将守角楼',
+    nameEn: 'Guard Tower',
+    difficulty: 'medium',
+    minSteps: 80,
+    pieces: dataSet['将守角楼'],
+  },
+  {
+    id: '屯兵东路',
+    name: '屯兵东路',
+    nameEn: 'East Road',
+    difficulty: 'hard',
+    minSteps: 100,
+    pieces: dataSet['屯兵东路'],
+  },
+  {
+    id: '凹凸有致',
+    name: '凹凸有致',
+    nameEn: 'Arranged',
+    difficulty: 'hard',
+    minSteps: 102,
+    pieces: dataSet['凹凸有致'],
+  },
+  {
+    id: '比翼横空',
+    name: '比翼横空',
+    nameEn: 'Side Flight',
+    difficulty: 'easy',
+    minSteps: 39,
+    pieces: dataSet['比翼横空'],
+  },
+  {
+    id: '横竖皆将',
+    name: '横竖皆将',
+    nameEn: 'All Generals',
+    difficulty: 'hard',
+    minSteps: 104,
+    pieces: dataSet['横竖皆将'],
+  },
+  {
+    id: '守口如瓶',
+    name: '守口如瓶',
+    nameEn: 'Silent',
+    difficulty: 'hard',
+    minSteps: 103,
+    pieces: dataSet['守口如瓶'],
+  },
+  {
+    id: '守口如瓶之二',
+    name: '守口如瓶之二',
+    nameEn: 'Silent II',
+    difficulty: 'hard',
+    minSteps: 131,
+    pieces: dataSet['守口如瓶之二'],
+  },
+  {
+    id: '层层设防',
+    name: '层层设防',
+    nameEn: 'Defense',
+    difficulty: 'hard',
+    minSteps: 138,
+    pieces: dataSet['层层设防'],
+  },
+  {
+    id: '层层设防之二',
+    name: '层层设防之二',
+    nameEn: 'Defense II',
+    difficulty: 'hard',
+    minSteps: 158,
+    pieces: dataSet['层层设防之二'],
+  },
+  {
+    id: '三军联防',
+    name: '三军联防',
+    nameEn: 'Army Defense',
+    difficulty: 'medium',
+    minSteps: 89,
+    pieces: dataSet['三军联防'],
+  },
+  {
+    id: '堵塞要道',
+    name: '堵塞要道',
+    nameEn: 'Block Path',
+    difficulty: 'medium',
+    minSteps: 53,
+    pieces: dataSet['堵塞要道'],
+  },
+  {
+    id: '四路皆兵',
+    name: '四路皆兵',
+    nameEn: 'All Troops',
+    difficulty: 'hard',
+    minSteps: 96,
+    pieces: dataSet['四路皆兵'],
+  },
+  {
+    id: '五虎拦路',
+    name: '五虎拦路',
+    nameEn: 'Five Tigers',
+    difficulty: 'medium',
+    minSteps: 55,
+    pieces: dataSet['五虎拦路'],
+  },
+  {
+    id: '兵将连环',
+    name: '兵将连环',
+    nameEn: 'Chain Link',
+    difficulty: 'hard',
+    minSteps: 107,
+    pieces: dataSet['兵将连环'],
+  },
+  {
+    id: '横马当关',
+    name: '横马当关',
+    nameEn: 'Horse Block',
+    difficulty: 'hard',
+    minSteps: 110,
+    pieces: dataSet['横马当关'],
+  },
+  {
+    id: '前挡后堵',
+    name: '前挡后堵',
+    nameEn: 'Front Block',
+    difficulty: 'medium',
+    minSteps: 53,
+    pieces: dataSet['前挡后堵'],
+  },
+  {
+    id: '兵挡将阻',
+    name: '兵挡将阻',
+    nameEn: 'Block Guard',
+    difficulty: 'hard',
+    minSteps: 118,
+    pieces: dataSet['兵挡将阻'],
+  },
+  {
+    id: '巧过五关',
+    name: '巧过五关',
+    nameEn: 'Five Gates',
+    difficulty: 'easy',
+    minSteps: 46,
+    pieces: dataSet['巧过五关'],
+  },
+  {
+    id: '十面埋伏',
+    name: '十面埋伏',
+    nameEn: 'Ambush Circle',
+    difficulty: 'hard',
+    minSteps: 110,
+    pieces: dataSet['十面埋伏'],
+  },
+  {
+    id: '水泄不通',
+    name: '水泄不通',
+    nameEn: 'Watertight',
+    difficulty: 'hard',
+    minSteps: 114,
+    pieces: dataSet['水泄不通'],
+  },
 ];
-
-

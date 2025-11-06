@@ -303,12 +303,12 @@ export class LevelService {
    */
   getSortedLevels(): Level[] {
     const levels = this.levelStore.allLevels();
-    const difficultyOrder = { 'easy': 1, 'medium': 2, 'hard': 3 };
+    const difficultyOrder = { 'beginner': 1, 'easy': 2, 'medium': 3, 'hard': 4 };
 
     return [...levels].sort((a, b) => {
       // 首先按难度排序
-      const diffA = difficultyOrder[a.difficulty as keyof typeof difficultyOrder] || 4;
-      const diffB = difficultyOrder[b.difficulty as keyof typeof difficultyOrder] || 4;
+      const diffA = difficultyOrder[a.difficulty as keyof typeof difficultyOrder] || 5;
+      const diffB = difficultyOrder[b.difficulty as keyof typeof difficultyOrder] || 5;
 
       if (diffA !== diffB) {
         return diffA - diffB;
@@ -317,6 +317,14 @@ export class LevelService {
       // 同一难度内按minSteps排序
       return (a.minSteps || 0) - (b.minSteps || 0);
     });
+  }
+
+  /**
+   * 获取第一个入门关卡（按解锁顺序）
+   */
+  getFirstBeginnerLevel(): Level | null {
+    const sortedLevels = this.getSortedLevels();
+    return sortedLevels.find(level => level.difficulty === 'beginner') || null;
   }
 
   /**
@@ -403,7 +411,7 @@ export class LevelService {
    * 初始化关卡解锁状态（首次启动时）
    */
   initializeUnlockStatus(): string[] {
-    const firstLevel = this.getFirstEasyLevel();
+    const firstLevel = this.getFirstBeginnerLevel();
     if (firstLevel) {
       const initialUnlocked = [firstLevel.id];
       this.setUnlockedLevels(initialUnlocked);
@@ -417,6 +425,13 @@ export class LevelService {
    * 注意：这个方法只更新Store，调用者需要负责Storage同步
    */
   tryUnlockNextLevel(currentLevelId: string): string | null {
+    // 首先确保当前完成的关卡本身已解锁（修复遗漏的关卡）
+    if (!this.isLevelUnlocked(currentLevelId)) {
+      this.unlockLevelInStore(currentLevelId);
+      console.log(`🔓 补充解锁当前完成的关卡: ${currentLevelId}`);
+    }
+    
+    // 然后尝试解锁下一关
     const nextLevel = this.getNextLevel(currentLevelId);
     if (nextLevel && !this.isLevelUnlocked(nextLevel.id)) {
       this.unlockLevelInStore(nextLevel.id);
@@ -444,6 +459,7 @@ export class LevelService {
       total: allLevels.length,
       unlocked: unlockedLevels.length,
       locked: allLevels.length - unlockedLevels.length,
+      beginner: allLevels.filter(l => l.difficulty === 'beginner').length,
       easy: allLevels.filter(l => l.difficulty === 'easy').length,
       medium: allLevels.filter(l => l.difficulty === 'medium').length,
       hard: allLevels.filter(l => l.difficulty === 'hard').length

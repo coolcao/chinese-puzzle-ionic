@@ -125,11 +125,15 @@ export class GameStorageService {
   async saveGameHistory(levelId: string, steps: number, time: number, gameSteps: GameStep[]): Promise<void> {
     const timestamp = Date.now();
     const id = `${levelId}_${timestamp}`; // 使用关卡ID+时间戳生成唯一ID
+    
+    // 获取关卡数据以获取正确的难度和名称
+    const level = levels.find(l => l.id === levelId);
+    
     const historyRecord: GameHistoryRecord = {
       id,
       levelId,
-      levelName: levelId, // 暂时使用levelId作为名称
-      difficulty: 'medium', // 默认难度，实际使用时会被覆盖
+      levelName: level?.name || level?.nameEn || levelId, // 使用关卡的实际名称
+      difficulty: level?.difficulty || 'medium', // 使用关卡的实际难度
       steps,
       time,
       completedAt: new Date().toISOString(),

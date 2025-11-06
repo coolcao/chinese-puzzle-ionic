@@ -1,10 +1,10 @@
-import { computed, inject, Injectable, signal } from "@angular/core";
-import { levels } from "src/app/chinese-puzzle/data/data-set";
-import { ToolsService } from "src/app/chinese-puzzle/services/tools.service";
-import { GameProgress } from "./chinese-puzzle.type";
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { levels } from 'src/app/chinese-puzzle/data/data-set';
+import { ToolsService } from 'src/app/chinese-puzzle/services/tools.service';
+import { GameProgress } from './chinese-puzzle.type';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LevelStore {
   private tools = inject(ToolsService);
@@ -18,14 +18,17 @@ export class LevelStore {
   readonly allLevels = computed(() => {
     return this._allLevels().sort((a, b) => a.minSteps - b.minSteps);
   });
+  readonly beginnerLevels = computed(() => {
+    return this.allLevels().filter((level) => level.difficulty === 'beginner');
+  });
   readonly easyLevels = computed(() => {
-    return this.allLevels().filter(level => level.difficulty === 'easy');
+    return this.allLevels().filter((level) => level.difficulty === 'easy');
   });
   readonly mediumLevels = computed(() => {
-    return this.allLevels().filter(level => level.difficulty === 'medium');
+    return this.allLevels().filter((level) => level.difficulty === 'medium');
   });
   readonly hardLevels = computed(() => {
-    return this.allLevels().filter(level => level.difficulty === 'hard');
+    return this.allLevels().filter((level) => level.difficulty === 'hard');
   });
 
   readonly unlockedLevels = this._unlockedLevels.asReadonly();
@@ -44,12 +47,12 @@ export class LevelStore {
     const progress = this._levelProgress();
     const unlocked = this._unlockedLevels();
 
-    return this.allLevels().map(level => ({
+    return this.allLevels().map((level) => ({
       ...level,
       isUnlocked: unlocked.includes(level.id),
       progress: progress.get(level.id) || null,
       isCompleted: progress.get(level.id)?.isCompleted || false,
-      stars: progress.get(level.id)?.stars || 0
+      stars: progress.get(level.id)?.stars || 0,
     }));
   });
 
@@ -57,9 +60,12 @@ export class LevelStore {
   readonly groupedLevelsWithProgress = computed(() => {
     const levelsWithProg = this.levelsWithProgress();
     return {
-      easy: levelsWithProg.filter(level => level.difficulty === 'easy'),
-      medium: levelsWithProg.filter(level => level.difficulty === 'medium'),
-      hard: levelsWithProg.filter(level => level.difficulty === 'hard')
+      beginer: levelsWithProg.filter(
+        (level) => level.difficulty === 'beginner',
+      ),
+      easy: levelsWithProg.filter((level) => level.difficulty === 'easy'),
+      medium: levelsWithProg.filter((level) => level.difficulty === 'medium'),
+      hard: levelsWithProg.filter((level) => level.difficulty === 'hard'),
     };
   });
 
@@ -88,7 +94,7 @@ export class LevelStore {
       locked: allLevels.length - unlocked.length,
       totalStars,
       maxStars,
-      completionRate: Math.round((completed.length / allLevels.length) * 100)
+      completionRate: Math.round((completed.length / allLevels.length) * 100),
     };
   });
 
@@ -197,5 +203,4 @@ export class LevelStore {
     const stars = this.getLevelStars(levelId);
     return '⭐'.repeat(stars);
   }
-
 }

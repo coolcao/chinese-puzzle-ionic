@@ -10,10 +10,9 @@ import { environment } from '../../../../environments/environment';
   selector: 'app-level-select',
   standalone: false,
   templateUrl: './level-select.component.html',
-  styleUrls: ['./level-select.component.css']
+  styleUrls: ['./level-select.component.css'],
 })
 export class LevelSelectComponent implements OnInit {
-
   private router = inject(Router);
   private gameStorage = inject(GameStorageService);
   private levelStateService = inject(LevelStateService);
@@ -32,41 +31,54 @@ export class LevelSelectComponent implements OnInit {
     return !environment.production;
   }
 
-  // 获取所有难度级别的配置
-  get difficultyLevels() {
+  // 获取所有难度级别的配置 - 使用computed避免重复创建对象
+  difficultyLevels = computed(() => {
+    const groupedLevels = this.groupedLevelsWithUnlock();
     return [
+      {
+        key: 'beginner',
+        translationKey: 'levels.difficulty.beginner',
+        levels: groupedLevels.beginer,
+        badgeClasses: {
+          // completed: 'border-yellow-300 bg-yellow-100 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200',
+          uncompleted:
+            'border-lime-300 bg-lime-100 text-lime-800 dark:border-lime-700 dark:bg-lime-900 dark:text-lime-200',
+        },
+      },
       {
         key: 'easy',
         translationKey: 'levels.difficulty.easy',
-        levels: this.groupedLevelsWithUnlock().easy,
+        levels: groupedLevels.easy,
         badgeClasses: {
           // completed: 'border-yellow-300 bg-yellow-100 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200',
-          uncompleted: 'border-green-300 bg-green-100 text-green-800 dark:border-green-700 dark:bg-green-900 dark:text-green-200'
-        }
+          uncompleted:
+            'border-green-300 bg-green-100 text-green-800 dark:border-green-700 dark:bg-green-900 dark:text-green-200',
+        },
       },
       {
         key: 'medium',
         translationKey: 'levels.difficulty.medium',
-        levels: this.groupedLevelsWithUnlock().medium,
+        levels: groupedLevels.medium,
         badgeClasses: {
           // completed: 'border-yellow-300 bg-yellow-100 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200',
-          uncompleted: 'border-yellow-300 bg-yellow-100 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200'
-        }
+          uncompleted:
+            'border-yellow-300 bg-yellow-100 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200',
+        },
       },
       {
         key: 'hard',
         translationKey: 'levels.difficulty.hard',
-        levels: this.groupedLevelsWithUnlock().hard,
+        levels: groupedLevels.hard,
         badgeClasses: {
           // completed: 'border-yellow-300 bg-yellow-100 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200',
-          uncompleted: 'border-red-300 bg-red-100 text-red-800 dark:border-red-700 dark:bg-red-900 dark:text-red-200'
-        }
-      }
+          uncompleted:
+            'border-red-300 bg-red-100 text-red-800 dark:border-red-700 dark:bg-red-900 dark:text-red-200',
+        },
+      },
     ];
-  }
+  });
 
-
-  constructor() { }
+  constructor() {}
 
   async ngOnInit() {
     // 先设置loading为true，确保页面一打开就显示loading
@@ -100,12 +112,11 @@ export class LevelSelectComponent implements OnInit {
     }
 
     this.router.navigate(['fabric'], {
-      queryParams: { levelId: levelId }
+      queryParams: { levelId: levelId },
     });
   }
 
   goBack() {
     this.router.navigate([''], { replaceUrl: true });
   }
-
 }

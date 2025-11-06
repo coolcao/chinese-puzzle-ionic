@@ -1,16 +1,33 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, effect, inject, OnInit, computed, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  AfterViewInit,
+  OnDestroy,
+  effect,
+  inject,
+  OnInit,
+  computed,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { timer, interval, Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
 import { GameManagementService } from '../../services/game-management.service';
-import { Piece, Direction, GameStep, Position } from '../../chinese-puzzle.type';
+import {
+  Piece,
+  Direction,
+  GameStep,
+  Position,
+} from '../../chinese-puzzle.type';
 import { ImageLoadingService } from '../../services/image-loading.service';
 import { PieceMovementService } from '../../services/piece-movement.service';
 import { AudioService } from '../../services/audio.service';
 import { GameStorageService } from '../../services/game-storage.service';
 import { LevelStateService } from '../../services/level-state.service';
+import { LevelService } from '../../services/level.service';
 import { FabricGameService } from './services/fabric-game.service';
 import { FabricDrawingService } from './services/fabric-drawing.service';
 import { FabricInteractionService } from './services/fabric-interaction.service';
@@ -21,9 +38,13 @@ import { FabricInteractionService } from './services/fabric-interaction.service'
   templateUrl: './game-board-fabric.component.html',
   styleUrls: ['./game-board-fabric.component.css'],
 })
-export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('gameCanvasPC', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('gameCanvasMobile', { static: false }) canvasMobileRef!: ElementRef<HTMLCanvasElement>;
+export class GameBoardFabricComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
+  @ViewChild('gameCanvasPC', { static: false })
+  canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('gameCanvasMobile', { static: false })
+  canvasMobileRef!: ElementRef<HTMLCanvasElement>;
 
   private store = inject(ChinesePuzzleStore);
   private gameManagement = inject(GameManagementService);
@@ -35,6 +56,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   private audioService = inject(AudioService);
   private gameStorage = inject(GameStorageService);
   private levelStateService = inject(LevelStateService);
+  private levelService = inject(LevelService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private translate = inject(TranslateService);
@@ -56,7 +78,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   boardState = this.store.board;
   finished = this.store.finished;
   isDarkMode = computed(() => this.store.settings().isDarkMode);
-
 
   steps = signal(0);
 
@@ -101,9 +122,13 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
         if (currentLevel) {
           // 保存到历史记录
           this.saveGameHistory();
-          
+
           // 保存游戏进度并处理关卡解锁
-          this.saveGameProgressAndUnlock(currentLevel.id, this.steps(), this.gameTime());
+          this.saveGameProgressAndUnlock(
+            currentLevel.id,
+            this.steps(),
+            this.gameTime(),
+          );
         }
 
         // 显示完成Modal
@@ -146,9 +171,11 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     });
 
     // 设置移动回调
-    this.fabricInteractionService.setMoveCallback((piece: Piece, direction: Direction, steps: number) => {
-      this.handlePieceMove(piece, direction, steps);
-    });
+    this.fabricInteractionService.setMoveCallback(
+      (piece: Piece, direction: Direction, steps: number) => {
+        this.handlePieceMove(piece, direction, steps);
+      },
+    );
   }
 
   async ngOnInit() {
@@ -166,7 +193,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.resetGameSteps();
 
     // 从查询参数中获取关卡ID
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       const levelId = params['levelId'];
 
       if (levelId) {
@@ -182,7 +209,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
       // 在数据集更改后重新加载图片
       this.preLoadImage().then(() => {
-        console.log("Image loading completed");
+        console.log('Image loading completed');
         // 等待一帧后重新绘制，确保状态更新
         requestAnimationFrame(() => {
           this.drawBoard();
@@ -201,7 +228,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     setTimeout(() => {
       this.initCanvas();
     }, 0);
-
   }
 
   ngOnDestroy(): void {
@@ -209,7 +235,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.fabricGameService.dispose();
     this.stopTimer();
   }
-
 
   // 初始化Canvas
   private initCanvas() {
@@ -239,12 +264,18 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       canvasElement = this.canvasMobileRef.nativeElement;
     } else {
       // fallback到任一可用的canvas
-      canvasElement = this.canvasRef?.nativeElement || this.canvasMobileRef?.nativeElement || null;
+      canvasElement =
+        this.canvasRef?.nativeElement ||
+        this.canvasMobileRef?.nativeElement ||
+        null;
     }
 
     // 如果根据屏幕尺寸应该使用的canvas元素不存在，尝试获取任何可用的canvas元素
     if (!canvasElement) {
-      canvasElement = this.canvasRef?.nativeElement || this.canvasMobileRef?.nativeElement || null;
+      canvasElement =
+        this.canvasRef?.nativeElement ||
+        this.canvasMobileRef?.nativeElement ||
+        null;
     }
 
     return canvasElement;
@@ -272,7 +303,9 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
     // 监听黑暗模式变化
     if (window.matchMedia) {
-      this.darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      this.darkModeMediaQuery = window.matchMedia(
+        '(prefers-color-scheme: dark)',
+      );
       this.darkModeListener = (e: MediaQueryListEvent) => {
         // 重新绘制棋盘以适配新的主题
         this.drawBoard();
@@ -295,11 +328,18 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     const shouldUseMobile = !isPC && this.canvasMobileRef?.nativeElement;
 
     // 获取当前正在使用的Canvas类型
-    const currentlyUsingPC = this.fabricGameService.canvas?.getElement() === this.canvasRef?.nativeElement;
-    const currentlyUsingMobile = this.fabricGameService.canvas?.getElement() === this.canvasMobileRef?.nativeElement;
+    const currentlyUsingPC =
+      this.fabricGameService.canvas?.getElement() ===
+      this.canvasRef?.nativeElement;
+    const currentlyUsingMobile =
+      this.fabricGameService.canvas?.getElement() ===
+      this.canvasMobileRef?.nativeElement;
 
     // 如果需要切换Canvas类型，重新初始化
-    if ((shouldUsePC && !currentlyUsingPC) || (shouldUseMobile && !currentlyUsingMobile)) {
+    if (
+      (shouldUsePC && !currentlyUsingPC) ||
+      (shouldUseMobile && !currentlyUsingMobile)
+    ) {
       this.reinitializeCanvas();
     } else {
       // 只是尺寸变化，更新尺寸并重新绘制
@@ -336,7 +376,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   // 组件销毁时清理监听器
   private destroyResizeObserver() {
-    window.removeEventListener('resize', () => { });
+    window.removeEventListener('resize', () => {});
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;
@@ -344,7 +384,10 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
     // 清理黑暗模式监听器
     if (this.darkModeMediaQuery && this.darkModeListener) {
-      this.darkModeMediaQuery.removeEventListener('change', this.darkModeListener);
+      this.darkModeMediaQuery.removeEventListener(
+        'change',
+        this.darkModeListener,
+      );
       this.darkModeListener = null;
       this.darkModeMediaQuery = null;
     }
@@ -376,8 +419,11 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.fabricDrawingService.drawBoard(isDarkMode);
 
     // 绘制所有棋子
-    this.pieces().forEach(piece => {
-      const pieceGroup = this.fabricDrawingService.createPieceGroup(piece, isDarkMode);
+    this.pieces().forEach((piece) => {
+      const pieceGroup = this.fabricDrawingService.createPieceGroup(
+        piece,
+        isDarkMode,
+      );
       this.fabricGameService.addPieceObject(piece.id, pieceGroup);
       this.fabricGameService.canvas!.add(pieceGroup);
     });
@@ -391,7 +437,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     }
   }
 
-
   // 处理棋子移动（支持多步移动）
   private handlePieceMove(piece: Piece, direction: Direction, steps: number) {
     const operationStartTime = Date.now();
@@ -402,13 +447,27 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
     // 执行多步移动
     for (let step = 0; step < steps; step++) {
-      if (this.pieceMovementService.canMove(currentPiece, direction, this.boardState(), this.boardWidth, this.boardHeight)) {
-        const moveResult = this.pieceMovementService.movePiece(currentPiece, direction, this.boardState(), this.boardWidth, this.boardHeight);
+      if (
+        this.pieceMovementService.canMove(
+          currentPiece,
+          direction,
+          this.boardState(),
+          this.boardWidth,
+          this.boardHeight,
+        )
+      ) {
+        const moveResult = this.pieceMovementService.movePiece(
+          currentPiece,
+          direction,
+          this.boardState(),
+          this.boardWidth,
+          this.boardHeight,
+        );
         if (moveResult) {
           // 更新状态
           this.store.updatePiece(moveResult.updatedPiece);
           this.store.updateBoard(moveResult.updatedBoardState);
-          this.steps.update(steps => steps + 1);
+          this.steps.update((steps) => steps + 1);
           totalStepsMoved += 1;
           currentPiece = moveResult.updatedPiece;
 
@@ -421,7 +480,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
           if (!this.isGameStarted()) {
             this.startTimer();
           }
-
         } else {
           break;
         }
@@ -435,7 +493,13 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       const finalPosition: Position = { x: currentPiece.x, y: currentPiece.y };
 
       // 记录操作步骤
-      this.recordGameStep(piece, originalPosition, finalPosition, direction, operationStartTime);
+      this.recordGameStep(
+        piece,
+        originalPosition,
+        finalPosition,
+        direction,
+        operationStartTime,
+      );
 
       // 播放移动音效
       this.audioService.playWoodSound();
@@ -450,7 +514,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       this.audioService.playFailSound();
     }
   }
-
 
   // 触摸移动事件
   onTouchMove(event: TouchEvent) {
@@ -524,16 +587,21 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   // 前往下一关
   goToNextLevel() {
     this.audioService.playClickSound();
-    const currentNames = this.dataSetNames();
-    const currentName = this.dataSetName();
-    const currentIndex = currentNames.indexOf(currentName);
+    const currentLevel = this.currentLevel();
+    if (!currentLevel) {
+      console.error('当前关卡信息不存在');
+      return;
+    }
 
-    if (currentIndex < currentNames.length - 1) {
-      const nextLevel = currentNames[currentIndex + 1];
-      this.router.navigate(['game-board-fabric'], {
-        queryParams: { level: nextLevel },
-        replaceUrl: true
+    // 通过LevelService获取下一个关卡
+    const nextLevel = this.levelService.getNextLevel(currentLevel.id);
+    if (nextLevel) {
+      this.router.navigate(['fabric'], {
+        queryParams: { levelId: nextLevel.id },
+        replaceUrl: true,
       });
+    } else {
+      console.log('已经是最后一关');
     }
   }
 
@@ -562,11 +630,14 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
 
   // 检查是否有下一关
   hasNextLevel(): boolean {
-    const currentNames = this.dataSetNames();
-    const currentName = this.dataSetName();
-    const currentIndex = currentNames.indexOf(currentName);
+    const currentLevel = this.currentLevel();
+    if (!currentLevel) {
+      return false;
+    }
 
-    return currentIndex < currentNames.length - 1;
+    // 通过LevelService检查是否有下一关
+    const nextLevel = this.levelService.getNextLevel(currentLevel.id);
+    return nextLevel !== null;
   }
 
   // 关闭完成Modal
@@ -598,11 +669,12 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.gameStartTime.set(Date.now());
     this.gameTime.set(0);
 
-
     // 每秒更新一次游戏时间
     this.timerSubscription = interval(1000).subscribe(() => {
       if (this.gameStartTime()) {
-        this.gameTime.set(Math.floor((Date.now() - this.gameStartTime()!) / 1000));
+        this.gameTime.set(
+          Math.floor((Date.now() - this.gameStartTime()!) / 1000),
+        );
       }
     });
   }
@@ -630,9 +702,14 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     this.currentStepNumber.set(0);
   }
 
-
   // 记录操作步骤
-  private recordGameStep(piece: Piece, fromPosition: Position, toPosition: Position, direction: Direction, operationStartTime: number) {
+  private recordGameStep(
+    piece: Piece,
+    fromPosition: Position,
+    toPosition: Position,
+    direction: Direction,
+    operationStartTime: number,
+  ) {
     if (!this.gameStartTime) return;
 
     const now = Date.now();
@@ -645,7 +722,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
       toPosition: { ...toPosition },
       direction,
       distance: this.calculateDistance(fromPosition, toPosition, direction),
-      duration: now - operationStartTime
+      duration: now - operationStartTime,
     };
 
     this.gameSteps.push(step);
@@ -653,7 +730,11 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   // 计算移动距离
-  private calculateDistance(from: Position, to: Position, direction: Direction): number {
+  private calculateDistance(
+    from: Position,
+    to: Position,
+    direction: Direction,
+  ): number {
     switch (direction) {
       case Direction.Up:
       case Direction.Down:
@@ -685,14 +766,14 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
         currentLevel.id,
         this.steps(),
         this.gameTime(),
-        this.gameSteps
+        this.gameSteps,
       );
 
       console.log('Game history saved with steps:', {
         levelId: currentLevel.id,
         steps: this.steps,
         time: this.gameTime,
-        gameStepsCount: this.gameSteps.length
+        gameStepsCount: this.gameSteps.length,
       });
     } catch (error) {
       console.error('Failed to save game history:', error);
@@ -700,16 +781,22 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   // 保存游戏进度并处理关卡解锁
-  private async saveGameProgressAndUnlock(levelId: string, steps: number, time: number) {
+  private async saveGameProgressAndUnlock(
+    levelId: string,
+    steps: number,
+    time: number,
+  ) {
     try {
       // 保存游戏进度
       await this.gameStorage.saveProgress(levelId, steps, time);
-      
+
       // 处理关卡解锁逻辑
       const nextLevelId = await this.levelStateService.completeLevel(levelId);
-      
+
       if (nextLevelId) {
-        console.log(`🎉 关卡 "${levelId}" 完成，已解锁下一关: "${nextLevelId}"`);
+        console.log(
+          `🎉 关卡 "${levelId}" 完成，已解锁下一关: "${nextLevelId}"`,
+        );
       } else {
         console.log(`🏆 恭喜！你已完成关卡 "${levelId}"`);
       }
@@ -718,43 +805,45 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     }
   }
 
-  // 获取完成评价
-  getCompletionRating(): string {
-    const steps = this.steps;
+  // 获取完成评价 - 使用computed避免频繁重计算
+  completionRating = computed(() => {
+    const steps = this.steps();
     const currentLevel = this.currentLevel();
 
     // 获取关卡的实际最优步数，如果没有则使用基于难度的默认值
-    const optimalSteps = currentLevel?.minSteps || this.getDefaultThresholdByDifficulty(currentLevel?.difficulty);
+    const optimalSteps =
+      currentLevel?.minSteps ||
+      this.getDefaultThresholdByDifficulty(currentLevel?.difficulty);
 
     // 计算步数与最优步数的比率
-    const efficiency = steps() / optimalSteps;
+    const efficiency = steps / optimalSteps;
 
     // 使用与GameStorageService.calculateStars()一致的标准
     let ratingKey: string;
     if (efficiency <= 1.1) {
-      ratingKey = 'rating.perfect';  // 3星：110%以内
+      ratingKey = 'rating.perfect'; // 3星：110%以内
     } else if (efficiency <= 1.5) {
-      ratingKey = 'rating.excellent';  // 2星：150%以内
+      ratingKey = 'rating.excellent'; // 2星：150%以内
     } else {
-      ratingKey = 'rating.good';  // 1星：超过150%
+      ratingKey = 'rating.good'; // 1星：超过150%
     }
 
     // 打印评分详情（用于调试）
     const rating = this.translate.instant(ratingKey);
     console.log('🏆 评分详情:', {
-      实际步数: steps(),
+      实际步数: steps,
       最优步数: optimalSteps,
       效率比: (efficiency * 100).toFixed(1) + '%',
       星级评价: rating,
       关卡信息: {
         id: currentLevel?.id,
         difficulty: currentLevel?.difficulty,
-        configuredMinSteps: currentLevel?.minSteps
-      }
+        configuredMinSteps: currentLevel?.minSteps,
+      },
     });
 
     return this.translate.instant(ratingKey);
-  }
+  });
 
   // 根据难度获取默认阈值（当关卡没有minSteps时使用）
   private getDefaultThresholdByDifficulty(difficulty?: string): number {
@@ -775,7 +864,6 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     return [...this.gameSteps];
   }
 
-
   // 演示：打印详细的操作步骤（开发调试用）
   printGameSteps() {
     console.log('=== 游戏操作步骤详情 ===');
@@ -791,7 +879,7 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
         方向: step.direction,
         距离: step.distance,
         耗时: step.duration + 'ms',
-        时间戳: step.timestamp + 'ms'
+        时间戳: step.timestamp + 'ms',
       });
     });
   }

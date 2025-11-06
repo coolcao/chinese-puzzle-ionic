@@ -46,7 +46,10 @@ export class ProfileComponent implements OnInit {
   settings = this.store.settings;
   isDarkMode = computed(() => this.settings().isDarkMode);
 
-  constructor(private router: Router, private translate: TranslateService) { }
+  constructor(
+    private router: Router,
+    private translate: TranslateService,
+  ) {}
 
   async ngOnInit() {
     await this.loadUserData();
@@ -66,7 +69,7 @@ export class ProfileComponent implements OnInit {
       // 并行加载统计数据和历史记录
       const [stats, history] = await Promise.all([
         this.gameStorage.getStats(),
-        this.gameStorage.getGameHistory()
+        this.gameStorage.getGameHistory(),
       ]);
 
       this.gameStats.set(stats);
@@ -154,9 +157,10 @@ export class ProfileComponent implements OnInit {
   // 获取难度显示文本
   getDifficultyText(difficulty: string): string {
     const difficultyMap: { [key: string]: string } = {
-      'easy': this.translate.instant('myProfile.difficultyEasy'),
-      'medium': this.translate.instant('myProfile.difficultyMedium'),
-      'hard': this.translate.instant('myProfile.difficultyHard')
+      beginner: this.translate.instant('myProfile.difficultyBeginner'),
+      easy: this.translate.instant('myProfile.difficultyEasy'),
+      medium: this.translate.instant('myProfile.difficultyMedium'),
+      hard: this.translate.instant('myProfile.difficultyHard'),
     };
     return difficultyMap[difficulty] || difficulty;
   }
@@ -192,7 +196,7 @@ export class ProfileComponent implements OnInit {
   // 获取本地化的关卡名称
   getLevelName(record: GameHistoryRecord): string {
     const currentLang = this.translate.currentLang || 'zh';
-    const level = levels.find(l => l.id === record.levelId);
+    const level = levels.find((l) => l.id === record.levelId);
 
     if (currentLang === 'en' && level?.nameEn) {
       return level.nameEn;

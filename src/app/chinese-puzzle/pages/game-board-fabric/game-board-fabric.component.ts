@@ -729,21 +729,20 @@ export class GameBoardFabricComponent implements OnInit, AfterViewInit, OnDestro
     // 计算步数与最优步数的比率
     const efficiency = steps() / optimalSteps;
 
+    // 使用与GameStorageService.calculateStars()一致的标准
     let ratingKey: string;
-    if (efficiency <= 1.05) {
-      ratingKey = 'rating.perfect';
-    } else if (efficiency <= 1.4) {
-      ratingKey = 'rating.excellent';
-    } else if (efficiency <= 1.6) {
-      ratingKey = 'rating.good';
+    if (efficiency <= 1.1) {
+      ratingKey = 'rating.perfect';  // 3星：110%以内
+    } else if (efficiency <= 1.5) {
+      ratingKey = 'rating.excellent';  // 2星：150%以内
     } else {
-      ratingKey = 'rating.needImprovement';
+      ratingKey = 'rating.good';  // 1星：超过150%
     }
 
     // 打印评分详情（用于调试）
     const rating = this.translate.instant(ratingKey);
     console.log('🏆 评分详情:', {
-      实际步数: steps,
+      实际步数: steps(),
       最优步数: optimalSteps,
       效率比: (efficiency * 100).toFixed(1) + '%',
       星级评价: rating,

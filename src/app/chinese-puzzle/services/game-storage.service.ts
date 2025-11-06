@@ -310,7 +310,7 @@ export class GameStorageService {
         return `继续努力！${starsDisplay}|Keep Trying! ${starsDisplay}`;
       }
     }
-    return '继续努力！💪|Keep Trying! 💪';
+    return '继续努力！⭐|Keep Trying! ⭐';
   }
 
   private calculateStars(levelId: string, steps: number): number {

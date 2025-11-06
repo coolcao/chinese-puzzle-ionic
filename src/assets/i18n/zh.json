@@ -150,10 +150,10 @@
     }
   },
   "rating": {
-    "perfect": "⭐⭐⭐⭐⭐",
-    "excellent": "⭐⭐⭐⭐",
-    "good": "⭐⭐⭐",
-    "needImprovement": "⭐⭐"
+    "perfect": "完美通关！⭐⭐⭐",
+    "excellent": "表现优秀！⭐⭐",
+    "good": "继续努力！⭐",
+    "needImprovement": "继续努力！⭐"
   },
   "gameInstructions": {
     "title": "游戏指南",

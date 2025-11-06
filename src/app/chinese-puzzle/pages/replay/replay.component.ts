@@ -18,7 +18,7 @@ import {
 import { FabricGameService } from '../game-board-fabric/services/fabric-game.service';
 import { FabricDrawingService } from '../game-board-fabric/services/fabric-drawing.service';
 import { levels } from '../../data/data-set';
-import { interval, Subscription } from 'rxjs';
+import { interval } from 'rxjs';
 import { ImageLoadingService } from '../../services/image-loading.service';
 import { ToastController } from '@ionic/angular';
 import { LanguageService } from '../../services/language.service';
@@ -51,7 +51,8 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
   countdownValue = 0;
 
   historyId: string | null = null;
-  private playbackTimer: Subscription | null = null;
+  private playbackTimerId: number | null = null;
+  private isFrameInProgress = false;
   private resizeObserver: ResizeObserver | null = null;
   private darkModeMediaQuery: MediaQueryList | null = null;
   private darkModeListener: ((e: MediaQueryListEvent) => void) | null = null;
@@ -274,14 +275,10 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   play() {
-    if (!this.historyRecord || !this.currentLevel) return;
+    if (!this.historyRecord || !this.currentLevel || this.isPlaying) return;
 
     this.isPlaying = true;
-    const frameInterval = 1000 / this.playbackSpeed;
-
-    this.playbackTimer = interval(frameInterval).subscribe(() => {
-      this.nextFrame();
-    });
+    this.scheduleNextFrame();
   }
 
   pause() {
@@ -290,26 +287,61 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private stopPlayback() {
-    if (this.playbackTimer) {
-      this.playbackTimer.unsubscribe();
-      this.playbackTimer = null;
+    if (this.playbackTimerId !== null) {
+      clearTimeout(this.playbackTimerId);
+      this.playbackTimerId = null;
     }
   }
 
-  private async nextFrame() {
-    if (!this.historyRecord) return;
-
-    if (this.currentStepIndex >= this.historyRecord.gameSteps.length) {
-      this.pause();
-      this.showToast(this.translate.instant('replay.completed'));
+  private scheduleNextFrame() {
+    if (!this.isPlaying) {
       return;
     }
 
-    const currentGameStep = this.historyRecord.gameSteps[this.currentStepIndex];
-    await this.executeStep(currentGameStep);
-    this.currentStepIndex++;
-    // 当前步数应该是已完成的步数，最大不超过总步数
-    this.currentStep = Math.min(this.currentStepIndex, this.totalSteps);
+    if (this.playbackTimerId !== null) {
+      clearTimeout(this.playbackTimerId);
+    }
+
+    const frameInterval = Math.max(16, 1000 / this.playbackSpeed);
+
+    this.playbackTimerId = window.setTimeout(async () => {
+      this.playbackTimerId = null;
+      if (this.isFrameInProgress) {
+        this.scheduleNextFrame();
+        return;
+      }
+
+      await this.nextFrame();
+    }, frameInterval);
+  }
+
+  private async nextFrame() {
+    if (!this.historyRecord) {
+      return;
+    }
+
+    this.isFrameInProgress = true;
+
+    try {
+      if (this.currentStepIndex >= this.historyRecord.gameSteps.length) {
+        this.pause();
+        this.showToast(this.translate.instant('replay.completed'));
+        return;
+      }
+
+      const currentGameStep =
+        this.historyRecord.gameSteps[this.currentStepIndex];
+      await this.executeStep(currentGameStep);
+      this.currentStepIndex++;
+      // 当前步数应该是已完成的步数，最大不超过总步数
+      this.currentStep = Math.min(this.currentStepIndex, this.totalSteps);
+    } finally {
+      this.isFrameInProgress = false;
+
+      if (this.isPlaying && this.currentStepIndex < this.totalSteps) {
+        this.scheduleNextFrame();
+      }
+    }
   }
 
   private async executeStep(step: GameStep) {
@@ -409,13 +441,25 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
     this.playbackSpeed = speeds[nextIndex];
 
     if (this.isPlaying) {
-      this.pause();
-      this.play();
+      if (this.playbackTimerId !== null) {
+        clearTimeout(this.playbackTimerId);
+        this.playbackTimerId = null;
+      }
+
+      if (!this.isFrameInProgress) {
+        this.scheduleNextFrame();
+      }
     }
   }
 
   getSpeedText(): string {
     return `${this.playbackSpeed}x`;
+  }
+
+  getCardHeight(): number {
+    // 使用信号值确保稳定的高度计算
+    const cellSize = this.fabricGameService.cellSizeSignal();
+    return cellSize > 0 ? this.fabricGameService.boardHeight * cellSize : 400; // 400px作为默认高度
   }
 
   goBack() {

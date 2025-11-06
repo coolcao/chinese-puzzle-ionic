@@ -28,9 +28,7 @@
       <div class="flex h-full w-full items-center justify-center">
         <div
           class="m-6 flex w-80 flex-col justify-between rounded-lg border-2 border-wood-border bg-wood-light shadow-lg dark:bg-dark-wood-lighter dark:text-wood"
-          [style.height.px]="
-            fabricGameService.boardHeight * fabricGameService.cellSize
-          "
+          [style.height.px]="getCardHeight()"
         >
           <div class="rounded-t-lg border-b border-wood-border p-6">
             <h2

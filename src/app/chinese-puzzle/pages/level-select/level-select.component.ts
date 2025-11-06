@@ -4,7 +4,6 @@ import { GameStorageService } from '../../services/game-storage.service';
 import { LevelStateService } from '../../services/level-state.service';
 import { LanguageService } from '../../services/language.service';
 import { LevelStore } from 'src/app/chinese-puzzle/level.store';
-import { GameProgress } from '../../chinese-puzzle.type';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -31,6 +30,39 @@ export class LevelSelectComponent implements OnInit {
   // 检查是否为开发模式
   get isDebugMode(): boolean {
     return !environment.production;
+  }
+
+  // 获取所有难度级别的配置
+  get difficultyLevels() {
+    return [
+      {
+        key: 'easy',
+        translationKey: 'levels.difficulty.easy',
+        levels: this.groupedLevelsWithUnlock().easy,
+        badgeClasses: {
+          // completed: 'border-yellow-300 bg-yellow-100 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200',
+          uncompleted: 'border-green-300 bg-green-100 text-green-800 dark:border-green-700 dark:bg-green-900 dark:text-green-200'
+        }
+      },
+      {
+        key: 'medium',
+        translationKey: 'levels.difficulty.medium',
+        levels: this.groupedLevelsWithUnlock().medium,
+        badgeClasses: {
+          // completed: 'border-yellow-300 bg-yellow-100 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200',
+          uncompleted: 'border-yellow-300 bg-yellow-100 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200'
+        }
+      },
+      {
+        key: 'hard',
+        translationKey: 'levels.difficulty.hard',
+        levels: this.groupedLevelsWithUnlock().hard,
+        badgeClasses: {
+          // completed: 'border-yellow-300 bg-yellow-100 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200',
+          uncompleted: 'border-red-300 bg-red-100 text-red-800 dark:border-red-700 dark:bg-red-900 dark:text-red-200'
+        }
+      }
+    ];
   }
 
 

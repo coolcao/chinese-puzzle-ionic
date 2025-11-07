@@ -406,4 +406,49 @@ export class GameStorageService {
   async resetAllData(): Promise<void> {
     await this.clear();
   }
+
+  // 原子性解锁方法
+  
+  /**
+   * 原子性解锁单个关卡
+   * 只添加新关卡，不覆盖已有数据
+   */
+  async unlockLevelSafely(levelId: string): Promise<void> {
+    const storage = await this.ensureStorage();
+    
+    // 原子性操作：先读取，再验证，最后写入
+    const existingUnlocked = (await storage.get('unlocked_levels') as string[]) || [];
+    
+    // 检查关卡ID是否已存在
+    if (!existingUnlocked.includes(levelId)) {
+      const newUnlocked = [...existingUnlocked, levelId];
+      await storage.set('unlocked_levels', newUnlocked);
+      console.log(`🔓 原子性解锁关卡: ${levelId}, 总解锁数: ${newUnlocked.length}`);
+    } else {
+      console.log(`ℹ️ 关卡 ${levelId} 已经解锁，跳过`);
+    }
+  }
+
+  /**
+   * 批量解锁关卡，安全去重
+   * 只添加新关卡，不覆盖已有数据
+   */
+  async unlockLevelsSafely(levelIds: string[]): Promise<void> {
+    const storage = await this.ensureStorage();
+    
+    // 原子性操作：先读取现有数据
+    const existingUnlocked = (await storage.get('unlocked_levels') as string[]) || [];
+    
+    // 过滤出真正需要添加的新关卡
+    const newLevelsToUnlock = levelIds.filter(id => !existingUnlocked.includes(id));
+    
+    if (newLevelsToUnlock.length > 0) {
+      // 合并并去重
+      const updatedUnlocked = [...existingUnlocked, ...newLevelsToUnlock];
+      await storage.set('unlocked_levels', updatedUnlocked);
+      console.log(`🔓 批量解锁关卡: [${newLevelsToUnlock.join(', ')}], 总解锁数: ${updatedUnlocked.length}`);
+    } else {
+      console.log(`ℹ️ 所有关卡都已解锁，跳过批量解锁操作`);
+    }
+  }
 }

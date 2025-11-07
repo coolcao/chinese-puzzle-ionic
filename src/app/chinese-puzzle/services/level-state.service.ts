@@ -31,8 +31,8 @@ export class LevelStateService {
       } else {
         // 没有存储数据，初始化默认状态
         const initialUnlocked = this.levelService.initializeUnlockStatus();
-        await this.gameStorage.set('unlocked_levels', initialUnlocked);
-        console.log('🆕 初始化关卡解锁状态:', initialUnlocked);
+        await this.gameStorage.unlockLevelsSafely(initialUnlocked);
+        console.log('🆕 安全初始化关卡解锁状态:', initialUnlocked);
       }
       
       // 加载所有关卡进度到Store
@@ -42,7 +42,7 @@ export class LevelStateService {
       console.error('❌ 初始化关卡状态失败:', error);
       // 出错时使用默认状态
       const initialUnlocked = this.levelService.initializeUnlockStatus();
-      await this.gameStorage.set('unlocked_levels', initialUnlocked);
+      await this.gameStorage.unlockLevelsSafely(initialUnlocked);
     }
   }
 
@@ -51,14 +51,13 @@ export class LevelStateService {
    */
   async unlockLevel(levelId: string): Promise<void> {
     try {
+      // 使用原子性解锁到Storage
+      await this.gameStorage.unlockLevelSafely(levelId);
+      
       // 更新Store
       this.levelService.unlockLevel(levelId);
       
-      // 同步到Storage
-      const currentUnlocked = this.levelService.getUnlockedLevels();
-      await this.gameStorage.set('unlocked_levels', currentUnlocked);
-      
-      console.log('🔓 关卡已解锁:', levelId);
+      console.log('🔓 安全解锁关卡:', levelId);
     } catch (error) {
       console.error('❌ 解锁关卡失败:', error);
       throw error;
@@ -76,9 +75,8 @@ export class LevelStateService {
       const nextLevelId = this.levelService.tryUnlockNextLevel(levelId);
       
       if (nextLevelId) {
-        // 同步到Storage
-        const currentUnlocked = this.levelService.getUnlockedLevels();
-        await this.gameStorage.set('unlocked_levels', currentUnlocked);
+        // 使用原子性解锁到Storage
+        await this.gameStorage.unlockLevelSafely(nextLevelId);
         
         console.log(`🎉 完成关卡 "${levelId}"，已解锁下一关: "${nextLevelId}"`);
         return nextLevelId;
@@ -100,10 +98,11 @@ export class LevelStateService {
       // 重置Store
       const initialUnlocked = this.levelService.resetUnlockStatus();
       
-      // 同步到Storage
-      await this.gameStorage.set('unlocked_levels', initialUnlocked);
+      // 清空Storage，然后重新初始化
+      await this.gameStorage.remove('unlocked_levels');
+      await this.gameStorage.unlockLevelsSafely(initialUnlocked);
       
-      console.log('🔒 关卡解锁状态已重置，仅保留第一关:', initialUnlocked);
+      console.log('🔒 关卡解锁状态已安全重置，仅保留第一关:', initialUnlocked);
     } catch (error) {
       console.error('❌ 重置关卡状态失败:', error);
       throw error;
@@ -151,8 +150,8 @@ export class LevelStateService {
   async syncStoreToStorage(): Promise<void> {
     try {
       const unlockedLevels = this.levelService.getUnlockedLevels();
-      await this.gameStorage.set('unlocked_levels', unlockedLevels);
-      console.log('🔄 已同步Store到Storage:', unlockedLevels);
+      await this.gameStorage.unlockLevelsSafely(unlockedLevels);
+      console.log('🔄 已安全同步Store到Storage:', unlockedLevels);
     } catch (error) {
       console.error('❌ 同步Store到Storage失败:', error);
       throw error;

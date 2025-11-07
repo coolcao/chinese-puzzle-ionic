@@ -52,7 +52,7 @@ export class ProfileComponent implements OnInit {
   constructor(
     private router: Router,
     private translate: TranslateService,
-  ) {}
+  ) { }
 
   async ngOnInit() {
     await this.loadUserData();
@@ -61,7 +61,7 @@ export class ProfileComponent implements OnInit {
   // 返回首页
   goBack() {
     this.audioService.playClickSound();
-    this.router.navigate(['']);
+    this.router.navigate([''], { replaceUrl: true });
   }
 
   // 加载用户数据

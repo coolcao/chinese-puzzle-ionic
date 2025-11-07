@@ -114,143 +114,184 @@
           </div>
 
           <div *ngIf="currentTutorialData" class="flex-1 p-6">
-            <div class="mb-4 flex items-center justify-between">
-              <div class="flex-1">
-                <div class="mb-2 flex items-center space-x-3">
-                  <span class="text-lg">
-                    {{
-                      currentTutorialData.type === "interact"
-                        ? "👆"
-                        : currentTutorialData.type === "highlight"
-                          ? "✨"
-                          : currentTutorialData.type === "move"
-                            ? "🎯"
-                            : "📖"
-                    }}
-                  </span>
-                  <h4
-                    class="text-lg font-bold text-wood-text dark:text-wood-lighter"
-                  >
-                    {{ currentTutorialData.title }}
-                  </h4>
+            <!-- PC端：错误提示时完全替换标题和内容，否则显示正常教程 -->
+            @if (showTutorialError) {
+              <!-- 错误提示模式 - 替换标题区域 -->
+              <div class="mb-4 flex items-center justify-between">
+                <div class="flex-1">
+                  <div class="mb-2 flex items-center space-x-3">
+                    <span class="text-lg">⚠️</span>
+                    <h4 class="text-lg font-bold text-red-600 dark:text-red-400">
+                      操作错误
+                    </h4>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm font-medium text-wood-text/80 dark:text-wood-lighter/80">
+                      {{ "tutorial.step" | translate }}
+                      {{ currentTutorialStep + 1 }}/{{ tutorialSteps.length }}
+                    </span>
+                  </div>
                 </div>
+                <button
+                  (click)="skipTutorial()"
+                  appClickSound
+                  class="rounded-lg bg-wood-dark px-3 py-1.5 text-xs font-medium text-wood-lighter transition-colors md:hover:bg-wood-darker dark:bg-dark-wood-darker dark:md:hover:bg-dark-wood"
+                >
+                  {{ "tutorial.skip" | translate }}
+                </button>
+              </div>
+
+              <!-- 错误提示内容 -->
+              <div class="rounded-lg border border-red-500 bg-red-50 px-2 py-1.5 shadow-sm dark:border-red-400 dark:bg-red-900/80">
                 <div class="flex items-center space-x-2">
-                  <span
-                    class="text-sm font-medium text-wood-text/80 dark:text-wood-lighter/80"
+                  <div class="flex-shrink-0">
+                    <svg
+                      class="h-4 w-4 text-red-500 dark:text-red-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.314 18.5c-.77.833.192 2.5 1.732 2.5z"
+                      />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-xs font-medium text-red-800 dark:text-red-200">
+                      {{ tutorialError }}
+                    </p>
+                  </div>
+                  <button
+                    (click)="hideTutorialError()"
+                    class="flex-shrink-0 text-red-500 md:hover:text-red-700 dark:text-red-400 dark:md:hover:text-red-200"
                   >
-                    {{ "tutorial.step" | translate }}
-                    {{ currentTutorialStep + 1 }}/{{ tutorialSteps.length }}
-                  </span>
+                    <svg
+                      class="h-3 w-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
                 </div>
+              </div>
+
+              <!-- 错误状态下的进度条 -->
+              <div class="mb-4 mt-4 flex space-x-1.5">
+                <div
+                  *ngFor="let step of tutorialSteps; let i = index"
+                  class="h-1.5 flex-1 rounded-full transition-colors"
+                  [ngClass]="{
+                    'bg-wood-darker dark:bg-wood-lighter':
+                      i === currentTutorialStep,
+                    'bg-wood-dark/60 dark:bg-wood/60': i < currentTutorialStep,
+                    'bg-wood/30 dark:bg-dark-wood/30': i > currentTutorialStep,
+                  }"
+                ></div>
+              </div>
+            } @else {
+              <!-- 正常教程模式 -->
+              <div class="mb-4 flex items-center justify-between">
+                <div class="flex-1">
+                  <div class="mb-2 flex items-center space-x-3">
+                    <span class="text-lg">
+                      {{
+                        currentTutorialData.type === "interact"
+                          ? "👆"
+                          : currentTutorialData.type === "highlight"
+                            ? "✨"
+                            : currentTutorialData.type === "move"
+                              ? "🎯"
+                              : "📖"
+                      }}
+                    </span>
+                    <h4
+                      class="text-lg font-bold text-wood-text dark:text-wood-lighter"
+                    >
+                      {{ currentTutorialData.title }}
+                    </h4>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <span
+                      class="text-sm font-medium text-wood-text/80 dark:text-wood-lighter/80"
+                    >
+                      {{ "tutorial.step" | translate }}
+                      {{ currentTutorialStep + 1 }}/{{ tutorialSteps.length }}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  (click)="skipTutorial()"
+                  appClickSound
+                  class="rounded-lg bg-wood-dark px-3 py-1.5 text-xs font-medium text-wood-lighter transition-colors md:hover:bg-wood-darker dark:bg-dark-wood-darker dark:md:hover:bg-dark-wood"
+                >
+                  {{ "tutorial.skip" | translate }}
+                </button>
+              </div>
+
+              <p class="mb-4 text-sm text-wood-text/90 dark:text-wood-light/90">
+                {{ currentTutorialData.description }}
+              </p>
+
+              <div class="mb-4 flex space-x-1.5">
+                <div
+                  *ngFor="let step of tutorialSteps; let i = index"
+                  class="h-1.5 flex-1 rounded-full transition-colors"
+                  [ngClass]="{
+                    'bg-wood-darker dark:bg-wood-lighter':
+                      i === currentTutorialStep,
+                    'bg-wood-dark/60 dark:bg-wood/60': i < currentTutorialStep,
+                    'bg-wood/30 dark:bg-dark-wood/30': i > currentTutorialStep,
+                  }"
+                ></div>
+              </div>
+
+              <div
+                *ngIf="currentTutorialData.waitForUser"
+                class="flex items-center justify-center space-x-2 rounded-lg bg-wood/30 py-2 dark:bg-dark-wood/30"
+              >
+                <div class="flex space-x-1.5">
+                  <div
+                    class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+                  ></div>
+                  <div
+                    class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+                    style="animation-delay: 0.1s"
+                  ></div>
+                  <div
+                    class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+                    style="animation-delay: 0.2s"
+                  ></div>
+                </div>
+                <span
+                  class="text-sm font-medium text-wood-text dark:text-wood-lighter"
+                  >{{ "tutorial.followInstructions" | translate }}</span
+                >
               </div>
 
               <button
-                (click)="skipTutorial()"
+                *ngIf="!currentTutorialData.waitForUser"
+                (click)="nextTutorialStep()"
                 appClickSound
-                class="rounded-lg bg-wood-dark px-3 py-1.5 text-xs font-medium text-wood-lighter transition-colors hover:bg-wood-darker dark:bg-dark-wood-darker dark:hover:bg-dark-wood"
+                class="w-full rounded-lg bg-wood-darker py-2.5 font-semibold text-wood-lighter transition-colors md:hover:bg-wood-dark dark:bg-wood-dark dark:text-wood-text dark:md:hover:bg-wood"
               >
-                {{ "tutorial.skip" | translate }}
+                {{
+                  currentTutorialStep === tutorialSteps.length - 1
+                    ? ("tutorial.completeNext" | translate)
+                    : ("tutorial.nextStep" | translate)
+                }}
               </button>
-            </div>
-
-            <p class="mb-4 text-sm text-wood-text/90 dark:text-wood-light/90">
-              {{ currentTutorialData.description }}
-            </p>
-
-            <div class="mb-4 flex space-x-1.5">
-              <div
-                *ngFor="let step of tutorialSteps; let i = index"
-                class="h-1.5 flex-1 rounded-full transition-colors"
-                [ngClass]="{
-                  'bg-wood-darker dark:bg-wood-lighter':
-                    i === currentTutorialStep,
-                  'bg-wood-dark/60 dark:bg-wood/60': i < currentTutorialStep,
-                  'bg-wood/30 dark:bg-dark-wood/30': i > currentTutorialStep,
-                }"
-              ></div>
-            </div>
-
-            <div
-              *ngIf="currentTutorialData.waitForUser"
-              class="flex items-center justify-center space-x-2 rounded-lg bg-wood/30 py-2 dark:bg-dark-wood/30"
-            >
-              <div class="flex space-x-1.5">
-                <div
-                  class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
-                ></div>
-                <div
-                  class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
-                  style="animation-delay: 0.1s"
-                ></div>
-                <div
-                  class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
-                  style="animation-delay: 0.2s"
-                ></div>
-              </div>
-              <span
-                class="text-sm font-medium text-wood-text dark:text-wood-lighter"
-                >{{ "tutorial.followInstructions" | translate }}</span
-              >
-            </div>
-
-            <button
-              *ngIf="!currentTutorialData.waitForUser"
-              (click)="nextTutorialStep()"
-              appClickSound
-              class="w-full rounded-lg bg-wood-darker py-2.5 font-semibold text-wood-lighter transition-colors hover:bg-wood-dark dark:bg-wood-dark dark:text-wood-text dark:hover:bg-wood"
-            >
-              {{
-                currentTutorialStep === tutorialSteps.length - 1
-                  ? ("tutorial.completeNext" | translate)
-                  : ("tutorial.nextStep" | translate)
-              }}
-            </button>
-            <!-- PC端教程错误提示 - 放在教程模态框下方 -->
-            <div
-              *ngIf="showTutorialError"
-              class="mt-4 rounded-lg border-2 border-red-500 bg-red-50 px-4 py-3 shadow-lg dark:border-red-400 dark:bg-red-900/80"
-            >
-              <div class="flex items-center space-x-3">
-                <div class="flex-shrink-0">
-                  <svg
-                    class="h-5 w-5 text-red-500 dark:text-red-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.314 18.5c-.77.833.192 2.5 1.732 2.5z"
-                    />
-                  </svg>
-                </div>
-                <div class="flex-1">
-                  <p class="text-sm font-medium text-red-800 dark:text-red-200">
-                    {{ tutorialError }}
-                  </p>
-                </div>
-                <button
-                  (click)="hideTutorialError()"
-                  class="flex-shrink-0 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200"
-                >
-                  <svg
-                    class="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
+            }
           </div>
         </div>
       </div>
@@ -282,126 +323,156 @@
         *ngIf="currentTutorialData"
         class="border-b-2 border-wood-border bg-wood-light px-4 py-1.5 shadow-sm backdrop-blur-sm transition-colors duration-300 dark:bg-dark-wood-dark"
       >
-        <div class="mb-1 flex items-center justify-between">
-          <!-- 步骤和标题 -->
-          <div class="flex-1">
-            <h4
-              class="text-sm font-bold text-wood-text dark:text-wood-lighter"
-            >
-              {{ currentTutorialData.title }}
-            </h4>
-          </div>
-
-          <!-- 跳过按钮 -->
-          <button
-            (click)="skipTutorial()"
-            appClickSound
-            class="rounded-lg bg-wood-dark px-3 py-1 text-xs text-wood-lighter transition-colors hover:bg-wood-darker dark:bg-dark-wood-darker dark:text-wood-lighter dark:hover:bg-dark-wood"
-          >
-            {{ "tutorial.skip" | translate }}
-          </button>
-        </div>
-
-        <!-- 描述 -->
-        <p class="mb-1 text-xs text-wood-text dark:text-wood">
-          {{ currentTutorialData.description }}
-        </p>
-
-        <!-- 进度条 -->
-        <div class="mb-1 flex space-x-1">
-          <div
-            *ngFor="let step of tutorialSteps; let i = index"
-            class="h-1 flex-1 rounded-full transition-colors"
-            [ngClass]="{
-              'bg-wood-darker dark:bg-wood-lighter': i === currentTutorialStep,
-              'bg-wood-dark dark:bg-wood': i < currentTutorialStep,
-              'bg-gray-300 dark:bg-gray-600': i > currentTutorialStep,
-            }"
-          ></div>
-        </div>
-
-        <!-- 操作提示或{{ 'tutorialPage.nextStep' | translate }}按钮 -->
-        <div
-          *ngIf="currentTutorialData.waitForUser"
-          class="flex items-center justify-center space-x-2"
-        >
-          <div class="flex space-x-1">
-            <div
-              class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
-            ></div>
-            <div
-              class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
-              style="animation-delay: 0.1s"
-            ></div>
-            <div
-              class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
-              style="animation-delay: 0.2s"
-            ></div>
-          </div>
-          <span class="text-sm text-wood-text dark:text-wood">{{
-            "tutorial.followInstructions" | translate
-          }}</span>
-        </div>
-
-        <button
-          *ngIf="!currentTutorialData.waitForUser"
-          (click)="nextTutorialStep()"
-          appClickSound
-          class="w-full rounded-lg bg-wood-darker py-2 font-medium text-wood-lighter transition-colors hover:bg-wood dark:bg-wood-dark dark:text-wood-text dark:hover:bg-wood"
-        >
-          {{
-            currentTutorialStep === tutorialSteps.length - 1
-              ? ("tutorial.completeNext" | translate)
-              : ("tutorial.nextStep" | translate)
-          }}
-        </button>
-
-        <!-- 移动端教程错误提示 - 放在教程提示栏下方 -->
-        <div
-          *ngIf="showTutorialError"
-          class="mt-2 rounded-lg border-2 border-red-500 bg-red-50 px-3 py-2 shadow-lg dark:border-red-400 dark:bg-red-900/80"
-        >
-          <div class="flex items-center space-x-2">
-            <div class="flex-shrink-0">
-              <svg
-                class="h-4 w-4 text-red-500 dark:text-red-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.314 18.5c-.77.833.192 2.5 1.732 2.5z"
-                />
-              </svg>
-            </div>
+        <!-- 移动端：错误提示时完全替换标题和内容，否则显示正常教程 -->
+        @if (showTutorialError) {
+          <!-- 错误提示模式 - 替换标题区域 -->
+          <div class="mb-1 flex items-center justify-between">
             <div class="flex-1">
-              <p class="text-xs font-medium text-red-800 dark:text-red-200">
-                {{ tutorialError }}
-              </p>
+              <h4 class="text-sm font-bold text-red-600 dark:text-red-400">
+                ⚠️ 操作错误
+              </h4>
             </div>
             <button
-              (click)="hideTutorialError()"
-              class="flex-shrink-0 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200"
+              (click)="skipTutorial()"
+              appClickSound
+              class="rounded-lg bg-wood-dark px-3 py-1 text-xs text-wood-lighter transition-colors md:hover:bg-wood-darker dark:bg-dark-wood-darker dark:text-wood-lighter dark:md:hover:bg-dark-wood"
             >
-              <svg
-                class="h-3 w-3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              {{ "tutorial.skip" | translate }}
             </button>
           </div>
-        </div>
+
+          <!-- 错误提示内容 -->
+          <div class="rounded border border-red-500 bg-red-50 px-2 py-1 shadow-sm dark:border-red-400 dark:bg-red-900/80">
+            <div class="flex items-center space-x-1.5">
+              <div class="flex-shrink-0">
+                <svg
+                  class="h-3 w-3 text-red-500 dark:text-red-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.314 18.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-normal text-red-800 dark:text-red-200">
+                  {{ tutorialError }}
+                </p>
+              </div>
+              <button
+                (click)="hideTutorialError()"
+                class="flex-shrink-0 text-red-500 md:hover:text-red-700 dark:text-red-400 dark:md:hover:text-red-200"
+              >
+                <svg
+                  class="h-2.5 w-2.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- 错误状态下的进度条 -->
+          <div class="mb-1 mt-2 flex space-x-1">
+            <div
+              *ngFor="let step of tutorialSteps; let i = index"
+              class="h-1 flex-1 rounded-full transition-colors"
+              [ngClass]="{
+                'bg-wood-darker dark:bg-wood-lighter': i === currentTutorialStep,
+                'bg-wood-dark dark:bg-wood': i < currentTutorialStep,
+                'bg-gray-300 dark:bg-gray-600': i > currentTutorialStep,
+              }"
+            ></div>
+          </div>
+        } @else {
+          <!-- 正常教程模式 -->
+          <div class="mb-1 flex items-center justify-between">
+            <!-- 步骤和标题 -->
+            <div class="flex-1">
+              <h4
+                class="text-sm font-bold text-wood-text dark:text-wood-lighter"
+              >
+                {{ currentTutorialData.title }}
+              </h4>
+            </div>
+
+            <!-- 跳过按钮 -->
+            <button
+              (click)="skipTutorial()"
+              appClickSound
+              class="rounded-lg bg-wood-dark px-3 py-1 text-xs text-wood-lighter transition-colors md:hover:bg-wood-darker dark:bg-dark-wood-darker dark:text-wood-lighter dark:md:hover:bg-dark-wood"
+            >
+              {{ "tutorial.skip" | translate }}
+            </button>
+          </div>
+
+          <!-- 描述 -->
+          <p class="mb-1 text-xs text-wood-text dark:text-wood">
+            {{ currentTutorialData.description }}
+          </p>
+
+          <!-- 进度条 -->
+          <div class="mb-1 flex space-x-1">
+            <div
+              *ngFor="let step of tutorialSteps; let i = index"
+              class="h-1 flex-1 rounded-full transition-colors"
+              [ngClass]="{
+                'bg-wood-darker dark:bg-wood-lighter': i === currentTutorialStep,
+                'bg-wood-dark dark:bg-wood': i < currentTutorialStep,
+                'bg-gray-300 dark:bg-gray-600': i > currentTutorialStep,
+              }"
+            ></div>
+          </div>
+
+          <!-- 操作提示或下一步按钮 -->
+          <div
+            *ngIf="currentTutorialData.waitForUser"
+            class="flex items-center justify-center space-x-2"
+          >
+            <div class="flex space-x-1">
+              <div
+                class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+              ></div>
+              <div
+                class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+                style="animation-delay: 0.1s"
+              ></div>
+              <div
+                class="h-2 w-2 animate-bounce rounded-full bg-wood-darker dark:bg-wood-lighter"
+                style="animation-delay: 0.2s"
+              ></div>
+            </div>
+            <span class="text-sm text-wood-text dark:text-wood">{{
+              "tutorial.followInstructions" | translate
+            }}</span>
+          </div>
+
+          <button
+            *ngIf="!currentTutorialData.waitForUser"
+            (click)="nextTutorialStep()"
+            appClickSound
+            class="w-full rounded-lg bg-wood-darker py-2 font-medium text-wood-lighter transition-colors md:hover:bg-wood dark:bg-wood-dark dark:text-wood-text dark:md:hover:bg-wood"
+          >
+            {{
+              currentTutorialStep === tutorialSteps.length - 1
+                ? ("tutorial.completeNext" | translate)
+                : ("tutorial.nextStep" | translate)
+            }}
+          </button>
+        }
       </div>
     </div>
 
@@ -441,7 +512,7 @@
         </h3>
         <button
           (click)="showInstructions = false"
-          class="text-wood-text hover:bg-wood-dark dark:text-wood-lighter"
+          class="text-wood-text md:hover:bg-wood-dark dark:text-wood-lighter"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -508,7 +579,7 @@
 
       <button
         (click)="showInstructions = false"
-        class="mt-6 w-full rounded-lg bg-wood-dark py-3 font-medium text-wood-text transition-colors hover:bg-wood/60 dark:bg-wood/30 dark:text-wood-light"
+        class="mt-6 w-full rounded-lg bg-wood-dark py-3 font-medium text-wood-text transition-colors md:hover:bg-wood/60 dark:bg-wood/30 dark:text-wood-light"
       >
         {{ "tutorial.instructions.startGame" | translate }}
       </button>

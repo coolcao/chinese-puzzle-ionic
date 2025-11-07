@@ -60,5 +60,10 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // 插件：自动为所有hover类添加媒体查询
+    function({ addVariant }) {
+      addVariant('hover', '@media (hover: hover) and (pointer: fine) { &:hover }')
+    }
+  ],
 }

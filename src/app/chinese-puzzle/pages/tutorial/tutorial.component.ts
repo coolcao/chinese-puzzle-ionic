@@ -449,9 +449,7 @@ export class TutorialComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // 跳转到关卡选择页面
     setTimeout(() => {
-      console.log('跳转到关卡选择页面');
-
-      this.router.navigate(['levels']);
+      this.router.navigate(['levels'], { replaceUrl: true });
     }, 100);
   }
 

@@ -56,7 +56,9 @@
                   <span
                     class="ml-2 text-sm font-normal text-wood-text/70 dark:text-wood-lighter/70"
                   >
-                    {{ "levels.difficulty." + currentLevel.difficulty | translate }}
+                    {{
+                      "levels.difficulty." + currentLevel.difficulty | translate
+                    }}
                   </span>
                 </div>
               </div>
@@ -86,8 +88,14 @@
                 <div
                   class="flex items-center justify-between text-sm text-wood-text dark:text-wood-lighter"
                 >
-                  <span>{{ translate.instant("replay.currentStep") }}: {{ currentStep }}</span>
-                  <span>{{ translate.instant("replay.totalSteps") }}: {{ totalSteps }}</span>
+                  <span
+                    >{{ translate.instant("replay.currentStep") }}:
+                    {{ currentStep }}</span
+                  >
+                  <span
+                    >{{ translate.instant("replay.totalSteps") }}:
+                    {{ totalSteps }}</span
+                  >
                 </div>
                 <input
                   type="range"
@@ -177,7 +185,7 @@
       <div class="flex items-center justify-center space-x-2 sm:space-x-3">
         <button
           (click)="togglePlayPause()"
-          class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main p-2 text-white shadow-lg sm:p-3"
+          class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main p-2 text-white shadow-lg sm:h-12 sm:w-12 sm:p-3 md:h-14 md:w-14"
           [disabled]="isCountingDown"
         >
           <ion-icon
@@ -205,13 +213,13 @@
         </div>
         <button
           (click)="restartReplay()"
-          class="h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main p-2 text-white shadow-lg sm:p-3"
+          class="h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main p-2 text-white shadow-lg sm:h-12 sm:w-12 sm:p-3 md:h-14 md:w-14"
         >
           <ion-icon name="refresh" class="text-lg sm:text-xl"></ion-icon>
         </button>
         <button
           (click)="changePlaybackSpeed()"
-          class="h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main text-white shadow-lg sm:p-3"
+          class="h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main text-white shadow-lg sm:h-12 sm:w-12 sm:p-3 md:h-14 md:w-14"
         >
           <span class="text-xs font-bold sm:text-sm">{{ getSpeedText() }}</span>
         </button>

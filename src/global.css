@@ -43,80 +43,54 @@
 * {
   /* 移除iOS上的点击高亮 */
   -webkit-tap-highlight-color: transparent;
-  /* 优化触摸延迟 */
+}
+
+/* 防止页面意外缩放 - 修复平板问题 */
+html,
+body {
+  /* 防止双击缩放 */
+  touch-action: pan-x pan-y;
+  /* 确保页面不会溢出导致缩放 */
+  overflow-x: hidden;
+  /* 防止用户选择文本时触发缩放 */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* 只对交互元素应用触摸优化 */
+button,
+[role="button"],
+.btn,
+.cursor-pointer,
+[appClickSound],
+ion-button,
+.tab-button,
+[class*="tab"],
+input,
+textarea,
+select {
+  /* 优化触摸延迟，但不影响页面缩放 */
   touch-action: manipulation;
 }
 
-/* 移动端：增强按钮的触摸反馈 */
+/* 移动端：增强按钮的触摸反馈 - 修复平板缩放问题 */
 @media (hover: none) and (pointer: coarse) {
-  /* 通用按钮基础反馈 */
-  button:active,
-  [role="button"]:active,
-  .btn:active {
-    transform: scale(0.95) !important;
-    transition: transform 0.1s ease-out !important;
-    filter: brightness(0.9) !important;
+
+  /* 只对真正的按钮元素应用触摸反馈，避免过度影响 */
+  button:active {
+    transform: scale(0.98);
+    transition: transform 0.05s ease-out;
+    filter: brightness(0.95);
   }
-  
-  /* 主要操作按钮（Next、确认等） */
-  button[class*="bg-wood-darker"]:active {
-    background-color: rgb(92, 68, 49) !important;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25) !important;
-    transform: scale(0.95) translateY(1px) !important;
-  }
-  
-  /* 次要按钮（跳过、取消等） */
-  button[class*="bg-wood-dark"]:active {
-    background-color: rgb(78, 56, 41) !important;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-    transform: scale(0.95) translateY(1px) !important;
-  }
-  
-  /* 危险按钮（删除、重置等） */
-  button[class*="bg-red"]:active {
-    background-color: rgb(185, 28, 28) !important;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-  }
-  
-  /* 成功按钮（完成、保存等） */
-  button[class*="bg-green"]:active {
-    background-color: rgb(21, 128, 61) !important;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-  }
-  
-  /* 文字按钮（无背景） */
-  button[class*="text-"]:active:not([class*="bg-"]) {
-    opacity: 0.6 !important;
-    transform: scale(0.95) !important;
-    background-color: rgba(0, 0, 0, 0.05) !important;
-    border-radius: 8px !important;
-  }
-  
-  /* 关卡卡片等可点击卡片 */
-  .cursor-pointer:active,
-  [appClickSound]:active {
-    transform: scale(0.97) !important;
-    filter: brightness(0.95) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-    transition: all 0.1s ease-out !important;
-  }
-  
-  /* 浮动操作按钮 */
-  button[class*="rounded-full"]:active {
-    transform: scale(0.9) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-  }
-  
-  /* 特殊处理：Ionic按钮 */
+
+  /* Ionic按钮特殊处理 */
   ion-button:active {
-    transform: scale(0.95) !important;
-    filter: brightness(0.9) !important;
+    transform: scale(0.98);
+    filter: brightness(0.95);
   }
-  
-  /* 导航按钮特殊效果 */
-  .tab-button:active,
-  [class*="tab"]:active {
-    transform: scale(0.95) !important;
-    background-color: rgba(0, 0, 0, 0.1) !important;
-  }
+
+  /* 移除可能导致问题的广泛选择器，改为更具体的目标 */
+  /* 注意：移除了 [appClickSound]:active 和 .cursor-pointer:active 等可能导致问题的规则 */
 }

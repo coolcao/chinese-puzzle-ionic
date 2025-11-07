@@ -119,8 +119,10 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
         );
 
         // 按stepNumber排序gameSteps，确保播放顺序正确
-        this.historyRecord.gameSteps.sort((a, b) => a.stepNumber - b.stepNumber);
-        
+        this.historyRecord.gameSteps.sort(
+          (a, b) => a.stepNumber - b.stepNumber,
+        );
+
         this.totalSteps = this.historyRecord.gameSteps.length;
         this.currentStep = 0;
         this.currentStepIndex = 0;
@@ -482,7 +484,7 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/profile'], { replaceUrl: true });
   }
 
   private lockBoard() {

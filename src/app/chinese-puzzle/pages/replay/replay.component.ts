@@ -118,6 +118,9 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
           JSON.stringify(piecesWithCorrectImages),
         );
 
+        // 按stepNumber排序gameSteps，确保播放顺序正确
+        this.historyRecord.gameSteps.sort((a, b) => a.stepNumber - b.stepNumber);
+        
         this.totalSteps = this.historyRecord.gameSteps.length;
         this.currentStep = 0;
         this.currentStepIndex = 0;
@@ -238,16 +241,24 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
         // 如果已播放完毕，重新开始播放
         this.restartAndPlay();
       } else {
-        // 如果未播放或暂停中，开始倒计时
-        this.startCountdown();
+        // 判断是否从头开始播放
+        if (this.currentStepIndex === 0) {
+          // 从头开始播放，显示倒计时
+          this.startCountdown();
+        } else {
+          // 中途暂停后继续播放，不显示倒计时，直接播放
+          this.play();
+        }
       }
     }
   }
 
   // 检查播放是否已完毕
   private isPlaybackCompleted(): boolean {
-    return !!(this.historyRecord && 
-           this.currentStepIndex >= this.historyRecord.gameSteps.length);
+    return !!(
+      this.historyRecord &&
+      this.currentStepIndex >= this.historyRecord.gameSteps.length
+    );
   }
 
   // 重新开始播放
@@ -340,6 +351,10 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (this.isPlaying && this.currentStepIndex < this.totalSteps) {
         this.scheduleNextFrame();
+      } else if (this.currentStepIndex >= this.totalSteps) {
+        // 播放完成，显示提示并确保按钮状态正确
+        this.pause();
+        this.showToast(this.translate.instant('replay.completed'));
       }
     }
   }
@@ -395,7 +410,11 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
     this.drawBoard();
 
     // 对于seek操作，我们直接设置位置而不使用动画，以提高性能
-    for (let i = 0; i < Math.min(seekStep, this.historyRecord.gameSteps.length); i++) {
+    for (
+      let i = 0;
+      i < Math.min(seekStep, this.historyRecord.gameSteps.length);
+      i++
+    ) {
       const step = this.historyRecord.gameSteps[i];
       // 直接设置位置，不使用动画
       const piece = this.currentPieces.find((p) => p.id === step.pieceId);
@@ -466,7 +485,6 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['/profile']);
   }
 
-
   private lockBoard() {
     if (this.fabricGameService.canvas) {
       this.fabricGameService.canvas.selection = false;
@@ -484,7 +502,8 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
       duration: 2000,
       position: 'top',
       color: 'dark',
-      cssClass: 'replay-toast',
+      cssClass: 'toast',
+      mode: 'md',
     });
     toast.present();
   }

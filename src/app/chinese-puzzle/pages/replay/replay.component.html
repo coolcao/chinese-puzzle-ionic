@@ -53,40 +53,18 @@
                       ? currentLevel.name
                       : currentLevel.nameEn
                   }}
-                </div>
-                <div
-                  class="mt-1 text-xs text-wood-text/70 dark:text-wood-lighter/70"
-                >
-                  {{ "common.difficulty" | translate }}：{{
-                    "levels.difficulty." + currentLevel.difficulty | translate
-                  }}
+                  <span
+                    class="ml-2 text-sm font-normal text-wood-text/70 dark:text-wood-lighter/70"
+                  >
+                    {{ "levels.difficulty." + currentLevel.difficulty | translate }}
+                  </span>
                 </div>
               </div>
             </div>
 
             <!-- 回放状态 -->
             <div class="space-y-4">
-              <div class="flex items-center justify-between">
-                <span class="text-wood-text dark:text-wood-lighter">{{
-                  "replay.steps" | translate
-                }}</span>
-                <div
-                  class="rounded-lg bg-wood/50 px-4 py-2 text-wood-text dark:text-wood-lighter"
-                >
-                  {{ historyRecord?.steps || 0 }}
-                </div>
-              </div>
-
-              <div class="flex items-center justify-between">
-                <span class="text-wood-text dark:text-wood-lighter">{{
-                  "replay.totalSteps" | translate
-                }}</span>
-                <div
-                  class="rounded-lg bg-wood/50 px-4 py-2 font-mono text-wood-text dark:text-wood-lighter"
-                >
-                  {{ totalSteps }}
-                </div>
-              </div>
+              <!-- 移除了步数和总步数显示，避免混淆 -->
             </div>
           </div>
 
@@ -173,23 +151,12 @@
           {{
             currentLanguage === "zh" ? currentLevel.name : currentLevel.nameEn
           }}
+          <span
+            class="ml-2 text-sm font-normal text-wood-text/70 dark:text-wood-light/70"
+          >
+            {{ "levels.difficulty." + currentLevel.difficulty | translate }}
+          </span>
         </h2>
-        <div
-          class="mt-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-wood-text/70 dark:text-wood-light/70"
-        >
-          <span>{{
-            "levels.difficulty." + currentLevel.difficulty | translate
-          }}</span>
-          <span class="hidden sm:inline">•</span>
-          <span
-            >{{ "replay.steps" | translate }}:
-            {{ historyRecord?.steps || 0 }}</span
-          >
-          <span class="hidden sm:inline">•</span>
-          <span
-            >{{ "replay.totalSteps" | translate }}: {{ totalSteps }}</span
-          >
-        </div>
       </div>
     </div>
 

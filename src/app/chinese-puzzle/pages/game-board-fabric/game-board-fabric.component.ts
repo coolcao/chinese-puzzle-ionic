@@ -196,6 +196,12 @@ export class GameBoardFabricComponent
     this.route.queryParams.subscribe((params) => {
       const levelId = params['levelId'];
 
+      // 重要：每次路由参数变化时都要重置游戏状态
+      this.steps.set(0);
+      this.isLevelJustLoaded = true;
+      this.resetTimer();
+      this.resetGameSteps(); // 确保历史记录被正确重置
+
       if (levelId) {
         // URL中指定了关卡，先加载设置，然后手动切换到指定关卡
         const decodedLevelId = decodeURIComponent(levelId);
@@ -726,6 +732,7 @@ export class GameBoardFabricComponent
     };
 
     this.gameSteps.push(step);
+    this.currentStepNumber.set(this.currentStepNumber() + 1);
     console.log('记录操作步骤:', step);
   }
 

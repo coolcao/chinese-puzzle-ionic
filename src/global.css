@@ -31,8 +31,10 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
 
-.replay-toast {
+.toast {
   margin-top: 56px;
+  text-align: center;
+  opacity: 0.8;
 }
 
 /* ===== 移动端触摸优化 ===== */

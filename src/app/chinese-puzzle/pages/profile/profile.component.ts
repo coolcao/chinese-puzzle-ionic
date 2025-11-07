@@ -15,6 +15,7 @@ import { GameHistoryRecord, GameStats } from '../../chinese-puzzle.type';
 import { levels } from '../../data/data-set';
 import { LanguageService } from '../../services/language.service';
 import { ConfirmModalComponent } from '../../components/confirm-modal/confirm-modal.component';
+import { HeaderButton } from '../../components/game-header/game-header.component';
 
 @Component({
   selector: 'app-profile',
@@ -29,6 +30,15 @@ export class ProfileComponent implements OnInit {
   private languageService = inject(LanguageService);
 
   @ViewChild(ConfirmModalComponent) confirmModal!: ConfirmModalComponent;
+
+  // Header按钮配置
+  headerButtons: HeaderButton[] = [
+    {
+      icon: 'refresh',
+      position: 'right',
+      onClick: () => this.refreshData()
+    }
+  ];
 
   // 信号状态管理
   isLoading = signal(true);

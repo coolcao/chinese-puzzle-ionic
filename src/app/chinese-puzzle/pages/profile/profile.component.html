@@ -1,66 +1,14 @@
 <div
   class="flex h-screen flex-col bg-wood-lighter transition-colors duration-300 dark:bg-dark-wood-lighter"
 >
-  <!-- 顶部导航栏 -->
-  <header
-    class="border-b border-wood-border bg-wood-light dark:border-dark-wood-border dark:bg-dark-wood"
-  >
-    <div class="mx-auto max-w-6xl">
-      <div class="flex items-center justify-between px-6 py-4">
-      <!-- 返回按钮 -->
-      <button
-        (click)="goBack()"
-        appClickSound
-        class="flex items-center space-x-2 rounded-lg p-2 text-wood-text hover:bg-wood-lighter dark:text-wood-lighter dark:hover:bg-dark-wood-darker"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-      </button>
-
-      <!-- 标题 -->
-      <h1 class="text-xl font-bold text-wood-text dark:text-wood-lighter">
-        {{ "myProfile.title" | translate }}
-      </h1>
-
-      <!-- 右侧按钮组 -->
-      <div class="flex items-center space-x-2">
-        <!-- 刷新按钮 -->
-        <button
-          (click)="refreshData()"
-          appClickSound
-          class="flex items-center space-x-2 rounded-lg p-2 text-wood-text hover:bg-wood-lighter dark:text-wood-lighter dark:hover:bg-dark-wood-darker"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
-        </button>
-      </div>
-      </div>
-    </div>
-  </header>
+  <!-- 统一的header组件 -->
+  <app-game-header
+    [titleTranslationKey]="'myProfile.title'"
+    [showBackButton]="true"
+    [customButtons]="headerButtons"
+    [maxWidth]="'max-w-6xl'"
+    (backClick)="goBack()"
+  ></app-game-header>
 
   <!-- 主要内容区域 -->
   <div class="flex-1 overflow-hidden">

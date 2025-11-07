@@ -1,4 +1,11 @@
-import { Component, OnInit, computed, inject, signal, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
@@ -52,7 +59,7 @@ export class ProfileComponent implements OnInit {
   constructor(
     private router: Router,
     private translate: TranslateService,
-  ) { }
+  ) {}
 
   async ngOnInit() {
     await this.loadUserData();
@@ -107,7 +114,7 @@ export class ProfileComponent implements OnInit {
   // 回放历史记录
   replay(recordId: string) {
     this.audioService.playClickSound();
-    this.router.navigate(['/replay', recordId], { replaceUrl: true });
+    this.router.navigate(['/replay', recordId]);
   }
 
   // 显示清除历史记录确认框
@@ -119,7 +126,7 @@ export class ProfileComponent implements OnInit {
       warning: this.translate.instant('myProfile.clearHistoryWarning'),
       confirmText: this.translate.instant('myProfile.clearHistory'),
       cancelText: this.translate.instant('common.cancel'),
-      type: 'danger'
+      type: 'danger',
     });
   }
 

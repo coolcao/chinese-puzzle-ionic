@@ -231,7 +231,9 @@
     "controls": "回放控制",
     "completed": "播放完毕",
     "currentStep": "当前步数",
-    "totalSteps": "总步数"
+    "totalSteps": "总步数",
+    "soundOn": "音效已开启",
+    "soundOff": "音效已关闭"
   },
   "levelSelectPage": {
     "title": "选择关卡",

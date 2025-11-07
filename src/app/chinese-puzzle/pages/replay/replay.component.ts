@@ -20,6 +20,7 @@ import { FabricDrawingService } from '../game-board-fabric/services/fabric-drawi
 import { levels } from '../../data/data-set';
 import { interval } from 'rxjs';
 import { ImageLoadingService } from '../../services/image-loading.service';
+import { AudioService } from '../../services/audio.service';
 import { ToastController } from '@ionic/angular';
 import { LanguageService } from '../../services/language.service';
 import { PieceImageService } from '../../services/piece-image.service';
@@ -50,6 +51,9 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
   isCountingDown = false;
   countdownValue = 0;
 
+  // 音效控制
+  isSoundEnabled = true;
+
   historyId: string | null = null;
   private playbackTimerId: number | null = null;
   private isFrameInProgress = false;
@@ -67,6 +71,7 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
     public fabricGameService: FabricGameService,
     private fabricDrawingService: FabricDrawingService,
     private imageLoadingService: ImageLoadingService,
+    private audioService: AudioService,
     private toastController: ToastController,
     private languageService: LanguageService,
     private pieceImageService: PieceImageService,
@@ -390,6 +395,11 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
       piece.y = step.toPosition.y;
       this.drawBoard();
     }
+
+    // 播放移动音效，与游戏页面保持一致（如果启用音效）
+    if (this.isSoundEnabled) {
+      this.audioService.playWoodSound();
+    }
   }
 
   onSliderChange(event: any) {
@@ -475,6 +485,10 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getSpeedText(): string {
     return `${this.playbackSpeed}x`;
+  }
+
+  toggleSound() {
+    this.isSoundEnabled = !this.isSoundEnabled;
   }
 
   getCardHeight(): number {

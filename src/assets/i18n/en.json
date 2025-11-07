@@ -231,7 +231,9 @@
     "controls": "Playback Controls",
     "completed": "Playback Completed",
     "currentStep": "Current Step",
-    "totalSteps": "Total Steps"
+    "totalSteps": "Total Steps",
+    "soundOn": "Sound Enabled",
+    "soundOff": "Sound Disabled"
   },
   "levelSelectPage": {
     "title": "Select Level",

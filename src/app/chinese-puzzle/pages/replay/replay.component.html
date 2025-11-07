@@ -131,6 +131,24 @@
                 >
                   <span class="text-base font-bold">{{ getSpeedText() }}</span>
                 </button>
+                <button
+                  (click)="toggleSound()"
+                  class="h-16 w-16 rounded-full p-3 shadow-lg transition-colors"
+                  [class]="
+                    isSoundEnabled
+                      ? 'hover:bg-wood-main-hover bg-wood-main text-white'
+                      : 'bg-gray-400 text-gray-200 hover:bg-gray-500'
+                  "
+                  [title]="
+                    (isSoundEnabled ? 'replay.soundOn' : 'replay.soundOff')
+                      | translate
+                  "
+                >
+                  <ion-icon
+                    [name]="isSoundEnabled ? 'volume-high' : 'volume-mute'"
+                    class="text-2xl"
+                  ></ion-icon>
+                </button>
               </div>
             </div>
           </div>
@@ -213,15 +231,29 @@
         </div>
         <button
           (click)="restartReplay()"
-          class="h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main p-2 text-white shadow-lg sm:h-12 sm:w-12 sm:p-3 md:h-14 md:w-14"
+          class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main p-2 text-white shadow-lg sm:h-12 sm:w-12 sm:p-3 md:h-14 md:w-14"
         >
           <ion-icon name="refresh" class="text-lg sm:text-xl"></ion-icon>
         </button>
         <button
           (click)="changePlaybackSpeed()"
-          class="h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main text-white shadow-lg sm:h-12 sm:w-12 sm:p-3 md:h-14 md:w-14"
+          class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-wood-main p-2 text-white shadow-lg sm:h-12 sm:w-12 sm:p-3 md:h-14 md:w-14"
         >
           <span class="text-xs font-bold sm:text-sm">{{ getSpeedText() }}</span>
+        </button>
+        <button
+          (click)="toggleSound()"
+          class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full p-2 shadow-lg transition-colors sm:h-12 sm:w-12 sm:p-3 md:h-14 md:w-14"
+          [class]="
+            isSoundEnabled
+              ? 'bg-wood-main text-white'
+              : 'bg-gray-400 text-gray-200'
+          "
+        >
+          <ion-icon
+            [name]="isSoundEnabled ? 'volume-high' : 'volume-mute'"
+            class="text-lg sm:text-xl"
+          ></ion-icon>
         </button>
       </div>
     </footer>

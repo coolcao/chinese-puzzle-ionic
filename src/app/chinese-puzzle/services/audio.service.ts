@@ -9,7 +9,7 @@ export interface SoundEffect {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AudioService {
   private store = inject(ChinesePuzzleStore);
@@ -20,7 +20,7 @@ export class AudioService {
 
   // 背景音乐对象
   private backgroundMusic: Howl | null = null;
-  
+
   // 背景音乐加载状态
   private isBackgroundMusicLoaded = false;
 
@@ -30,7 +30,7 @@ export class AudioService {
     success: 'assets/audios/success.mp3',
     lineFail: 'assets/audios/line_fail.mp3',
     lineSuccess: 'assets/audios/line_success.mp3',
-    wood: 'assets/audios/wood.mp3'
+    wood: 'assets/audios/wood.mp3',
   };
 
   constructor() {
@@ -49,7 +49,7 @@ export class AudioService {
         preload: true,
         onloaderror: (id, error) => {
           console.warn(`音效加载失败: ${key}`, error);
-        }
+        },
       });
 
       this.soundEffects.set(key, howl);
@@ -93,7 +93,7 @@ export class AudioService {
    * 停止所有音效
    */
   stopAllSounds(): void {
-    this.soundEffects.forEach(sound => {
+    this.soundEffects.forEach((sound) => {
       sound.stop();
     });
   }
@@ -131,7 +131,7 @@ export class AudioService {
         return;
       }
 
-      this.soundEffects.forEach(sound => {
+      this.soundEffects.forEach((sound) => {
         if (sound.state() === 'loaded') {
           loadedCount++;
           if (loadedCount === totalSounds) {
@@ -204,19 +204,22 @@ export class AudioService {
     this.backgroundMusic = new Howl({
       src: ['assets/audios/bg.mp3'],
       loop: true,
-      volume: 0.3, // 设置较小的音量
+      volume: 0.2, // 设置较小的音量
       preload: true,
       onload: () => {
         this.isBackgroundMusicLoaded = true;
         // 背景音乐加载完成后，检查当前设置是否需要播放
-        if (this.store.settings().backgroundMusicEnabled && !this.backgroundMusic?.playing()) {
+        if (
+          this.store.settings().backgroundMusicEnabled &&
+          !this.backgroundMusic?.playing()
+        ) {
           this.backgroundMusic?.play();
         }
       },
       onloaderror: (id, error) => {
         console.warn('背景音乐加载失败:', error);
         this.isBackgroundMusicLoaded = false;
-      }
+      },
     });
   }
 
@@ -261,7 +264,11 @@ export class AudioService {
    * 恢复背景音乐
    */
   resumeBackgroundMusic(): void {
-    if (this.store.settings().backgroundMusicEnabled && this.backgroundMusic && this.isBackgroundMusicLoaded) {
+    if (
+      this.store.settings().backgroundMusicEnabled &&
+      this.backgroundMusic &&
+      this.isBackgroundMusicLoaded
+    ) {
       this.backgroundMusic.play();
     }
   }
@@ -282,7 +289,11 @@ export class AudioService {
   updateBackgroundMusicStatus(): void {
     if (this.store.settings().backgroundMusicEnabled) {
       // 如果背景音乐已加载且未在播放，则播放
-      if (this.isBackgroundMusicLoaded && this.backgroundMusic && !this.backgroundMusic.playing()) {
+      if (
+        this.isBackgroundMusicLoaded &&
+        this.backgroundMusic &&
+        !this.backgroundMusic.playing()
+      ) {
         this.backgroundMusic.play();
       }
       // 如果未加载，则等待加载完成后自动播放（由onload回调处理）
@@ -295,7 +306,9 @@ export class AudioService {
    * 检查背景音乐是否正在播放
    */
   isBackgroundMusicPlaying(): boolean {
-    return this.backgroundMusic && this.isBackgroundMusicLoaded ? this.backgroundMusic.playing() : false;
+    return this.backgroundMusic && this.isBackgroundMusicLoaded
+      ? this.backgroundMusic.playing()
+      : false;
   }
 
   /**

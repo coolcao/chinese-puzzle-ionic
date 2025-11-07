@@ -20,7 +20,7 @@
       <button
         (click)="startGame()"
         appClickSound
-        class="w-full transform rounded-2xl border-2 border-wood-border bg-wood py-4 text-xl font-bold text-wood-text shadow-lg transition duration-300 hover:bg-wood-hover active:scale-95 dark:border-dark-wood-border dark:bg-dark-wood dark:text-wood-lighter dark:hover:bg-dark-wood-hover"
+        class="w-full transform rounded-2xl border-2 border-wood-border bg-wood py-4 text-xl font-bold text-wood-text shadow-lg transition duration-300 active:scale-95 hover:bg-wood-hover dark:border-dark-wood-border dark:bg-dark-wood dark:text-wood-lighter dark:hover:bg-dark-wood-hover"
       >
         {{ "home.startTutorial" | translate }}
       </button>
@@ -507,81 +507,6 @@
               </span>
             </span>
           </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 我的模态框 -->
-  <div
-    *ngIf="showProfile"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
-    (click)="closeProfile()"
-  >
-    <div
-      class="w-11/12 max-w-md rounded-2xl border-2 border-wood-border bg-wood-lighter p-6 shadow-2xl dark:border-dark-wood-border dark:bg-dark-wood-light"
-      (click)="$event.stopPropagation()"
-    >
-      <div class="mb-4 flex items-center justify-between">
-        <h3 class="text-xl font-bold text-wood-text dark:text-wood-lighter">
-          {{ "myProfile.title" | translate }}
-        </h3>
-        <button
-          (click)="closeProfile()"
-          appClickSound
-          class="rounded-full p-1 text-wood-text hover:bg-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-      <div class="space-y-4">
-        <div class="rounded-xl bg-wood-light p-4 dark:bg-dark-wood">
-          <h4 class="mb-2 font-bold text-wood-text dark:text-wood-lighter">
-            {{ "myProfile.gameStatistics" | translate }}
-          </h4>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="text-center">
-              <p
-                class="text-2xl font-bold text-wood-text dark:text-wood-lighter"
-              >
-                {{ 123 }}
-              </p>
-              <p class="text-sm text-wood-text dark:text-wood-lighter">
-                {{ "myProfile.completedLevels" | translate }}
-              </p>
-            </div>
-            <div class="text-center">
-              <p
-                class="text-2xl font-bold text-wood-text dark:text-wood-lighter"
-              >
-                {{ 123 }}
-              </p>
-              <p class="text-sm text-wood-text dark:text-wood-lighter">
-                {{ "myProfile.bestScore" | translate }}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="rounded-xl bg-wood-light p-4 dark:bg-dark-wood">
-          <h4 class="mb-2 font-bold text-wood-text dark:text-wood-lighter">
-            {{ "myProfile.achievements" | translate }}
-          </h4>
-          <p class="text-sm text-wood-text dark:text-wood-lighter">
-            {{ "myProfile.noAchievements" | translate }}
-          </p>
         </div>
       </div>
     </div>

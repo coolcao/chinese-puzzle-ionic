@@ -19,7 +19,6 @@ export class HomeComponent implements OnInit {
   // 模态框显示状态
   showInstructions = false;
   showSettings = false;
-  showProfile = false;
 
   private appStore = inject(AppStore);
   private store = inject(ChinesePuzzleStore);
@@ -32,8 +31,10 @@ export class HomeComponent implements OnInit {
   isDarkMode = computed(() => this.settings().isDarkMode);
   platform = this.appStore.platform;
 
-  constructor(private router: Router, private translate: TranslateService) {
-  }
+  constructor(
+    private router: Router,
+    private translate: TranslateService,
+  ) {}
 
   async ngOnInit() {
     // 加载设置
@@ -87,12 +88,6 @@ export class HomeComponent implements OnInit {
     this.audioService.playClickSound();
     this.router.navigate(['profile']);
   }
-
-  closeProfile() {
-    this.audioService.playClickSound();
-    this.showProfile = false;
-  }
-
   // 跳转到关卡生成器
   goToGenerator() {
     this.audioService.playClickSound();
@@ -109,20 +104,29 @@ export class HomeComponent implements OnInit {
   async toggleSoundEffects() {
     // 注意：先播放音效再切换设置，避免立即关闭音效
     this.audioService.playClickSound();
-    this.store.updateSetting('soundEffectsEnabled', !this.settings().soundEffectsEnabled);
+    this.store.updateSetting(
+      'soundEffectsEnabled',
+      !this.settings().soundEffectsEnabled,
+    );
     await this.saveSettings();
   }
 
   async toggleBackgroundMusic() {
     this.audioService.playClickSound();
-    this.store.updateSetting('backgroundMusicEnabled', !this.settings().backgroundMusicEnabled);
+    this.store.updateSetting(
+      'backgroundMusicEnabled',
+      !this.settings().backgroundMusicEnabled,
+    );
     this.audioService.updateBackgroundMusicStatus();
     await this.saveSettings();
   }
 
   async toggleVibration() {
     this.audioService.playClickSound();
-    this.store.updateSetting('vibrationEnabled', !this.settings().vibrationEnabled);
+    this.store.updateSetting(
+      'vibrationEnabled',
+      !this.settings().vibrationEnabled,
+    );
     await this.saveSettings();
   }
 

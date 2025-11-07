@@ -200,6 +200,8 @@
     "gameHistory": "Game History",
     "clearHistory": "Clear History",
     "confirmClearHistory": "Are you sure you want to clear all game history?",
+    "confirmClearHistoryTitle": "Clear History",
+    "clearHistoryWarning": "This action cannot be undone. All game records will be permanently deleted.",
     "noHistory": "No Game History",
     "steps": "Moves",
     "time": "Time",

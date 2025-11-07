@@ -1,0 +1,85 @@
+<!-- 确认Modal -->
+<div
+  *ngIf="isVisible()"
+  class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 backdrop-blur-sm dark:bg-black/70"
+  (click)="cancel()"
+>
+  <div
+    class="relative mx-auto w-11/12 max-w-sm rounded-2xl bg-wood-light p-6 text-wood-text shadow-2xl ring-1 ring-wood-border dark:bg-dark-wood dark:text-wood-lighter dark:ring-dark-wood-border sm:p-8"
+    (click)="stopPropagation($event)"
+  >
+    <!-- Modal Header -->
+    <div class="flex items-start justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-full" [ngClass]="getIcon().bgColor">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            [ngClass]="getIcon().textColor"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              [attr.d]="getIcon().icon"
+            />
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold leading-6 text-wood-text dark:text-wood-lighter">
+          {{ data().title }}
+        </h3>
+      </div>
+      <button
+        (click)="cancel()"
+        class="rounded-full p-1 text-wood-text/60 transition-all duration-200 hover:bg-wood/20 hover:text-wood-text dark:text-wood-lighter/60 dark:hover:bg-dark-wood/20 dark:hover:text-wood-lighter"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="mt-4">
+      <p class="text-sm text-wood-text/80 dark:text-wood-lighter/80">
+        {{ data().message }}
+      </p>
+      <p *ngIf="data().warning" class="mt-2 text-xs text-wood-text/60 dark:text-wood-lighter/60">
+        {{ data().warning }}
+      </p>
+    </div>
+
+    <!-- Modal Actions -->
+    <div class="mt-6 flex justify-end gap-3">
+      <button
+        type="button"
+        (click)="cancel()"
+        class="rounded-xl border border-wood-border bg-wood-lighter px-4 py-2 text-sm text-wood-text shadow-sm hover:bg-wood-lighter/80 focus:outline-none focus:ring-2 focus:ring-wood-dark focus:ring-offset-0 dark:border-dark-wood-border dark:bg-dark-wood-light dark:text-wood-lighter dark:hover:bg-dark-wood-light/80"
+      >
+        {{ data().cancelText }}
+      </button>
+      <button
+        type="button"
+        (click)="confirm()"
+        class="rounded-xl border px-4 py-2 text-sm font-medium text-white shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-0"
+        [ngClass]="getConfirmButtonClass()"
+      >
+        {{ data().confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

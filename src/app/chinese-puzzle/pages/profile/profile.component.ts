@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
@@ -7,6 +7,7 @@ import { GameStorageService } from '../../services/game-storage.service';
 import { GameHistoryRecord, GameStats } from '../../chinese-puzzle.type';
 import { levels } from '../../data/data-set';
 import { LanguageService } from '../../services/language.service';
+import { ConfirmModalComponent } from '../../components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-profile',
@@ -19,6 +20,8 @@ export class ProfileComponent implements OnInit {
   private audioService = inject(AudioService);
   private gameStorage = inject(GameStorageService);
   private languageService = inject(LanguageService);
+
+  @ViewChild(ConfirmModalComponent) confirmModal!: ConfirmModalComponent;
 
   // 信号状态管理
   isLoading = signal(true);
@@ -107,16 +110,27 @@ export class ProfileComponent implements OnInit {
     this.router.navigate(['/replay', recordId], { replaceUrl: true });
   }
 
+  // 显示清除历史记录确认框
+  showClearHistoryConfirm() {
+    this.audioService.playClickSound();
+    this.confirmModal.show({
+      title: this.translate.instant('myProfile.confirmClearHistoryTitle'),
+      message: this.translate.instant('myProfile.confirmClearHistory'),
+      warning: this.translate.instant('myProfile.clearHistoryWarning'),
+      confirmText: this.translate.instant('myProfile.clearHistory'),
+      cancelText: this.translate.instant('common.cancel'),
+      type: 'danger'
+    });
+  }
+
   // 清除历史记录
   async clearHistory() {
-    if (confirm(this.translate.instant('myProfile.confirmClearHistory'))) {
-      this.audioService.playClickSound();
-      try {
-        await this.gameStorage.clearGameHistory();
-        await this.loadUserData(); // 重新加载数据
-      } catch (error) {
-        console.error('Failed to clear history:', error);
-      }
+    this.audioService.playClickSound();
+    try {
+      await this.gameStorage.clearGameHistory();
+      await this.loadUserData(); // 重新加载数据
+    } catch (error) {
+      console.error('Failed to clear history:', error);
     }
   }
 

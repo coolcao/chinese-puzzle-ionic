@@ -19,6 +19,7 @@ import { GameHeaderComponent } from './components/game-header/game-header.compon
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ReplayComponent } from './pages/replay/replay.component';
 import { DebugPanelComponent } from './components/debug-panel/debug-panel.component';
+import { ConfirmModalComponent } from './components/confirm-modal/confirm-modal.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { DebugPanelComponent } from './components/debug-panel/debug-panel.compon
     ProfileComponent,
     GameHeaderComponent,
     ReplayComponent,
+    ConfirmModalComponent,
   ],
   imports: [
     CommonModule,

@@ -200,6 +200,8 @@
     "gameHistory": "游戏历史",
     "clearHistory": "清除历史",
     "confirmClearHistory": "确定要清除所有游戏历史记录吗？",
+    "confirmClearHistoryTitle": "清除历史记录",
+    "clearHistoryWarning": "此操作不可撤销，所有游戏记录将被永久删除。",
     "noHistory": "暂无游戏记录",
     "steps": "步数",
     "time": "用时",

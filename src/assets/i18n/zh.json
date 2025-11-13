@@ -237,7 +237,8 @@
   },
   "levelSelectPage": {
     "title": "选择关卡",
-    "selectHint": "选择关卡开始游戏"
+    "selectHint": "选择关卡开始游戏",
+    "unlockHint": "完成前一关解锁"
   },
   "gameControl": {
     "title": "控制",

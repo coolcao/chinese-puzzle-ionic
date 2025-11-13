@@ -6,8 +6,13 @@ import {
   ElementRef,
   AfterViewInit,
   effect,
+  inject,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { interval } from 'rxjs';
+import { ToastController } from '@ionic/angular';
+
 import { GameStorageService } from '../../services/game-storage.service';
 import {
   GameHistoryRecord,
@@ -18,13 +23,11 @@ import {
 import { FabricGameService } from '../game-board-fabric/services/fabric-game.service';
 import { FabricDrawingService } from '../game-board-fabric/services/fabric-drawing.service';
 import { levels } from '../../data/data-set';
-import { interval } from 'rxjs';
 import { ImageLoadingService } from '../../services/image-loading.service';
 import { AudioService } from '../../services/audio.service';
-import { ToastController } from '@ionic/angular';
 import { LanguageService } from '../../services/language.service';
 import { PieceImageService } from '../../services/piece-image.service';
-import { TranslateService } from '@ngx-translate/core';
+import { ChinesePuzzleStore } from '../../chinese-puzzle.store';
 
 @Component({
   selector: 'app-replay',
@@ -33,6 +36,8 @@ import { TranslateService } from '@ngx-translate/core';
   standalone: false,
 })
 export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
+  private puzzleStore = inject(ChinesePuzzleStore);
+
   @ViewChild('replayCanvasPC', { static: false })
   canvasPCRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('replayCanvasMobile', { static: false })
@@ -529,9 +534,7 @@ export class ReplayComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const isDarkMode =
-      window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDarkMode = this.puzzleStore.settings().isDarkMode;
 
     this.fabricGameService.clearCanvas();
     this.fabricDrawingService.drawBoard(isDarkMode);

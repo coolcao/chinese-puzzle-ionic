@@ -237,7 +237,8 @@
   },
   "levelSelectPage": {
     "title": "Select Level",
-    "selectHint": "Choose a level to play"
+    "selectHint": "Choose a level to play",
+    "unlockHint": "Complete previous level to unlock"
   },
   "gameControl": {
     "title": "Controls",
